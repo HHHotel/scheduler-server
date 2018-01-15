@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>HHH Scheduler</title>
+    <link rel = "stylesheet" href = "css/styling.css" />
+    <link rel = "stylesheet" href = "css/spacing.css" />
+    <link rel="icon" href = "images/web-app-icon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/>
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <link rel="apple-touch-icon" href="images/web-app-icon.png">
+  </head>
+
+  <body>
+
+    <div class = "side-menu">
+      <div class = "menu-container">
+        <div id = "week-jmp" class = "menu-item">JUMP TO WEEK</div>
+        <div class = "menu-item"></div>
+        <div class = "menu-item"></div>
+        <div class = "menu-item"></div>
+        <div class = "menu-item"></div>
+        <div class = "menu-item"></div>
+      </div>
+    </div>
+
+    <div class = "scheduler">
+      <div class = "toolbar">
+        <div id = "add-button">
+          <svg xmlns="http://www.w3.org/2000/svg"
+          width="40" height="40" viewBox="0 0 60 60">
+          <path transform="translate(12,24)" d="M36 15h-15v-15h-6v15h-15v6h15v15h6v-15h15z"/></svg>
+        </div>
+
+        <div id = "hb-menu">
+          <svg id = "hb-menu" height = "64" width = "50" focusable="false" viewBox="0 0 24 24">
+            <path id = "hb-menu" d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"></path>
+          </svg>
+        </div>
+
+        <div id = "title">
+          <h1 id = "dates"></h1>
+        </div>
+
+
+        <div class = "scroller">
+          <div id = "left"><span><</span></div>
+          <div id = 'right'><span>></span></div>
+        </div>
+      </div>
+
+      <!-- Add Dog form -->
+      <div>
+        <form id = "add-dog">
+          <div id = "close-add-dog">X</div>
+          <div>Name</div>
+          <input type = "text" required/>
+          <div class = "date-input">
+            <div>Start Date</div>
+            <input type = "date" required/>
+            <div>End Date</div>
+            <input type = "date" required/>
+          </div>
+          <button id = "submit">Submit</button>
+        </form>
+      </div>
+      <!-- End Dog form -->
+
+      <!-- Date Search -->
+      <div class = "date-search">
+        <img src = "images/calender-icon.png"/>
+        <input type = "text" />
+      </div>
+      <!-- End Date Search -->
+
+      <div class = "wrapper">
+        <div class = "week">
+          <div class = "day">
+            <h2></h2>
+            <div class = "dogList"></div>
+          </div>
+          <div class = "day">
+            <h2></h2>
+            <div class = "dogList"></div>
+          </div>
+          <div class = "day">
+            <h2></h2>
+            <div class = "dogList"></div>
+          </div>
+          <div class = "day">
+            <h2></h2>
+            <div class = "dogList"></div>
+          </div>
+          <div class = "day">
+            <h2></h2>
+            <div class = "dogList"></div>
+          </div>
+          <div class = "day">
+            <h2></h2>
+            <div class = "dogList"></div>
+          </div>
+          <div class = "day">
+            <h2></h2>
+            <div class = "dogList"></div>
+          </div>
+        </div>
+      </div>
+
+      <div id = "cover"></div>
+    </div>
+
+  <div id = "scripts">
+      <script src = "js/jQuery/jquery-3.2.1.min.js"></script>
+      <script src = "/socket.io/socket.io.js"></script>
+      <script src = "js/week.js"></script>
+      <script src = "js/booking.js"></script>
+      <script src = "js/info.js"></script>
+      <script src = "js/dog.js"></script>
+      <script src = "js/notso_dummy_server.js"></script>
+      <script src = "js/event_handlers.js"></script>
+    </div>
+
+  </body>
+
+</html>
