@@ -1,13 +1,13 @@
 /* eslint semi: ["error", "always"] */
 
-const express = require('express');
-const app = express();
-const path = require('path');
-const fs = require('fs');
-const server = require('http').createServer(app);
-const io = require('socket.io')(server);
+var express = require('express');
+var app = express();
+var path = require('path');
+var fs = require('fs');
+var server = require('http').createServer(app);
+var io = require('socket.io')(server);
 
-let storage;
+var storage;
 
 fs.readFile('dogData.txt', 'utf8', function (err, data) {
   if (err) {
@@ -42,10 +42,10 @@ io.on('connection', function (socket) {
   });
 
   socket.on('remove', function (dogID) {
-    let idIndex = storage.indexOf(dogID);
-    let endIndex = storage.indexOf('!', idIndex);
-    let startIndex;
-    for (let i = idIndex; i >= 0; i--) {
+    var idIndex = storage.indexOf(dogID);
+    var endIndex = storage.indexOf('!', idIndex);
+    var startIndex;
+    for (var i = idIndex; i >= 0; i--) {
       if (storage[i] === '!') {
         startIndex = i;
         break;
