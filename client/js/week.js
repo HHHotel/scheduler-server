@@ -46,10 +46,6 @@ Week.prototype.initWeek = function (sDate, eDate) {
   }
 };
 
-// TO-DO
-// This is a quick implemention of writing the week at the prototype
-// Needs to account for going over years
-
 // Week.prototype.toString = function () {
 //   const months = ['January', 'February',
 //     'March', 'April', 'May', 'June',
