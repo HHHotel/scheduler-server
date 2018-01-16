@@ -53,13 +53,29 @@
       <div>
         <form id = "add-dog">
           <div id = "close-add-dog">X</div>
-          <div>Name</div>
+          <h2>Name</h2>
           <input type = "text" required/>
           <div class = "date-input">
-            <div>Start Date</div>
+            <h2>Start Date</h2>
             <input type = "date" required/>
-            <div>End Date</div>
+              <div>
+                <input type = "radio" name = "timeStart" value = "8:00 AM" required/>
+                <label>AM</label>
+              </div>
+              <div>
+                <input type = "radio" name = "timeStart" value = "4:00 PM" required/>
+                <label>PM</label>
+              </div>
+            <h2>End Date</h2>
             <input type = "date" required/>
+            <div>
+              <input type = "radio" name = "timeEnd" value = "8:00 AM" required/>
+              <label>AM</label>
+            </div>
+            <div>
+              <input type = "radio" name = "timeEnd" value = "4:00 PM" required/>
+              <label>PM</label>
+            </div>
           </div>
           <button id = "submit">Submit</button>
         </form>
@@ -111,7 +127,7 @@
 
   <div id = "scripts">
       <script src = "js/jQuery/jquery-3.2.1.min.js"></script>
-      <script src = "/socket.io/socket.io.js"></script>
+      <script src="/socket.io/socket.io.js"></script>
       <script src = "js/week.js"></script>
       <script src = "js/booking.js"></script>
       <script src = "js/info.js"></script>

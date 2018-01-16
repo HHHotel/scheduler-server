@@ -119,8 +119,13 @@ $(function () {
   function parseField ($object) {
     var result = [];
     $object.find('select[value!=""], input[value!=""]').each(function () {
-      let append = $(this).attr('type') === 'date' ? $(this).val() + ' PST' : $(this).val();
-      result.push(append);
+      if ($(this).attr('type') === 'date') {
+        result.push($(this).val() + ' PST');
+      } else if ($(this).attr('type') === 'radio' && $(this).prop('checked')) {
+        result[result.length - 1] += $(this).val();
+      } else if ($(this).attr('type') !== 'radio') {
+        result.push($(this).val());
+      }
     });
     return result;
   }
@@ -141,7 +146,7 @@ $(function () {
 
       dogsInDay.forEach(function (d) {
         let dog = document.createElement('div');
-        dog.innerHTML = d.dog.name;
+        dog.innerHTML = d.dog.toString(week.getDay(i));
         dog.className = d.color;
         dog.id = d.dog.ID;
         days[i].append(dog);

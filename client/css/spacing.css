@@ -209,12 +209,20 @@ body {
   margin: 20px auto;
 }
 
-.date-input input
-, .date-input div {
-  width: 50%;
-  display: block;
+.date-input {
+  vertical-align: middle;
+}
+
+.date-input input,
+.date-input div {
+  width: 40%;
+  display: inline-block;
   margin: auto;
   text-align: center;
+}
+
+.date-input div {
+  width: 10%;
 }
 
 #add-dog * {
@@ -231,5 +239,11 @@ body {
   .date-search {
     width: 90%;
     left: 5%;
+  }
+}
+
+@media only screen and (max-width: 1055px) {
+  #radios {
+    display: block;
   }
 }
