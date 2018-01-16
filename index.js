@@ -21,21 +21,18 @@ server.listen(8080, function () {
   console.log('Server running on port 8080');
 });
 
-server.on('close', function () {
-  console.log(' Stopping ...');
-  fs.writeFile('dogData.txt', storage, function (err) {
-    if (err) throw err;
-    console.log('Saved!');
-  });
-});
-
 process.on('SIGINT', function () {
+  console.log('Exiting..');
+  fs.writeFileSync('dogData.txt', storage, function (err) {
+    if (err) throw err;
+  });
   server.close();
 });
 
 app.use(express.static(path.join(__dirname, 'client')));
 
 io.on('connection', function (socket) {
+  console.log('New connection');
   socket.emit('load', storage);
   socket.on('store', function (data) {
     if (!storage.includes(data)) {
