@@ -23,9 +23,7 @@ server.listen(8080, function () {
 
 process.on('SIGINT', function () {
   console.log('Exiting..');
-  fs.writeFileSync('dogData.txt', storage, function (err) {
-    if (err) throw err;
-  });
+  fs.writeFileSync('dogData.txt', storage);
   server.close();
 });
 
