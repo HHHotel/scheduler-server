@@ -1,10 +1,9 @@
 /* eslint semi: ["error", "always"] */
-/* global Info Booking */
+/* global Booking */
 
 function Dog (dogName) {
   this.name = dogName;
   this.status = 'boarding';
-  this.info = new Info();
   this.bookings = [];
   this.ID = Dog.getNewID();
 }
@@ -17,7 +16,6 @@ Dog.prototype.addBooking = function (start, end) {
 // ------------- Getters ------------------//
 Dog.prototype.getName = function () { return this.name; };
 // Dog.prototype.getClient = function () { return this.clientName; };
-Dog.prototype.getInfo = function () { return this.info; };
 Dog.prototype.getStatus = function () { return this.status; };
 Dog.prototype.getLastBooking = function () { return this.bookings[this.bookings.length - 1]; };
 Dog.prototype.getBookings = function () { return this.bookings; };
