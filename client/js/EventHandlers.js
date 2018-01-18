@@ -1,12 +1,11 @@
 /* eslint semi: ["error", "always"] */
-/* global $ Week Server io */
-/* eslint-disable no-unused-vars */
+/* global $ Week ServerInterface io */
 
 // On load Functions
 $(function () {
   let week = new Week(Date.now());
   let socket = io();
-  let server = new Server();
+  let server = new ServerInterface();
 
   socket.on('load', function (data) {
     clearDogs();
@@ -160,7 +159,7 @@ $(function () {
 
   // Clears localStorage and Server object
   function clearDogs () {
-    server = new Server();
+    server = new ServerInterface();
     update();
   }
 });

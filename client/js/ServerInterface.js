@@ -1,11 +1,11 @@
 /* eslint semi: ["error", "always"] */
 /* global Dog */
 
-function Server () {
+function ServerInterface () {
   this.dogs = [];
 }
 
-Server.prototype.addDog = function (dogInfo) {
+ServerInterface.prototype.addDog = function (dogInfo) {
   let dog;
   dog = new Dog(dogInfo[0]);
   dog.addBooking(dogInfo[1], dogInfo[2]);
@@ -13,7 +13,7 @@ Server.prototype.addDog = function (dogInfo) {
   this.dogs.push(dog);
 };
 
-Server.prototype.getDogsInDay = function (day) {
+ServerInterface.prototype.getDogsInDay = function (day) {
   let output = [];
   this.dogs.forEach(function (d) {
     let dStatus = d.getLastBooking().dayType(day);
@@ -24,7 +24,7 @@ Server.prototype.getDogsInDay = function (day) {
   return output;
 };
 
-Server.prototype.serialize = function () {
+ServerInterface.prototype.serialize = function () {
   let storageString = '';
   this.dogs.forEach(function (dog) {
     let dogString = '!#' + dog.getName() + '##' +
@@ -36,7 +36,7 @@ Server.prototype.serialize = function () {
   return storageString;
 };
 
-Server.prototype.serializeLastDog = function () {
+ServerInterface.prototype.serializeLastDog = function () {
   let dog = this.dogs[this.dogs.length - 1];
   let dogString = '!#' + dog.getName() + '##' +
   dog.getLastBooking().getStart().toLocaleString() + '##' +
@@ -44,7 +44,7 @@ Server.prototype.serializeLastDog = function () {
   return dogString;
 };
 
-Server.prototype.load = function (servInfo) {
+ServerInterface.prototype.load = function (servInfo) {
   if (servInfo.indexOf('!#') === 0) {
     servInfo = servInfo.slice(2);
     let info = [];
