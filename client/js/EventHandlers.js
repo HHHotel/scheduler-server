@@ -147,7 +147,7 @@ $(function () {
       dogsInDay.forEach(function (d) {
         let dog = document.createElement('div');
         dog.innerHTML = d.dog.toString(week.getDay(i));
-        dog.className = d.color;
+        dog.className = d.status;
         dog.id = d.dog.ID;
         days[i].append(dog);
       });

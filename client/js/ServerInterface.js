@@ -16,12 +16,9 @@ Server.prototype.addDog = function (dogInfo) {
 Server.prototype.getDogsInDay = function (day) {
   let output = [];
   this.dogs.forEach(function (d) {
-    if (day.toDateString() === d.getLastBooking().getStart().toDateString()) {
-      output.push({dog: d, color: 'arrive'});
-    } else if (day.toDateString() === d.getLastBooking().getEnd().toDateString()) {
-      output.push({dog: d, color: 'depart'});
-    } else if (day.getTime() < d.getLastBooking().getEnd().getTime() && day.getTime() > d.getLastBooking().getStart().getTime()) {
-      output.push({dog: d, color: d.getStatus()});
+    let dStatus = d.getLastBooking().dayType(day);
+    if (dStatus) {
+      output.push({dog: d, status: dStatus});
     }
   });
   return output;

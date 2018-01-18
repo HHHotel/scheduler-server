@@ -21,14 +21,11 @@ Dog.prototype.getLastBooking = function () { return this.bookings[this.bookings.
 Dog.prototype.getBookings = function () { return this.bookings; };
 
 Dog.prototype.toString = function (date) {
-  if (date.getMonth() === this.getLastBooking().getStart().getMonth() && date.getDate() === this.getLastBooking().getStart().getDate() && date.getYear() === this.getLastBooking().getStart().getYear()) {
-    return this.name +
-    ' (' + (this.getLastBooking().getStart().getHours() % 12) +
-    ':00' + ((this.getLastBooking().getStart().getHours()) >= 12 ? ' PM)' : ' AM)');
-  } else if (date.getMonth() === this.getLastBooking().getEnd().getMonth() && date.getDate() === this.getLastBooking().getEnd().getDate() && date.getYear() === this.getLastBooking().getEnd().getYear()) {
-    return this.name +
-    ' (' + (this.getLastBooking().getEnd().getHours() % 12) +
-    ':00' + ((this.getLastBooking().getEnd().getHours()) >= 12 ? ' PM)' : ' AM)');
+  let dogStatus = this.getLastBooking().dayType(date);
+  if (dogStatus === 'arriving') {
+    return this.name + ' (' + this.getLastBooking().getStartTime() + ')';
+  } else if (dogStatus === 'departing') {
+    return this.name + ' (' + this.getLastBooking().getEndTime() + ')';
   } else {
     return this.name;
   }
