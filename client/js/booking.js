@@ -18,7 +18,10 @@ Booking.prototype.getEndTime = function () {
 };
 
 Booking.prototype.dayType = function (date) {
-  if (!(date.getTime() > this.getStart().getTime() && date.getTime() < this.getEnd().getTime())) return;
+  let d = new Date(date.getTime());
+  let sTime = d.setHours(0);
+  let eTime = d.setHours(24);
+  if (!(eTime > this.getStart().getTime() && sTime <= this.getEnd().getTime())) return;
 
   if (this.getStart().toDateString() === date.toDateString()) {
     return 'arriving';

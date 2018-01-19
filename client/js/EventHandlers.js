@@ -1,11 +1,12 @@
 /* eslint semi: ["error", "always"] */
 /* global $ Week ServerInterface io */
 
+let server = new ServerInterface();
+
 // On load Functions
 $(function () {
   let week = new Week(Date.now());
   let socket = io();
-  let server = new ServerInterface();
 
   socket.on('load', function (data) {
     clearDogs();
@@ -175,13 +176,13 @@ $(function () {
 
       let dogsInDay = server.getDogsInDay(week.getDay(i));
 
-      dogsInDay.forEach(function (d) {
+      for (let d of dogsInDay) {
         let dog = document.createElement('div');
         dog.innerHTML = d.dog.toString(week.getDay(i));
         dog.className = d.status;
         dog.id = d.dog.ID;
         days[i].append(dog);
-      });
+      }
     }
   }
 
