@@ -209,19 +209,19 @@ body, html {
   color: var(--font-color-dark);
 }
 
-.arrive {
+.arriving {
   color: blue;
   order: 2;
 }
-.arrive::after {
+.arriving::after {
   content: ' - Arrives';
 }
 
-.depart {
+.departing {
   color: red;
   order: 3;
 }
-.depart::after {
+.departing::after {
   content: ' - Leaves';
 }
 
