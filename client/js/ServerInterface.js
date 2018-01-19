@@ -1,11 +1,11 @@
 /* eslint semi: ["error", "always"] */
 /* global Dog */
 
-function Server () {
+function ServerInterface () {
   this.dogs = [];
 }
 
-Server.prototype.addDog = function (dogInfo) {
+ServerInterface.prototype.addDog = function (dogInfo) {
   let dog;
   dog = new Dog(dogInfo[0]);
   dog.addBooking(dogInfo[1], dogInfo[2]);
@@ -13,7 +13,7 @@ Server.prototype.addDog = function (dogInfo) {
   this.dogs.push(dog);
 };
 
-Server.prototype.findDog = function (dogName) {
+ServerInterface.prototype.findDog = function (dogName) {
   let out = [];
   for (let dog of this.dogs) {
     if (dog.getName().toLowerCase().includes(dogName.toLowerCase())) {
@@ -23,21 +23,18 @@ Server.prototype.findDog = function (dogName) {
   return out;
 };
 
-Server.prototype.getDogsInDay = function (day) {
+ServerInterface.prototype.getDogsInDay = function (day) {
   let output = [];
   this.dogs.forEach(function (d) {
-    if (day.toDateString() === d.getLastBooking().getStart().toDateString()) {
-      output.push({dog: d, color: 'arrive'});
-    } else if (day.toDateString() === d.getLastBooking().getEnd().toDateString()) {
-      output.push({dog: d, color: 'depart'});
-    } else if (day.getTime() < d.getLastBooking().getEnd().getTime() && day.getTime() > d.getLastBooking().getStart().getTime()) {
-      output.push({dog: d, color: d.getStatus()});
+    let dStatus = d.getLastBooking().dayType(day);
+    if (dStatus) {
+      output.push({dog: d, status: dStatus});
     }
   });
   return output;
 };
 
-Server.prototype.serialize = function () {
+ServerInterface.prototype.serialize = function () {
   let storageString = '';
   this.dogs.forEach(function (dog) {
     let dogString = '!#' + dog.getName() + '##' +
@@ -49,7 +46,7 @@ Server.prototype.serialize = function () {
   return storageString;
 };
 
-Server.prototype.serializeLastDog = function () {
+ServerInterface.prototype.serializeLastDog = function () {
   let dog = this.dogs[this.dogs.length - 1];
   let dogString = '!#' + dog.getName() + '##' +
   dog.getLastBooking().getStart().toLocaleString() + '##' +
@@ -57,7 +54,7 @@ Server.prototype.serializeLastDog = function () {
   return dogString;
 };
 
-Server.prototype.load = function (servInfo) {
+ServerInterface.prototype.load = function (servInfo) {
   if (servInfo.indexOf('!#') === 0) {
     servInfo = servInfo.slice(2);
     let info = [];
