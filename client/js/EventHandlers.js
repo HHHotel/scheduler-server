@@ -136,13 +136,11 @@ $(function () {
     const days = document.querySelectorAll('.dogList');
     for (let i = 0; i < days.length; i++) {
       let dayTitle = days[i].previousElementSibling;
-      dayTitle.textContent = weekDays[week.getDay(i).getDay()] + ' \n ' + week.getDay(i).getDate();
+      dayTitle.textContent = weekDays[week.getDay(i).getDay()] + week.getDay(i).getDate();
       while (days[i].firstChild) {
         days[i].removeChild(days[i].firstChild);
       }
-
       let dogsInDay = server.getDogsInDay(week.getDay(i));
-
       dogsInDay.forEach(function (d) {
         let dog = document.createElement('div');
         dog.innerHTML = d.dog.toString(week.getDay(i));
@@ -157,7 +155,7 @@ $(function () {
     socket.emit('store', server.serializeLastDog());
   }
 
-  // Clears localStorage and Server object
+  // Clears Server object
   function clearDogs () {
     server = new ServerInterface();
     update();
