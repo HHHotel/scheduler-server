@@ -7,7 +7,7 @@ function Booking (sDate, eDate) {
 
 Booking.prototype.getStart = function () { return new Date(this.start); };
 Booking.prototype.getEnd = function () { return new Date(this.end); };
-Booking.prototype.toString = function () { return new Date(this.start) + ' - ' + new Date(this.end); };
+Booking.prototype.toString = function () { return new Date(this.start).toDateString() + ' - ' + new Date(this.end).toDateString(); };
 
 /* TO-DO This is a quick and dirty way of obtaining the days of the stay it
 still needs a better implementation */

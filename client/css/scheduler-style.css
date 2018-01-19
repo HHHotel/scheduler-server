@@ -1,0 +1,387 @@
+@import url('https://fonts.googleapis.com/css?family=Ubuntu');
+
+:root {
+    --background-light: #e1e7ec;
+    --background-ex-light: #e7e7e7;
+    --background-dark: #4d6c8c;
+    --font-color-light: #ebebeb;
+    --font-color-dark: #282C34;
+    --shadow: #AAA;
+}
+
+* {
+  font-family: 'Ubunutu', sans-serif;
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+body, html {
+  overflow-x: hidden;
+  background-color: var(--background-light);
+}
+
+.scheduler {
+  position: absolute;
+  width: 100%;
+  height: 100vh;
+}
+
+.side-menu {
+  position: fixed;
+  left: -300px;
+  width: 300px;
+  height: 100%;
+  background-color: var(--background-dark);
+}
+
+.menu-container {
+  height: 100%;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 100%;
+  grid-gap: 1rem;
+  margin: .5rem;
+}
+
+.menu-item {
+  user-select: none;
+  width: calc(100% - 1rem);
+  display: inline-block;
+  text-align: center;
+  vertical-align: middle;
+  height: 100%;
+  font-size: 2rem;
+  background-color: var(--background-light);
+}
+
+.menu-item::before {
+  content: '';
+  display: inline-block;
+  height: 100%;
+  vertical-align: middle;
+  margin-right: -0.25em; /* Adjusts for spacing */
+}
+
+.menu-item:hover {
+  background-color: var(--background-ex-light);
+  text-decoration: underline;
+}
+
+.toolbar {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 1;
+  padding: .5rem;
+
+  text-align: center;
+
+  width: 100%;
+  height: 5rem;
+
+  background-color: var(--background-dark);
+  box-shadow: 0px 3px 5px var(--shadow);
+}
+
+.toolbar #hb-menu {
+  float: left;
+  fill: var(--font-color-light);
+}
+
+#title {
+  vertical-align: middle;
+  height: 100%;
+  width: 75%;
+  margin: 0 .5rem;
+}
+
+#title h1 {
+  line-height: 4rem;
+}
+
+.toolbar h1 {
+  color: var(--font-color-light);
+  font-size: 2.9em;
+  font-style: bold;
+}
+
+.scroller {
+  height: 100%;
+  width: 5rem;
+  margin-right: 1rem;
+  display: block;
+  float: right;
+}
+
+.scroller > * {
+  width: 50%;
+}
+
+.scroller span {
+  display: inline;
+  vertical-align: middle;
+}
+
+.scroller #right,
+.scroller #left {
+  color: var(--font-color-light);
+  font-size: 3em;
+  font-weight: 1;
+
+  user-select: none;
+
+  line-height: 3.5rem;
+  height: 100%;
+}
+
+.scroller #left {
+  float: left;
+}
+
+.scroller #right {
+  float: right;
+}
+
+#add-button {
+  height: 60px;
+  width: 60px;
+  position: fixed;
+  bottom: 15px;
+  right: 15px;
+  background-color: var(--background-dark);
+  border-radius: 100%;
+  box-shadow: 3px 3px 7px var(--shadow);
+  fill: var(--font-color-light);
+
+}
+
+#add-button:hover {
+  fill: var(--font-color-dark);
+}
+
+.wrapper {
+  width: 100%;
+  position: absolute;
+  top: 5rem;
+  overflow: auto;
+  background-color: var(--background-light);
+}
+
+.week {
+  width: 95%;
+  margin: .5rem auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  grid-gap: 1rem;
+}
+
+.dog-list {
+  width: 100%;
+  padding: 2%;
+  height: calc(100% - 2rem);
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
+  flex-wrap: wrap;
+}
+
+.day {
+  height: 30rem;
+
+  background-color: white;
+  box-shadow: 5px 5px 10px var(--shadow);
+  border-radius: 3px;
+}
+
+.day h2 {
+  line-height: 2rem;
+  position: relative;
+  text-align: center;
+
+  font-weight: 3;
+  font-style: italic;
+  border-bottom: 2px solid var(--background-dark);
+  color: var(--font-color-dark);
+}
+
+.arrive {
+  color: blue;
+  order: 2;
+}
+.arrive::after {
+  content: ' - Arrives';
+}
+
+.depart {
+  color: red;
+  order: 3;
+}
+.depart::after {
+  content: ' - Leaves';
+}
+
+.boarding {
+  order: 1;
+  color: maroon;
+}
+
+#cover {
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  position: fixed;
+  top: 0;
+
+  background-color: rgba(26, 29, 34, 0.71);
+  display: none;
+}
+
+.date-search,
+.dog-search {
+  position: relative;
+  width: 30%;
+  left: 35%;
+  top: 30%;
+  z-index: 5;
+  display: none;
+}
+
+.dog-search input,
+.date-search input {
+  padding: .5rem;
+  width: calc(100% - 3.5rem);
+  text-align: center;
+
+  font-size: 2rem;
+  background-color: #4444;
+  color: var(--font-color-light);
+  border-radius: 5%;
+  border: none;
+  border-bottom: 4px solid var(--font-color-light);
+}
+
+.dog-search img,
+.date-search img {
+  height: 3.5rem;
+}
+
+.dog-search input,
+.dog-search img,
+.date-search input,
+.date-search img {
+  float:left;
+}
+
+.results-list {
+  position: relative;
+  width: 100%;
+  height: 50vh;
+  top: 3rem;
+  list-style: none;
+  overflow-y: scroll;
+  background-color: var(--background-light);
+}
+
+#add-dog {
+  z-index: 5;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  display: none;
+  padding: .5rem;
+
+  border: none;
+  color: var(--font-color-light);
+  background-color: var(--background-dark);
+}
+
+#add-dog > input, #add-dog button {
+  width: 60%;
+  padding: 4px;
+
+  background-color: var(--background-light);
+  border: none;
+  color: var(--font-color-dark);
+}
+
+#add-dog button {
+  width: 40%;
+  margin: 20px auto;
+
+  color: var(--font-color-dark);
+  border: none;
+  text-decoration: none;
+}
+
+#close-add-dog {
+  position: fixed;
+  right: 13px;
+
+  font-size: 2rem;
+}
+
+.date-input input {
+  vertical-align: middle;
+
+  border: none;
+  background-color: var(--background-light);
+  color: var(--font-color-dark);
+}
+
+.date-input input,
+ .date-input div {
+  width: 40%;
+  display: inline-block;
+  margin: auto;
+  text-align: center;
+
+  border: none;
+}
+
+.date-input div {
+  width: 10%;
+}
+
+#add-dog * {
+  margin: .5rem auto;
+}
+
+@media only screen and (max-width: 410px) {
+  #title h1 {
+    line-height: 2rem;
+  }
+}
+
+@media only screen and (max-width: 530px) {
+
+  #title h1 {
+    font-size: 2rem;
+  }
+
+  .scroller #right,
+  .scroller #left {
+    font-size: 2.5rem;
+  }
+}
+
+@media only screen and (max-width: 800px) {
+  .dog-search,
+  .date-search {
+    width: 90%;
+    left: 5%;
+  }
+}
+
+@media only screen and (max-width: 1055px) {
+  #radios {
+    display: block;
+  }
+}

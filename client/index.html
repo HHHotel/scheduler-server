@@ -2,8 +2,7 @@
 <html>
   <head>
     <title>HHH Scheduler</title>
-    <link rel = "stylesheet" href = "css/styling.css" />
-    <link rel = "stylesheet" href = "css/spacing.css" />
+    <link rel = "stylesheet" href = "css/scheduler-style.css" />
     <link rel="icon" href = "images/web-app-icon.png">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/>
     <meta name="mobile-web-app-capable" content="yes" />
@@ -15,8 +14,8 @@
 
     <div class = "side-menu">
       <div class = "menu-container">
-        <div id = "week-jmp" class = "menu-item">JUMP TO WEEK</div>
-        <div class = "menu-item"></div>
+        <div id = "week-jmp" class = "menu-item">Jump to Week</div>
+        <div id = "dog-search" class = "menu-item">Search Dog</div>
         <div class = "menu-item"></div>
         <div class = "menu-item"></div>
         <div class = "menu-item"></div>
@@ -89,35 +88,46 @@
       </div>
       <!-- End Date Search -->
 
+      <!-- Dog Search -->
+      <div class = "dog-search">
+        <img src = "images/search-icon.png"/>
+        <input type = "text" />
+
+        <ul class = "results-list">
+
+        </ul>
+      </div>
+      <!-- End dog Search -->
+
       <div class = "wrapper">
         <div class = "week">
           <div class = "day">
             <h2></h2>
-            <div class = "dogList"></div>
+            <div class = "dog-list"></div>
           </div>
           <div class = "day">
             <h2></h2>
-            <div class = "dogList"></div>
+            <div class = "dog-list"></div>
           </div>
           <div class = "day">
             <h2></h2>
-            <div class = "dogList"></div>
+            <div class = "dog-list"></div>
           </div>
           <div class = "day">
             <h2></h2>
-            <div class = "dogList"></div>
+            <div class = "dog-list"></div>
           </div>
           <div class = "day">
             <h2></h2>
-            <div class = "dogList"></div>
+            <div class = "dog-list"></div>
           </div>
           <div class = "day">
             <h2></h2>
-            <div class = "dogList"></div>
+            <div class = "dog-list"></div>
           </div>
           <div class = "day">
             <h2></h2>
-            <div class = "dogList"></div>
+            <div class = "dog-list"></div>
           </div>
         </div>
       </div>
@@ -130,7 +140,6 @@
       <script src="/socket.io/socket.io.js"></script>
       <script src = "js/week.js"></script>
       <script src = "js/booking.js"></script>
-      <script src = "js/info.js"></script>
       <script src = "js/dog.js"></script>
       <script src = "js/ServerInterface.js"></script>
       <script src = "js/EventHandlers.js"></script>

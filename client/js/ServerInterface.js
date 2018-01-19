@@ -13,6 +13,16 @@ Server.prototype.addDog = function (dogInfo) {
   this.dogs.push(dog);
 };
 
+Server.prototype.findDog = function (dogName) {
+  let out = [];
+  for (let dog of this.dogs) {
+    if (dog.getName().toLowerCase().includes(dogName.toLowerCase())) {
+      out.push(dog);
+    }
+  }
+  return out;
+};
+
 Server.prototype.getDogsInDay = function (day) {
   let output = [];
   this.dogs.forEach(function (d) {
