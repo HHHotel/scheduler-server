@@ -30,7 +30,7 @@ process.on('SIGINT', function () {
 app.use(express.static(path.join(__dirname, 'client')));
 
 io.on('connection', function (socket) {
-  console.log('New connection');
+  console.log('New connection id : ' + socket.id);
   socket.emit('load', storage);
   socket.on('store', function (data) {
     if (!storage.includes(data)) {
@@ -51,5 +51,9 @@ io.on('connection', function (socket) {
     }
     storage = storage.slice(0, startIndex) + storage.slice(endIndex + 1);
     io.sockets.emit('load', storage);
+  });
+
+  socket.on('disconnect', function () {
+    console.log('id : ' + socket.id + ' disconnected');
   });
 });

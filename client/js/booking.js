@@ -7,7 +7,7 @@ function Booking (sDate, eDate) {
 
 Booking.prototype.getStart = function () { return new Date(this.start); };
 Booking.prototype.getEnd = function () { return new Date(this.end); };
-Booking.prototype.toString = function () { return new Date(this.start) + ' - ' + new Date(this.end); };
+Booking.prototype.toString = function () { return new Date(this.start).toDateString() + ' - ' + new Date(this.end).toDateString(); };
 
 Booking.prototype.getStartTime = function () {
   return this.getStart().getHours() < 12 ? '8:00 AM' : '4:00 PM';
@@ -18,7 +18,10 @@ Booking.prototype.getEndTime = function () {
 };
 
 Booking.prototype.dayType = function (date) {
-  if (!(date.getTime() > this.getStart().getTime() && date.getTime() < this.getEnd().getTime())) return;
+  let d = new Date(date.getTime());
+  let sTime = d.setHours(0);
+  let eTime = d.setHours(24);
+  if (!(eTime > this.getStart().getTime() && sTime <= this.getEnd().getTime())) return;
 
   if (this.getStart().toDateString() === date.toDateString()) {
     return 'arriving';

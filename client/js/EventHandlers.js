@@ -1,11 +1,12 @@
 /* eslint semi: ["error", "always"] */
 /* global $ Week ServerInterface io */
 
+let server = new ServerInterface();
+
 // On load Functions
 $(function () {
   let week = new Week(Date.now());
   let socket = io();
-  let server = new ServerInterface();
 
   socket.on('load', function (data) {
     clearDogs();
@@ -74,6 +75,7 @@ $(function () {
     $('.toolbar').animate({left: 0}, 250);
     $('.side-menu').animate({left: -1 * offset}, 250);
     $('.date-search').hide();
+    $('.dog-search').hide();
     $('#cover').hide();
   }
 
@@ -84,6 +86,13 @@ $(function () {
     $('.date-search').show();
   });
 
+  $('#dog-search').click(function () {
+    closeMenu();
+    clearChildren($('.results-list'));
+    $('#cover').show();
+    $('.dog-search').show();
+  });
+
   $('.date-search input').keypress(function (e) {
     if (e.keyCode === 13) {
       week = new Week(new Date(this.value));
@@ -92,6 +101,32 @@ $(function () {
       closeMenu();
     }
   });
+
+  $('.dog-search input').keypress(function (e) {
+    if (e.keyCode === 13) {
+      let dogName = this.value;
+      this.value = '';
+      clearChildren($('.results-list'));
+      let resDogs = server.findDog(dogName);
+      for (let dog of resDogs) {
+        appendDog(dog);
+      }
+      update();
+    }
+  });
+
+  function clearChildren ($list) {
+    $list.children().each(function () {
+      $(this).remove();
+    });
+  }
+
+  function appendDog (dog) {
+    let $dogList = $('.results-list');
+    let $dog = $('<div>', {'class': 'result-dog', 'id': dog.ID});
+    $dog.html('<h2>' + dog.getName() + '</h2>' + dog.getLastBooking().toString());
+    $dogList.append($dog);
+  }
 
   // Add Button
   $('#add-button').click(function () {
@@ -133,21 +168,21 @@ $(function () {
   function update () {
     let weekDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thurday', 'Friday', 'Saturday'];
     $('#dates').text(week.toString());
-    const days = document.querySelectorAll('.dogList');
+    const days = document.querySelectorAll('.dog-list');
     for (let i = 0; i < days.length; i++) {
       let dayTitle = days[i].previousElementSibling;
-      dayTitle.textContent = weekDays[week.getDay(i).getDay()] + week.getDay(i).getDate();
-      while (days[i].firstChild) {
-        days[i].removeChild(days[i].firstChild);
-      }
+      dayTitle.textContent = weekDays[week.getDay(i).getDay()] + ' ' + week.getDay(i).getDate();
+      clearChildren($(days[i]));
+
       let dogsInDay = server.getDogsInDay(week.getDay(i));
-      dogsInDay.forEach(function (d) {
+
+      for (let d of dogsInDay) {
         let dog = document.createElement('div');
         dog.innerHTML = d.dog.toString(week.getDay(i));
         dog.className = d.status;
         dog.id = d.dog.ID;
         days[i].append(dog);
-      });
+      }
     }
   }
 
