@@ -38,12 +38,6 @@ Dog.getNewID = function () {
     id += possible[Math.round(Math.random() * (possible.length - 1))];
   }
 
-  /*
-
-HEY DUMMY YOU'RE TOO LAZY TO DO THIS PROPER SO YOU PUT THIS POS IMPLEMENTATION
-IN. PLS FIX WHEN YOU GET OFF YOUR ASS AND LEARN SQL AND NODE
-
-   */
+  /*  TO-DO Fix possibility of repeated ids */
   return id;
-  // YA THIS SHIT
 };
