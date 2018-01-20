@@ -190,7 +190,7 @@ $(function () {
     socket.emit('store', server.serializeLastDog());
   }
 
-  // Clears localStorage and Server object
+  // Clears Server object
   function clearDogs () {
     server = new ServerInterface();
     update();
