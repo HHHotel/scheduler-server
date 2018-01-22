@@ -1,78 +1,49 @@
 /* eslint semi: ["error", "always"] */
-/* global Dog */
+/* global Dog ScheduleEvent */
 
 function ServerInterface () {
-  this.dogs = [];
+  this.events = [];
 }
 
-ServerInterface.prototype.addDog = function (dogInfo) {
-  let dog;
-  dog = new Dog(dogInfo[0]);
-  dog.addBooking(dogInfo[1], dogInfo[2]);
-  dog.ID = dogInfo[3] ? dogInfo[3] : dog.ID;
-  this.dogs.push(dog);
+ServerInterface.prototype.addEvent = function (eInfo) {
+  let eventInfo = JSON.parse(eInfo);
+  let event = eventInfo[0] === 'dog' ? new Dog(eventInfo.name) : new ScheduleEvent(eventInfo.text, eventInfo.type);
+  event.ID = eventInfo.ID ? eventInfo.ID : event.ID;
+  this.events.push(event);
 };
 
-ServerInterface.prototype.findDog = function (dogName) {
+ServerInterface.prototype.findEvents = function (eventText) {
   let out = [];
-  for (let dog of this.dogs) {
-    if (dog.getName().toLowerCase().includes(dogName.toLowerCase())) {
-      out.push(dog);
+  for (let event of this.events) {
+    if (event.getText().toLowerCase().includes(eventText.toLowerCase())) {
+      out.push(event);
     }
   }
   return out;
 };
 
-ServerInterface.prototype.getDogsInDay = function (day) {
+ServerInterface.prototype.getEventsInDay = function (day) {
   let output = [];
-  this.dogs.forEach(function (d) {
-    let dStatus = d.getLastBooking().dayType(day);
-    if (dStatus) {
-      output.push({dog: d, status: dStatus});
-    }
-  });
+  for (let e of this.events) {
+    output.push(e.get(day));
+  }
   return output;
 };
 
 ServerInterface.prototype.serialize = function () {
   let storageString = '';
-  this.dogs.forEach(function (dog) {
-    let dogString = '!#' + dog.getName() + '##' +
-    dog.getLastBooking().getStart().toLocaleString() + '##' +
-    dog.getLastBooking().getEnd().toLocaleString() + '##' + dog.ID + '#!';
-
-    storageString += !storageString.includes(dogString) ? dogString : '';
+  this.events.forEach(function (event) {
+    storageString += event.serialize() + '\n';
   });
   return storageString;
 };
 
-ServerInterface.prototype.serializeLastDog = function () {
-  let dog = this.dogs[this.dogs.length - 1];
-  let dogString = '!#' + dog.getName() + '##' +
-  dog.getLastBooking().getStart().toLocaleString() + '##' +
-  dog.getLastBooking().getEnd().toLocaleString() + '##' + dog.ID + '#!';
-  return dogString;
+ServerInterface.prototype.serializeLastEvent = function () {
+  let event = this.events[this.events.length - 1];
+  return event.serialize();
 };
 
 ServerInterface.prototype.load = function (servInfo) {
-  if (servInfo.indexOf('!#') === 0) {
-    servInfo = servInfo.slice(2);
-    let info = [];
-    while (servInfo.includes('#')) {
-      let indexOne = 0;
-      let indexTwo = servInfo.indexOf('##');
-      let endIndex = servInfo.indexOf('#!');
-      if (indexTwo < endIndex && indexTwo > 0) {
-        info.push(servInfo.slice(indexOne, indexTwo));
-        servInfo = servInfo.slice(indexTwo + 2);
-      } else {
-        info.push(servInfo.slice(indexOne, endIndex));
-        this.addDog(info);
-        servInfo = servInfo.slice(endIndex + 4);
-        info = [];
-      }
-    }
-  } else {
-    console.log('Error loading data from storage');
-  }
+  let jsonInfo = JSON.parse(servInfo);
+  this.events = jsonInfo.events;
 };

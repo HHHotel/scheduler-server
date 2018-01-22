@@ -141,7 +141,7 @@ $(function () {
   // Add Dog on submit function
   $('form').submit(function (e) {
     e.preventDefault();
-    server.addDog(parseField($(this)));
+    server.addEvent(parseField($(this)));
     $('#add-dog').trigger('reset');
     $('#add-dog').hide();
     $('#cover').hide();
@@ -151,10 +151,10 @@ $(function () {
 
   // Recive Data from form
   function parseField ($object) {
-    var result = [];
+    var result = {};
     $object.find('select[value!=""], input[value!=""]').each(function () {
       if ($(this).attr('type') === 'date') {
-        result.push($(this).val() + ' PST');
+        result.start = $(this).val() + ' PST';
       } else if ($(this).attr('type') === 'radio' && $(this).prop('checked')) {
         result[result.length - 1] += $(this).val();
       } else if ($(this).attr('type') !== 'radio') {
