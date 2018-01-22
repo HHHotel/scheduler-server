@@ -1,0 +1,30 @@
+{
+  "events": [
+    {
+      "type": "Dog",
+      "obj": {
+        "name": "Blitzen",
+        "bookings": [
+          {
+            "start": "2018/01/21 8:00 AM PST",
+            "end": "2018/01/27 4:00 PM PST"
+          }
+        ],
+        "ID": "ABCDEFGH"
+      }
+    },
+    {
+      "obj": {
+        "name": "Joe",
+        "bookings": [
+          {
+            "start": "2018/01/21 4:00 PM PST",
+            "end": "2018/01/27 8:00 AM PST"
+          }
+        ],
+        "ID": "WEkJjofp"
+      },
+      "type": "Dog"
+    }
+  ]
+}

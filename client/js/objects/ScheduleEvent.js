@@ -1,25 +1,25 @@
 /* eslint semi: ["error", "always"] */
 /* eslint padded-blocks: ["error", { "classes": "always" }] */
 
-class ScheduleEvent {
+class SEvent {
 
   constructor (text, type) {
     this.text = text;
-    this.type = type;
-    this.ID = ScheduleEvent.getNewID();
+    this.color = type;
+    this.ID = SEvent.getNewID();
   }
 
   getText () { return this.text; };
 
-  getType () { return this.type; };
+  getColor () { return this.color; };
 
-  get () { return {text: this.text, color: this.type}; };
+  get () { return {text: this.text, color: this.color}; };
 
   serialize () { return JSON.stringify(this); };
 
 }
 
-ScheduleEvent.getNewID = function () {
+SEvent.getNewID = function () {
   let id = '';
   let possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   for (var i = 0; i < 8; i++) {

@@ -9,11 +9,11 @@ var io = require('socket.io')(server);
 
 var storage;
 
-fs.readFile('dogData.txt', 'utf8', function (err, data) {
+fs.readFile('dogData.json', 'utf8', function (err, data) {
   if (err) {
     storage = '';
   } else {
-    storage = data;
+    storage = JSON.parse(data);
   }
 });
 
@@ -23,7 +23,7 @@ server.listen(8080, function () {
 
 process.on('SIGINT', function () {
   console.log('Exiting..');
-  fs.writeFileSync('dogData.txt', storage);
+  fs.writeFileSync('dogData.json', JSON.stringify(storage));
   server.close();
 });
 
@@ -31,27 +31,30 @@ app.use(express.static(path.join(__dirname, 'client')));
 
 io.on('connection', function (socket) {
   console.log('New connection id : ' + socket.id);
-  socket.emit('load', storage);
+
+  socket.emit('load', JSON.stringify(storage));
+
   socket.on('store', function (data) {
-    if (!storage.includes(data)) {
-      storage += data;
-    }
+    var eventData = JSON.parse(data);
+    storage.events.push(eventData);
     socket.broadcast.emit('load', storage);
   });
 
-  socket.on('remove', function (dogID) {
-    var idIndex = storage.indexOf(dogID);
-    var endIndex = storage.indexOf('!', idIndex);
-    var startIndex;
-    for (var i = idIndex; i >= 0; i--) {
-      if (storage[i] === '!') {
-        startIndex = i;
-        break;
-      }
-    }
-    storage = storage.slice(0, startIndex) + storage.slice(endIndex + 1);
-    io.sockets.emit('load', storage);
-  });
+  // TO-DO Rewrite the remove function to fix JSON changes
+
+  // socket.on('remove', function (dogID) {
+  //   var idIndex = storage.indexOf(dogID);
+  //   var endIndex = storage.indexOf('}', idIndex);
+  //   var startIndex;
+  //   for (var i = idIndex; i >= 0; i--) {
+  //     if (storage[i] === '{') {
+  //       startIndex = i;
+  //       break;
+  //     }
+  //   }
+  //   storage = storage.slice(0, startIndex) + storage.slice(endIndex + 1);
+  //   io.sockets.emit('load', storage);
+  // });
 
   socket.on('disconnect', function () {
     console.log('id : ' + socket.id + ' disconnected');

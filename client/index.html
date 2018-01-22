@@ -53,26 +53,26 @@
         <form id = "add-dog">
           <div id = "close-add-dog">X</div>
           <h2>Name</h2>
-          <input type = "text" required/>
+          <input name = "name" type = "text" required/>
           <div class = "date-input">
             <h2>Start Date</h2>
-            <input type = "date" required/>
+            <input name = "start" type = "date" required/>
               <div>
-                <input type = "radio" name = "timeStart" value = "8:00 AM" required/>
+                <input type = "radio" name = "timeStart" value = " 8:00 AM" required/>
                 <label>AM</label>
               </div>
               <div>
-                <input type = "radio" name = "timeStart" value = "4:00 PM" required/>
+                <input type = "radio" name = "timeStart" value = " 4:00 PM" required/>
                 <label>PM</label>
               </div>
             <h2>End Date</h2>
-            <input type = "date" required/>
+            <input name = "end" type = "date" required/>
             <div>
-              <input type = "radio" name = "timeEnd" value = "8:00 AM" required/>
+              <input type = "radio" name = "timeEnd" value = " 8:00 AM" required/>
               <label>AM</label>
             </div>
             <div>
-              <input type = "radio" name = "timeEnd" value = "4:00 PM" required/>
+              <input type = "radio" name = "timeEnd" value = " 4:00 PM" required/>
               <label>PM</label>
             </div>
           </div>
@@ -135,15 +135,20 @@
       <div id = "cover"></div>
     </div>
 
-  <div id = "scripts">
+  <div id = "scripts">]
+    <div id = "imports">
       <script src = "js/jQuery/jquery-3.2.1.min.js"></script>
       <script src="/socket.io/socket.io.js"></script>
-      <script src = "js/week.js"></script>
-      <script src = "js/booking.js"></script>
-      <script src = "js/ScheduleEvent.js"></script>
-      <script src = "js/dog.js"></script>
-      <script src = "js/ServerInterface.js"></script>
-      <script src = "js/EventHandlers.js"></script>
+    </div>
+    <div id = "objects">
+      <script src = "js/objects/week.js"></script>
+      <script src = "js/objects/booking.js"></script>
+      <script src = "js/objects/ScheduleEvent.js"></script>
+      <script src = "js/objects/dog.js"></script>
+      <script src = "js/objects/ServerInterface.js"></script>
+      <script src = "js/objects/EventHandlers.js"></script>
+    </div>
+      <script src = "js/main.js"></script>
     </div>
 
   </body>
