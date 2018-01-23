@@ -274,19 +274,19 @@ footer p {
   color: var(--font-color-dark);
 }
 
-.arriving {
+.arrivals {
   color: blue;
   order: 3;
 }
-.arriving::after {
+.arrivals::after {
   content: ' - Arrives';
 }
 
-.departing {
+.departures {
   color: red;
   order: 3;
 }
-.departing::after {
+.departures::after {
   content: ' - Leaves';
 }
 
@@ -298,6 +298,15 @@ footer p {
 .daycare {
   order: 2;
   color: hotpink;
+}
+
+.grooming {
+  order: 5;
+  color: green;
+}
+.fosters {
+  color: darkblue;
+  order:7;
 }
 
 .general {

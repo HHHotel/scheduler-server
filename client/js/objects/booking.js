@@ -28,9 +28,9 @@ class Booking {
     if (!(eTime > this.getStart().getTime() && sTime <= this.getEnd().getTime())) return;
 
     if (this.getStart().toDateString() === date.toDateString()) {
-      return 'arriving';
+      return 'arrivals';
     } else if (this.getEnd().toDateString() === date.toDateString()) {
-      return 'departing';
+      return 'departures';
     } else {
       return 'boarding';
     }

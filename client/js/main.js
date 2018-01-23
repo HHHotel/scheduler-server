@@ -8,8 +8,8 @@ $(function () {
   eHandler.attachHandlers();
 
   socket.on('load', function (data) {
-    console.log('LOADING....');
-    console.log('DATA: ' + data);
+    // console.log('LOADING....');
+    // console.log('DATA: ' + data);
     server.load(data);
     eHandler.update();
   });

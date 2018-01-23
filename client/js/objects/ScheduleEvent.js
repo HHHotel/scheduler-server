@@ -20,7 +20,7 @@ class SEvent {
 
   get (date) { if (date.toDateString() === this.getDate().toDateString()) return {text: this.toString(), color: this.color, id: this.ID}; };
 
-  toString () { return this.getText() + ' (' + this.getDate().getHours() % 12 + ':00 ' + (this.getDate().getHours() >= 12 ? 'PM)' : 'AM)'); }
+  toString () { return this.getText() + ((this.getDate().getHours() > 0) ? ' (' + this.getDate().getHours() % 12 + ':00 ' + (this.getDate().getHours() >= 12 ? 'PM)' : 'AM)') : ''); }
 
   serialize () { return JSON.stringify({obj: this, type: 'SEvent'}); };
 

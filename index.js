@@ -4,6 +4,7 @@ var express = require('express');
 var app = express();
 var path = require('path');
 var fs = require('fs');
+// var parse = require('csv-parse');
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 
@@ -40,6 +41,23 @@ var storage = {
 
 };
 
+// fs.readFile('schedule_data.csv', 'utf8', function (err, data) {
+//   if (err) throw err;
+//   var events;
+//   parse(data, function (err, output) {
+//     if (err) throw err;
+//     events = output;
+//     for (var i = 0; i < events.length; i++) {
+//       var evt = events[i];
+//       var name = evt[3].replace(' leaves', '').replace(' arrives', '').replace(' arrive', '').replace(' leave', '');
+//       var date = evt[0];
+//       var time = evt[1];
+//       var status = evt[5].substring(1, evt[5].length - 1).toLowerCase();
+//       storage.add({obj: {text: name, date: date, time: time, color: status}, type: 'SEvent'});
+//     }
+//   });
+// });
+
 fs.readFile('dogData.json', 'utf8', function (err, data) {
   if (err) throw err;
   try {
@@ -49,8 +67,8 @@ fs.readFile('dogData.json', 'utf8', function (err, data) {
   }
 });
 
-server.listen(8080, function () {
-  console.log('Server running on port 8080');
+server.listen(8000, function () {
+  console.log('Server running on port 8000');
 });
 
 process.on('SIGINT', function () {

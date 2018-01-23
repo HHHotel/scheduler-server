@@ -32,11 +32,12 @@ class ServerInterface {
 
   findEvents (eventText) {
     let out = [];
-    console.log(this.events);
-    for (let event of this.events) {
+    for (let i = this.events.length - 1; i >= 0; i--) {
+      let event = this.events[i];
       if (event.getText().toLowerCase().includes(eventText.toLowerCase())) {
         out.push(event);
       }
+      if (out.length > 5) break;
     }
     return out;
   };
