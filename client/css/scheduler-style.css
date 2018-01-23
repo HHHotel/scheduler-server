@@ -1,16 +1,18 @@
-@import url('https://fonts.googleapis.com/css?family=Ubuntu');
+@import url('https://fonts.googleapis.com/css?family=Oswald');
+@import url('https://fonts.googleapis.com/css?family=Merriweather+Sans');
 
 :root {
     --background-light: #e1e7ec;
     --background-ex-light: #e7e7e7;
-    --background-dark: #4d6c8c;
+    --background-dark: #386351;
+    --background-ex-dark: #131418;
     --font-color-light: #ebebeb;
     --font-color-dark: #282C34;
     --shadow: #AAA;
 }
 
 * {
-  font-family: 'Ubunutu', sans-serif;
+  font-family: 'Oswald', sans-serif;
   padding: 0;
   margin: 0;
   box-sizing: border-box;
@@ -32,27 +34,50 @@ body, html {
   left: -300px;
   width: 300px;
   height: 100%;
-  background-color: var(--background-dark);
+  background-color: var(--background-light);
+  color: var(--font-color-light);
 }
 
 .menu-container {
   height: 100%;
   width: 100%;
-  display: grid;
-  grid-template-columns: 100%;
-  grid-gap: 1rem;
-  margin: .5rem;
+}
+
+.menu-container a,
+.menu-container img {
+  display: block;
+  width: 80%;
+  margin: auto;
+  padding: .5rem 0 1rem;
+}
+
+.menu-logo {
+  background-color: var(--background-dark);
+  box-shadow: 1px 3px 10px var(--shadow);
+
+  margin: 5%;
+  margin-bottom: 1rem;
+  width: 90%;
+
+  border-radius: 100%;
 }
 
 .menu-item {
   user-select: none;
-  width: calc(100% - 1rem);
+
+  width: 100%;
+  height: 4rem;
+  margin-bottom: .25rem;
+
   display: inline-block;
   text-align: center;
   vertical-align: middle;
-  height: 100%;
+
   font-size: 2rem;
-  background-color: var(--background-light);
+  font-weight: bold;
+
+  background-color: var(--background-dark);
+  box-shadow: 0px 3px 10px var(--shadow);
 }
 
 .menu-item::before {
@@ -64,7 +89,7 @@ body, html {
 }
 
 .menu-item:hover {
-  background-color: var(--background-ex-light);
+  background-color: var(--background-ex-dark);
   text-decoration: underline;
 }
 
@@ -94,9 +119,10 @@ body, html {
 }
 
 #title {
+  user-select: none;
   vertical-align: middle;
   height: 100%;
-  width: 75%;
+  width: 50%;
   margin: 0 .5rem;
 }
 
@@ -111,48 +137,36 @@ body, html {
 }
 
 .scroller {
-  height: 100%;
-  width: 5rem;
+  height: 48px;
+  margin-top: 10px;
   margin-right: 1rem;
   display: block;
   float: right;
 }
 
-.scroller > * {
-  width: 50%;
-}
-
-.scroller span {
-  display: inline;
-  vertical-align: middle;
+.scroller svg {
+  height: 100%;
 }
 
 .scroller #right,
 .scroller #left {
-  color: var(--font-color-light);
-  font-size: 3em;
-  font-weight: 1;
-
-  user-select: none;
-
-  line-height: 3.5rem;
-  height: 100%;
-}
-
-.scroller #left {
-  float: left;
-}
-
-.scroller #right {
+  display: block;
+  fill: var(--font-color-light);
   float: right;
 }
 
-#add-button {
-  height: 60px;
-  width: 60px;
+.add-event {
   position: fixed;
   bottom: 15px;
   right: 15px;
+}
+
+.add-button {
+  position: relative;
+  right: 0px;
+  bottom: 0px;
+  height: 60px;
+  width: 60px;
   background-color: var(--background-dark);
   border-radius: 100%;
   box-shadow: 3px 3px 7px var(--shadow);
@@ -160,8 +174,23 @@ body, html {
 
 }
 
-#add-button:hover {
+.add-button:hover {
   fill: var(--font-color-dark);
+}
+
+.add-list {
+  position: relative;
+  left: -30px;
+  width: 90px;
+  height: 150px;
+  padding-right: 10px;
+  display: none;
+}
+.add-list * {
+  margin-bottom: 20px;
+  text-align: right;
+  padding: 2px;
+  background-color: #0002;
 }
 
 .wrapper {
@@ -181,6 +210,7 @@ body, html {
 }
 
 .dog-list {
+  font-family: 'Merriweather Sans';
   width: 100%;
   padding: 2%;
   height: calc(100% - 2rem);
@@ -188,6 +218,9 @@ body, html {
   justify-content: flex-start;
   flex-direction: column;
   flex-wrap: wrap;
+}
+.dog-list *{
+  font-family: inherit;
 }
 
 .day {
@@ -211,7 +244,7 @@ body, html {
 
 .arriving {
   color: blue;
-  order: 2;
+  order: 3;
 }
 .arriving::after {
   content: ' - Arrives';
@@ -228,6 +261,11 @@ body, html {
 .boarding {
   order: 1;
   color: maroon;
+}
+
+.daycare {
+  order: 2;
+  color: pink;
 }
 
 #cover {
@@ -295,7 +333,7 @@ body, html {
   width: 100%;
   height: 100%;
   text-align: center;
-  display: none;
+  /* display: none; */
   padding: .5rem;
 
   border: none;
@@ -326,6 +364,10 @@ body, html {
   right: 13px;
 
   font-size: 2rem;
+}
+
+.date-input {
+  display: none;
 }
 
 .date-input input {
@@ -364,11 +406,6 @@ body, html {
 
   #title h1 {
     font-size: 2rem;
-  }
-
-  .scroller #right,
-  .scroller #left {
-    font-size: 2.5rem;
   }
 }
 

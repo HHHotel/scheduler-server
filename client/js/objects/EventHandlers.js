@@ -118,14 +118,51 @@ class EventHandler {
       }
     });
 
-    // Add Button
-    $('#add-button').click(function () {
-      $('#add-Event').fadeIn();
+    // // Add Button
+    // $('#add-button').click(function () {
+    //   $('#add-dog').fadeIn();
+    // });
+    //
+    // // Exit Dog form
+    // $('#close-add-dog').click(function () {
+    //   $('#add-dog').fadeOut();
+    // });
+
+    let angle = 0;
+    $('.add-button').click(function () {
+      $('.add-list').toggle();
+      animateRotate(angle += 135);
     });
 
-    // Exit Dog form
-    $('#close-add-dog').click(function () {
-      $('#add-Event').fadeOut();
+    function animateRotate (angle) {
+      // caching the object for performance reasons
+      var $elem = $('.add-button > svg');
+
+      // we use a pseudo object for the animation
+      // (starts from `0` to `angle`), you can name it as you want
+      $({deg: 0}).animate({deg: angle}, {
+        duration: 50,
+        step: function (now) {
+          // in the step-callback (that is fired each step of the animation),
+          // you can use the `now` paramter which contains the current
+          // animation-position (`0` up to `angle`)
+          $elem.css({
+            transform: 'rotate(' + now + 'deg)'
+          });
+        }
+      });
+    }
+
+    $('.add-list').click(function (e) {
+      let target = e.target;
+
+      if (target.id === 'new-dog') {
+
+      } else if (target.id === 'new-booking') {
+
+      } else if (target.id === 'other-event') {
+
+      }
     });
 
     // Add Event on submit function
@@ -137,6 +174,18 @@ class EventHandler {
       $('#cover').hide();
       self.update();
       self.server.store();
+    });
+
+    $('.daycare-button').click(function () {
+      $('#add-dog').trigger('reset');
+      $('.boarding-dates').hide();
+      $('.daycare-date').show();
+    });
+
+    $('.boarding-button').click(function () {
+      $('#add-dog').trigger('reset');
+      $('.boarding-dates').show();
+      $('.daycare-date').hide();
     });
   }
 
