@@ -123,10 +123,11 @@ class EventHandler {
     //   $('#add-dog').fadeIn();
     // });
     //
-    // // Exit Dog form
-    // $('#close-add-dog').click(function () {
-    //   $('#add-dog').fadeOut();
-    // });
+    // Exit Dog form
+    $('#close-add-dog').click(function () {
+      $('#add-dog').fadeOut();
+      $('#add-new-dog').fadeOut();
+    });
 
     let angle = 0;
     $('.add-button').click(function () {
@@ -141,7 +142,7 @@ class EventHandler {
       // we use a pseudo object for the animation
       // (starts from `0` to `angle`), you can name it as you want
       $({deg: 0}).animate({deg: angle}, {
-        duration: 50,
+        duration: 200,
         step: function (now) {
           // in the step-callback (that is fired each step of the animation),
           // you can use the `now` paramter which contains the current
@@ -157,21 +158,29 @@ class EventHandler {
       let target = e.target;
 
       if (target.id === 'new-dog') {
-
+        $('#add-new-dog').fadeIn();
       } else if (target.id === 'new-booking') {
-
+        $('#add-dog').fadeIn();
       } else if (target.id === 'other-event') {
 
       }
     });
 
+    $('#add-new-dog').submit(function (e) {
+      e.preventDefault();
+      self.server.newEvent(parseField($(this)));
+      $('#add-new-dog').trigger('reset');
+      $('#add-new-dog').hide();
+      self.update();
+      self.server.store();
+    });
+
     // Add Event on submit function
-    $('form').submit(function (e) {
+    $('#add-dog').submit(function (e) {
       e.preventDefault();
       self.server.addEvent(parseField($(this)));
       $('#add-dog').trigger('reset');
       $('#add-dog').hide();
-      $('#cover').hide();
       self.update();
       self.server.store();
     });
@@ -230,11 +239,14 @@ function parseField ($object) {
     if ($(this).attr('type') === 'date') {
       if ($(this).attr('name') === 'start') result.start = $(this).val();
       else if ($(this).attr('name') === 'end') result.end = $(this).val();
+      else if ($(this).attr('name') === 'date') result.date = $(this).val() + ' 8:00 AM PST';
     } else if ($(this).attr('type') === 'radio' && $(this).prop('checked')) {
       if ($(this).attr('name') === 'timeStart') result.start += $(this).val() + ' PST';
       else if ($(this).attr('name') === 'timeEnd') result.end += $(this).val() + ' PST';
     } else if ($(this).attr('name') === 'name') {
       result.name = $(this).val();
+    } else if ($(this).attr('name') === 'cName') {
+      result.cName = $(this).val();
     }
   });
   return {obj: result, type: 'Dog'};

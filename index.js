@@ -11,7 +11,7 @@ var storage;
 
 fs.readFile('dogData.json', 'utf8', function (err, data) {
   if (err) {
-    storage = '';
+    storage = [];
   } else {
     storage = JSON.parse(data);
   }
@@ -36,9 +36,23 @@ io.on('connection', function (socket) {
 
   socket.on('store', function (data) {
     var eventData = JSON.parse(data);
-    storage.events.push(eventData);
+    var index = indexOf(eventData);
+
+    if (index < 0) {
+      storage.events.push(eventData);
+    } else {
+      storage.events[index] = eventData;
+    }
     socket.broadcast.emit('load', storage);
   });
+
+  function indexOf (eventObj) {
+    for (var i = 0; i < storage.events.length; i++) {
+      var el = storage.events[i];
+      if (el.obj.ID === eventObj.obj.ID) return i;
+    }
+    return -1;
+  }
 
   // TO-DO Rewrite the remove function to fix JSON changes
 

@@ -265,7 +265,7 @@ body, html {
 
 .daycare {
   order: 2;
-  color: pink;
+  color: hotpink;
 }
 
 #cover {
@@ -325,7 +325,8 @@ body, html {
   background-color: var(--background-light);
 }
 
-#add-dog {
+#add-dog,
+#add-new-dog {
   z-index: 5;
   position: fixed;
   top: 0;
@@ -333,7 +334,7 @@ body, html {
   width: 100%;
   height: 100%;
   text-align: center;
-  /* display: none; */
+  display: none;
   padding: .5rem;
 
   border: none;
@@ -341,6 +342,7 @@ body, html {
   background-color: var(--background-dark);
 }
 
+#add-new-dog > input, #add-new-dog button,
 #add-dog > input, #add-dog button {
   width: 60%;
   padding: 4px;
@@ -350,6 +352,7 @@ body, html {
   color: var(--font-color-dark);
 }
 
+#add-new-dog button,
 #add-dog button {
   width: 40%;
   margin: 20px auto;
@@ -392,6 +395,7 @@ body, html {
   width: 10%;
 }
 
+#add-new-dog *,
 #add-dog * {
   margin: .5rem auto;
 }

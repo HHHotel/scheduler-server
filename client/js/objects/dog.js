@@ -50,7 +50,7 @@ class Dog {
     return dogStatus ? {text: text, color: dogStatus, id: this.ID} : undefined;
   }
 
-  getText () { return this.name + this.cName[0]; }
+  getText () { return this.name + ' ' + this.cName[0]; }
 
   serialize () { return JSON.stringify({obj: this, type: 'Dog'}); };
 

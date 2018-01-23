@@ -91,36 +91,32 @@
           <h2>Name</h2>
           <input name = "name" type = "text" required/>
 
-          <ul class = "results">
-
-          </ul>
-
           <div class = "date-input boarding-dates">
             <h2>Start Date</h2>
             <input name = "start" type = "date"/>
               <div>
-                <input type = "radio" name = "timeStart" value = " 8:00 AM" required/>
+                <input type = "radio" name = "timeStart" value = " 8:00 AM"/>
                 <label>AM</label>
               </div>
               <div>
-                <input type = "radio" name = "timeStart" value = " 4:00 PM" required/>
+                <input type = "radio" name = "timeStart" value = " 4:00 PM"/>
                 <label>PM</label>
               </div>
             <h2>End Date</h2>
             <input name = "end" type = "date"/>
               <div>
-                <input type = "radio" name = "timeEnd" value = " 8:00 AM" required/>
+                <input type = "radio" name = "timeEnd" value = " 8:00 AM"/>
                 <label>AM</label>
               </div>
               <div>
-                <input type = "radio" name = "timeEnd" value = " 4:00 PM" required/>
+                <input type = "radio" name = "timeEnd" value = " 4:00 PM"/>
                 <label>PM</label>
               </div>
           </div>
 
           <div class = "date-input daycare-date">
             <h2>Date</h2>
-            <input type = "date" />
+            <input name = "date" type = "date" />
           </div>
 
           <button id = "submit">Submit</button>
@@ -129,7 +125,7 @@
       <!-- End Existing Dog form -->
 
       <!-- Add New Dog form -->
-      <!-- <div>
+      <div>
         <form id = "add-new-dog">
           <div id = "close-add-dog">X</div>
           <h2>Name</h2>
@@ -138,7 +134,7 @@
           <input name = "cName" type = "text" required/>
           <button id = "submit">Submit</button>
         </form>
-      </div> -->
+      </div>
       <!-- End New Dog form -->
 
       <!-- Date Search -->

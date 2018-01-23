@@ -5,7 +5,7 @@
 class Daycare {
 
   constructor (date) {
-    this.date = date;
+    this.date = date.replace(/-/g, '/');
   }
 
   getDate () { return new Date(this.date); }
