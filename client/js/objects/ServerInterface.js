@@ -32,6 +32,7 @@ class ServerInterface {
 
   findEvents (eventText) {
     let out = [];
+    console.log(this.events);
     for (let event of this.events) {
       if (event.getText().toLowerCase().includes(eventText.toLowerCase())) {
         out.push(event);
@@ -53,6 +54,7 @@ class ServerInterface {
       let e = this.events[i];
       if (e.id === id) this.events.splice(i, 1);
     }
+    this.lastChanged = this.events[this.events.length - 1];
     this.socket.emit('remove', id);
   }
 
@@ -67,6 +69,7 @@ class ServerInterface {
 
   load (servInfo) {
     let jsonInfo = JSON.parse(servInfo);
+    this.events = [];
     if (jsonInfo.events) {
       for (let event of jsonInfo.events) {
         this.newEvent(event);

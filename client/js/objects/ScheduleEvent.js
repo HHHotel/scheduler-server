@@ -4,10 +4,12 @@
 class SEvent {
 
   constructor (eventInfo) {
-    this.text = eventInfo.text;
-    this.color = eventInfo.color;
-    this.date = eventInfo.date;
-    this.ID = eventInfo.ID ? eventInfo.ID : SEvent.getNewID();
+    if (eventInfo) {
+      this.text = eventInfo.text;
+      this.color = eventInfo.color;
+      this.date = eventInfo.date;
+      this.ID = eventInfo.ID ? eventInfo.ID : SEvent.getNewID();
+    }
   }
 
   getText () { return this.text; }

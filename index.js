@@ -7,13 +7,45 @@ var fs = require('fs');
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 
-var storage;
+var storage = {
+  events: [],
+  add: function (eventInfo) {
+    this.events.push(eventInfo);
+  },
+  set: function (index, obj) {
+    this.events[index] = obj;
+  },
+  push: function (index, eventObj) {
+    if (index < 0) {
+      storage.add(eventObj);
+    } else {
+      storage.set(index, eventObj);
+    }
+  },
+  remove: function (dogID) {
+    var index = storage.indexOf({obj: {ID: dogID}});
+    storage.events.splice(index, 1);
+  },
+  indexOf: function (eventObj) {
+    for (var i = 0; i < this.events.length; i++) {
+      var el = this.events[i];
+      if (el && eventObj && el.obj.ID === eventObj.obj.ID) return i;
+    }
+    return -1;
+  },
+  load: function (serverData) {
+    var sObj = JSON.parse(serverData);
+    this.events = sObj.events;
+  }
+
+};
 
 fs.readFile('dogData.json', 'utf8', function (err, data) {
-  if (err) {
-    storage = [];
-  } else {
-    storage = JSON.parse(data);
+  if (err) throw err;
+  try {
+    storage.load(data);
+  } catch (e) {
+    storage.events = [];
   }
 });
 
@@ -35,30 +67,17 @@ io.on('connection', function (socket) {
   socket.emit('load', JSON.stringify(storage));
 
   socket.on('store', function (data) {
-    var eventData = JSON.parse(data);
-    var index = indexOf(eventData);
+    var eventObj = JSON.parse(data);
+    var index = storage.indexOf(eventObj);
+    storage.push(index, eventObj);
 
-    if (index < 0) {
-      storage.events.push(eventData);
-    } else {
-      storage.events[index] = eventData;
-    }
     socket.broadcast.emit('load', JSON.stringify(storage));
   });
-
-  function indexOf (eventObj) {
-    for (var i = 0; i < storage.events.length; i++) {
-      var el = storage.events[i];
-      if (el.obj.ID === eventObj.obj.ID) return i;
-    }
-    return -1;
-  }
 
   // TO-DO SQL
 
   socket.on('remove', function (dogID) {
-    var index = indexOf({obj: {id: dogID}});
-    storage.events = storage.events.slice(0, index) + storage.events.slice(index + 1);
+    storage.remove(dogID);
     io.sockets.emit('load', JSON.stringify(storage));
   });
 

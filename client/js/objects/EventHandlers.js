@@ -111,6 +111,7 @@ class EventHandler {
     $('.results-list').on('click', '.result-event button', function () {
       let $event = $(this).parent();
       self.server.remove($event.attr('id'));
+      $(this).parent().remove();
       self.update();
     });
 
