@@ -10,6 +10,7 @@ class Daycare {
 
   getDate () { return new Date(this.date); }
   toString () { return this.date; }
+  toDateString () { return this.getDate().toDateString(); }
 
   dayType (date) {
     if (date.toDateString() === this.getDate().toDateString()) return 'daycare';

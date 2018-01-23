@@ -14,8 +14,10 @@ class ServerInterface {
   addEvent (eventInfo) {
     let eInfo = eventInfo.obj;
     let event = this.findEvents(eInfo.name)[0];
+
     if (eInfo.date) event.addDaycare(eInfo.date);
     else if (eInfo.start) event.addBooking(eInfo.start, eInfo.end);
+
     this.lastChanged = event;
   };
 
@@ -24,8 +26,6 @@ class ServerInterface {
     let event = eventInfo.type === 'Dog'
                 ? new Dog(eInfo)
                 : new SEvent(eInfo);
-
-    event.ID = eInfo.ID ? eInfo.ID : event.ID;
     this.events.push(event);
     this.lastChanged = event;
   }
@@ -43,10 +43,18 @@ class ServerInterface {
   getEventsInDay (day) {
     let output = [];
     for (let e of this.events) {
-      output.push(e.get(day));
+      if (e.get(day)) output.push(e.get(day));
     }
     return output;
   };
+
+  remove (id) {
+    for (let i = 0; i < this.events.length; i++) {
+      let e = this.events[i];
+      if (e.id === id) this.events.splice(i, 1);
+    }
+    this.socket.emit('remove', id);
+  }
 
   serialize () {
     return JSON.stringify(this.events);

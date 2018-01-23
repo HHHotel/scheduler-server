@@ -43,7 +43,7 @@ io.on('connection', function (socket) {
     } else {
       storage.events[index] = eventData;
     }
-    socket.broadcast.emit('load', storage);
+    socket.broadcast.emit('load', JSON.stringify(storage));
   });
 
   function indexOf (eventObj) {
@@ -54,21 +54,13 @@ io.on('connection', function (socket) {
     return -1;
   }
 
-  // TO-DO Rewrite the remove function to fix JSON changes
+  // TO-DO SQL
 
-  // socket.on('remove', function (dogID) {
-  //   var idIndex = storage.indexOf(dogID);
-  //   var endIndex = storage.indexOf('}', idIndex);
-  //   var startIndex;
-  //   for (var i = idIndex; i >= 0; i--) {
-  //     if (storage[i] === '{') {
-  //       startIndex = i;
-  //       break;
-  //     }
-  //   }
-  //   storage = storage.slice(0, startIndex) + storage.slice(endIndex + 1);
-  //   io.sockets.emit('load', storage);
-  // });
+  socket.on('remove', function (dogID) {
+    var index = indexOf({obj: {id: dogID}});
+    storage.events = storage.events.slice(0, index) + storage.events.slice(index + 1);
+    io.sockets.emit('load', JSON.stringify(storage));
+  });
 
   socket.on('disconnect', function () {
     console.log('id : ' + socket.id + ' disconnected');

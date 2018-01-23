@@ -39,7 +39,7 @@ body, html {
 }
 
 .menu-container {
-  height: 100%;
+  height: calc(100% - 3rem);
   width: 100%;
 }
 
@@ -91,6 +91,20 @@ body, html {
 .menu-item:hover {
   background-color: var(--background-ex-dark);
   text-decoration: underline;
+}
+
+footer {
+  height: 3rem;
+  width: 100%;
+  background-color: var(--background-ex-dark);
+}
+
+footer p {
+  display: inline-block;
+  width: 100%;
+  line-height: 2rem;
+  vertical-align: middle;
+  text-align: center;
 }
 
 .toolbar {
@@ -179,18 +193,36 @@ body, html {
 }
 
 .add-list {
-  position: relative;
-  left: -30px;
-  width: 90px;
+  position: fixed;
+  bottom: 120px;
+  right: 15px;
+  width: 180px;
   height: 150px;
   padding-right: 10px;
   display: none;
 }
+
 .add-list * {
+
   margin-bottom: 20px;
   text-align: right;
-  padding: 2px;
-  background-color: #0002;
+  padding: 4px;
+
+  font-size: 1.5rem;
+
+  background-color: var(--background-dark);
+  color: var(--font-color-light);
+  box-shadow: 2px 3px 5px var(--shadow);
+
+  border-radius: 5px;
+}
+
+.add-list *:hover {
+  user-select: none;
+  background-color: var(--background-ex-dark);
+  color: var(--font-color-light);
+  text-decoration: underline;
+
 }
 
 .wrapper {
@@ -268,6 +300,11 @@ body, html {
   color: hotpink;
 }
 
+.general {
+  order: 5;
+  color: darkslategrey;
+}
+
 #cover {
   width: 100%;
   height: 100%;
@@ -325,8 +362,7 @@ body, html {
   background-color: var(--background-light);
 }
 
-#add-dog,
-#add-new-dog {
+form {
   z-index: 5;
   position: fixed;
   top: 0;
@@ -342,8 +378,7 @@ body, html {
   background-color: var(--background-dark);
 }
 
-#add-new-dog > input, #add-new-dog button,
-#add-dog > input, #add-dog button {
+form > input, form button {
   width: 60%;
   padding: 4px;
 
@@ -352,8 +387,7 @@ body, html {
   color: var(--font-color-dark);
 }
 
-#add-new-dog button,
-#add-dog button {
+form button {
   width: 40%;
   margin: 20px auto;
 
@@ -362,7 +396,7 @@ body, html {
   text-decoration: none;
 }
 
-#close-add-dog {
+.close-add-dog {
   position: fixed;
   right: 13px;
 
@@ -395,8 +429,7 @@ body, html {
   width: 10%;
 }
 
-#add-new-dog *,
-#add-dog * {
+form * {
   margin: .5rem auto;
 }
 

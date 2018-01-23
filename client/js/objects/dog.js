@@ -33,9 +33,11 @@ class Dog {
   getName () { return this.name; }
   // Dog.prototype.getClient = function () { return this.clientName; };
   getLastBooking () { return this.bookings[this.bookings.length - 1]; }
+  getDate () { return this.getLastBooking(); }
   getBookings () { return this.bookings; }
 
   get (date) {
+    if (!this.getLastBooking()) return;
     let dogStatus = this.getLastBooking().dayType(date);
     let text = '';
     if (dogStatus === 'arriving') {

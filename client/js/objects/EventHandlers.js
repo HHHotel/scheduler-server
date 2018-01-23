@@ -24,11 +24,10 @@ class EventHandler {
 
       for (let event of eventsInDay) {
         if (event) {
-          let e = document.createElement('div');
-          e.innerHTML = event.text;
-          e.className = event.color;
-          e.id = event.id;
-          days[i].append(e);
+          let e = $('<div></div>').text(event.text);
+          $(e).addClass(event.color);
+          $(e).attr('id', event.id);
+          $(days[i]).append($(e));
         }
       }
     }
@@ -51,15 +50,6 @@ class EventHandler {
         cancelFullScreen.call(doc);
       }
     });
-
-    // Delete Events Function
-    // $('.week').click(function (e) {
-    //   let target = e.target;
-    //   if (target.id) {
-    //     socket.emit('remove', target.id);
-    //     update();
-    //   }
-    // });
 
     // Advance One week
     $('#right').click(function () {
@@ -118,15 +108,18 @@ class EventHandler {
       }
     });
 
-    // // Add Button
-    // $('#add-button').click(function () {
-    //   $('#add-dog').fadeIn();
-    // });
-    //
-    // Exit Dog form
-    $('#close-add-dog').click(function () {
-      $('#add-dog').fadeOut();
-      $('#add-new-dog').fadeOut();
+    $('.results-list').on('click', '.result-event button', function () {
+      let $event = $(this).parent();
+      self.server.remove($event.attr('id'));
+      self.update();
+    });
+
+    $('.close-add-dog').each(function () {
+      this.addEventListener('click', function () {
+        $('#add-dog').fadeOut();
+        $('#add-new-dog').fadeOut();
+        $('#add-new-event').fadeOut();
+      });
     });
 
     let angle = 0;
@@ -162,13 +155,22 @@ class EventHandler {
       } else if (target.id === 'new-booking') {
         $('#add-dog').fadeIn();
       } else if (target.id === 'other-event') {
-
+        $('#add-new-event').fadeIn();
       }
+    });
+
+    $('#add-new-event').submit(function (e) {
+      e.preventDefault();
+      self.server.newEvent(parseEventField($(this)));
+      $('#add-new-event').trigger('reset');
+      $('#add-new-event').hide();
+      self.update();
+      self.server.store();
     });
 
     $('#add-new-dog').submit(function (e) {
       e.preventDefault();
-      self.server.newEvent(parseField($(this)));
+      self.server.newEvent(parseDogField($(this)));
       $('#add-new-dog').trigger('reset');
       $('#add-new-dog').hide();
       self.update();
@@ -178,7 +180,7 @@ class EventHandler {
     // Add Event on submit function
     $('#add-dog').submit(function (e) {
       e.preventDefault();
-      self.server.addEvent(parseField($(this)));
+      self.server.addEvent(parseDogField($(this)));
       $('#add-dog').trigger('reset');
       $('#add-dog').hide();
       self.update();
@@ -216,8 +218,9 @@ function clearChildren ($list) {
 
 function appendDog (dog) {
   let $dogList = $('.results-list');
-  let $dog = $('<div>', {'class': 'result-Event', 'id': dog.ID});
-  $dog.html('<h2>' + dog.getName() + '</h2>' + dog.getLastBooking().toString());
+  let $dog = $('<div>', {'class': 'result-event', 'id': dog.ID});
+  $dog.html('<h2>' + dog.getText() + '</h2>' + (dog.getDate() ? dog.getDate().toDateString() : ''));
+  $dog.append('<button style = "width: 30%; height: 100%; float: right;">Remove</button>');
   $dogList.append($dog);
 }
 
@@ -233,21 +236,26 @@ function closeMenu () {
 
 // Recive Data from form
 // To-Do change to a different parsing functions
-function parseField ($object) {
-  var result = {};
+function parseDogField ($object) {
+  var result = '{';
   $object.find('select[value!=""], input[value!=""]').each(function () {
-    if ($(this).attr('type') === 'date') {
-      if ($(this).attr('name') === 'start') result.start = $(this).val();
-      else if ($(this).attr('name') === 'end') result.end = $(this).val();
-      else if ($(this).attr('name') === 'date') result.date = $(this).val() + ' 8:00 AM PST';
-    } else if ($(this).attr('type') === 'radio' && $(this).prop('checked')) {
-      if ($(this).attr('name') === 'timeStart') result.start += $(this).val() + ' PST';
-      else if ($(this).attr('name') === 'timeEnd') result.end += $(this).val() + ' PST';
-    } else if ($(this).attr('name') === 'name') {
-      result.name = $(this).val();
-    } else if ($(this).attr('name') === 'cName') {
-      result.cName = $(this).val();
-    }
+    result += '"' + $(this).attr('name') + '":"' + $(this).val() + '",';
   });
+  result = result.slice(0, result.length - 1) + '}';
+  result = JSON.parse(result);
+  result.start += result.timeStart;
+  result.end += result.timeEnd;
   return {obj: result, type: 'Dog'};
+}
+
+function parseEventField ($object) {
+  var result = '{';
+  $object.find('select[value!=""], input[value!=""]').each(function () {
+    result += '"' + $(this).attr('name') + '":"' + $(this).val() + '",';
+  });
+  result = result.slice(0, result.length - 1) + '}';
+  result = JSON.parse(result);
+  result.date += ' ' + result.time + ' PST';
+  result.type = 'general';
+  return {obj: result, type: 'event'};
 }

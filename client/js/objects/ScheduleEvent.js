@@ -3,19 +3,24 @@
 
 class SEvent {
 
-  constructor (text, type) {
-    this.text = text;
-    this.color = type;
-    this.ID = SEvent.getNewID();
+  constructor (eventInfo) {
+    this.text = eventInfo.text;
+    this.color = eventInfo.color;
+    this.date = eventInfo.date;
+    this.ID = eventInfo.ID ? eventInfo.ID : SEvent.getNewID();
   }
 
-  getText () { return this.text; };
+  getText () { return this.text; }
 
-  getColor () { return this.color; };
+  getColor () { return this.color; }
 
-  get () { return {text: this.text, color: this.color}; };
+  getDate () { return new Date(this.date); }
 
-  serialize () { return JSON.stringify(this); };
+  get (date) { if (date.toDateString() === this.getDate().toDateString()) return {text: this.toString(), color: this.color, id: this.ID}; };
+
+  toString () { return this.getText() + ' (' + this.getDate().getHours() % 12 + ':00 ' + (this.getDate().getHours() >= 12 ? 'PM)' : 'AM)'); }
+
+  serialize () { return JSON.stringify({obj: this, type: 'SEvent'}); };
 
 }
 

@@ -4,33 +4,12 @@
       "obj": {
         "name": "Blitzen",
         "cName": "Weinstein",
-        "ID": "ABCDEFGH",
         "bookings": [
           {
-            "start": "2018/01/21 8:00 AM PST",
-            "end": "2018/01/27 4:00 PM PST"
-          },
-          {
-            "date": "2018/01/23 8:00 AM PST"
-          },
-          {
-            "date": "2018/01/26 8:00 AM PST"
+            "date": "2018/01/24"
           }
-        ]
-      },
-      "type": "Dog"
-    },
-    {
-      "obj": {
-        "name": "Joe",
-        "cName": "Briggs",
-        "ID": "WEkJjofp",
-        "bookings": [
-          {
-            "start": "2018/01/21 4:00 PM PST",
-            "end": "2018/01/27 8:00 AM PST"
-          }
-        ]
+        ],
+        "ID": "KFXUqSQO"
       },
       "type": "Dog"
     }

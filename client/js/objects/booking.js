@@ -11,7 +11,7 @@ class Booking {
 
   getStart () { return new Date(this.start); }
   getEnd () { return new Date(this.end); }
-  toString () { return new Date(this.start).toDateString() + ' - ' + new Date(this.end).toDateString(); }
+  toDateString () { return new Date(this.start).toDateString() + ' - ' + new Date(this.end).toDateString(); }
 
   getStartTime () {
     return this.getStart().getHours() < 12 ? '8:00 AM' : '4:00 PM';

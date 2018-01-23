@@ -24,6 +24,7 @@
         <div class = "menu-item"></div>
         <div class = "menu-item"></div>
       </div>
+      <footer><p>&copy Matt Rochford 2018. All Rights Reserved</p></footer>
     </div>
 
     <div class = "scheduler">
@@ -85,7 +86,7 @@
       <!-- Add Existing Dog form -->
       <div>
         <form id = "add-dog">
-          <div id = "close-add-dog">X</div>
+          <div class = "close-add-dog">X</div>
           <button type="button" class = "daycare-button">Daycare</button>
           <button type="button" class = "boarding-button">Boarding</button>
           <h2>Name</h2>
@@ -127,7 +128,7 @@
       <!-- Add New Dog form -->
       <div>
         <form id = "add-new-dog">
-          <div id = "close-add-dog">X</div>
+          <div class = "close-add-dog">X</div>
           <h2>Name</h2>
           <input name = "name" type = "text" required/>
           <h2>Client Name</h2>
@@ -136,6 +137,21 @@
         </form>
       </div>
       <!-- End New Dog form -->
+
+      <!-- Add New Event form -->
+      <div>
+        <form id = "add-new-event">
+          <div class = "close-add-dog">X</div>
+          <h2>Text</h2>
+          <input name = "text" type = "text" required/>
+          <h2>Date</h2>
+          <input name = "date" type = "date" required/>
+          <h2>Time</h2>
+          <input name = "time" type = "time" required/>
+          <button id = "submit">Submit</button>
+        </form>
+      </div>
+      <!-- End New Event form -->
 
       <!-- Date Search -->
       <div class = "date-search">
