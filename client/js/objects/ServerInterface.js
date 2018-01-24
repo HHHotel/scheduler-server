@@ -34,7 +34,7 @@ class ServerInterface {
     let out = [];
     for (let i = this.events.length - 1; i >= 0; i--) {
       let event = this.events[i];
-      if (event.getText().toLowerCase().includes(eventText.toLowerCase())) {
+      if (event.bookings && event.getText().toLowerCase().includes(eventText.toLowerCase())) {
         out.push(event);
       }
       if (out.length > 5) break;
