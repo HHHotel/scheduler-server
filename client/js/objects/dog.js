@@ -11,7 +11,7 @@ class Dog {
 
       this.name = args.name;
       this.cName = args.cName;
-      this.ID = args.ID;
+      this.ID = args.ID ? args.ID : SEvent.getNewID();
       this.bookings = [];
 
       for (let booking of args.bookings) {
@@ -38,7 +38,7 @@ class Dog {
 
   get (date) {
     if (!this.getLastBooking()) return;
-    let dogStatus = this.getLastBooking().dayType(date);
+    let dogStatus = this.getLastBooking(date).dayType(date);
     let text = '';
     if (dogStatus === 'arriving') {
       text = this.getText() + ' (' + this.getLastBooking().getStartTime() + ')';
@@ -52,7 +52,9 @@ class Dog {
     return dogStatus ? {text: text, color: dogStatus, id: this.ID} : undefined;
   }
 
-  getText () { return this.name + ' ' + this.cName[0]; }
+  getText () {
+    return this.name + (this.cName ? ' ' + this.cName[0] : '');
+  }
 
   serialize () { return JSON.stringify({obj: this, type: 'Dog'}); };
 

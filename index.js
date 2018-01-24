@@ -4,7 +4,7 @@ var express = require('express');
 var app = express();
 var path = require('path');
 var fs = require('fs');
-// var parse = require('csv-parse');
+var parse = require('csv-parse');
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 
@@ -41,22 +41,28 @@ var storage = {
 
 };
 
-// fs.readFile('schedule_data.csv', 'utf8', function (err, data) {
-//   if (err) throw err;
-//   var events;
-//   parse(data, function (err, output) {
-//     if (err) throw err;
-//     events = output;
-//     for (var i = 0; i < events.length; i++) {
-//       var evt = events[i];
-//       var name = evt[3].replace(' leaves', '').replace(' arrives', '').replace(' arrive', '').replace(' leave', '');
-//       var date = evt[0];
-//       var time = evt[1];
-//       var status = evt[5].substring(1, evt[5].length - 1).toLowerCase();
-//       storage.add({obj: {text: name, date: date, time: time, color: status}, type: 'SEvent'});
-//     }
-//   });
-// });
+var csvData = {
+  events: [],
+  arrivals: [],
+  depatures: [],
+  daycare: [],
+  SEvents: [],
+  indexOf: function (eventObj, field, index) {
+    for (var i = index; i < field.length; i++) {
+      var el = field[i];
+      if (el && eventObj && el.name === eventObj.name) return i;
+    }
+    return -1;
+  },
+
+  indexOfDates: function (eventObj, field, index) {
+    for (var i = index; i < field.length; i++) {
+      var el = field[i];
+      if (el && eventObj && el.name === eventObj.name) return i;
+    }
+    return -1;
+  }
+};
 
 fs.readFile('dogData.json', 'utf8', function (err, data) {
   if (err) throw err;
@@ -65,6 +71,55 @@ fs.readFile('dogData.json', 'utf8', function (err, data) {
   } catch (e) {
     storage.events = [];
   }
+});
+
+fs.readFile('schedule_data.csv', 'utf8', function (err, data) {
+  if (err) throw err;
+  var events;
+  parse(data, function (err, output) {
+    if (err) throw err;
+    events = output;
+    for (var i = 0; i < events.length; i++) {
+      var evt = events[i];
+      var name = evt[3].replace(' leaves', '').replace(' arrives', '').replace(' arrive', '').replace(' leave', '');
+      var date = evt[0];
+      var time = evt[1];
+      var status = evt[5].substring(1, evt[5].length - 1).toLowerCase();
+      var e = {name: name, date: date, time: time, color: status};
+      if (i > 21117) {
+        if (status === 'arrivals') {
+          csvData.arrivals.push(e);
+        } else if (status === 'departures') {
+          csvData.depatures.push(e);
+        } else if (status === 'daycare') {
+          csvData.daycare.push(e);
+        }
+      } else {
+        csvData.SEvents.push({text: name, date: date, time: time, color: status});
+      }
+    }
+
+    for (var j = 0; j < csvData.arrivals.length; j++) {
+      var el = csvData.arrivals[j];
+      if (csvData.indexOf(el, csvData.events, 0) < 0) csvData.events.push({name: el.name, cName: ' ', bookings: []});
+      var pairIndex = csvData.indexOf(el, csvData.depatures, j);
+      var pairEl = csvData.depatures[pairIndex];
+      var eventIndex = csvData.indexOf(el, csvData.events, 0);
+      if (pairEl) csvData.events[eventIndex].bookings.push({start: el.date, end: pairEl.date});
+    }
+    for (var q = 0; q < csvData.daycare.length; q++) {
+      el = csvData.daycare[q];
+      if (csvData.indexOf(el, csvData.events, 0) < 0) csvData.events.push({name: el.name, cName: ' ', bookings: []});
+      eventIndex = csvData.indexOf(el, csvData.events, 0);
+      csvData.events[eventIndex].bookings.push({date: el.date});
+    }
+    for (var p = 0; p < csvData.SEvents.length; p++) {
+      var event = csvData.events[p];
+      if (event) storage.add({obj: event, type: 'Dog'});
+      var sEvent = csvData.SEvents[p];
+      storage.add({obj: sEvent, type: 'SEvent'});
+    }
+  });
 });
 
 server.listen(8000, function () {
