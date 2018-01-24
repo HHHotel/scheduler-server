@@ -53,7 +53,7 @@ var storage = {
 //       var date = evt[0];
 //       var time = evt[1];
 //       var status = evt[5].substring(1, evt[5].length - 1).toLowerCase();
-//       storage.add({obj: {text: name, date: date, time: time, color: status}, type: 'SEvent'});
+//       storage.add({obj: {text: name, date: date, time: time, color: status}, type: 'SEvent'}); // Here Change to a Dog object
 //     }
 //   });
 // });
