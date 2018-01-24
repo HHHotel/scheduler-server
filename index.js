@@ -53,21 +53,15 @@ var csvData = {
       if (el && eventObj && el.name === eventObj.name) return i;
     }
     return -1;
-  },
-
-  indexOfDates: function (eventObj, field, index) {
-    for (var i = index; i < field.length; i++) {
-      var el = field[i];
-      if (el && eventObj && el.name === eventObj.name) return i;
-    }
-    return -1;
   }
 };
 
 fs.readFile('dogData.json', 'utf8', function (err, data) {
   if (err) throw err;
+  var tStart = Date.now();
   try {
     storage.load(data);
+    console.log(Date.now() - tStart);
   } catch (e) {
     storage.events = [];
   }

@@ -71,11 +71,13 @@ class ServerInterface {
   load (servInfo) {
     let jsonInfo = JSON.parse(servInfo);
     this.events = [];
+    let tStart = Date.now();
     if (jsonInfo.events) {
       for (let event of jsonInfo.events) {
         this.newEvent(event);
       }
     }
+    console.log('Loaded from: ' + this.socket.io.uri + ' in ' + Math.round((Date.now() - tStart), 4) + 'ms');
   };
 
   store () {

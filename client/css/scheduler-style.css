@@ -242,7 +242,7 @@ footer p {
 }
 
 .dog-list {
-  font-family: 'Merriweather Sans';
+  font-family: 'Merriweather Sans', sans-serif;
   width: 100%;
   padding: 2%;
   height: calc(100% - 2rem);
