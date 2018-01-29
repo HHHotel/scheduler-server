@@ -12,21 +12,39 @@ class EventHandler {
   }
 
   update () {
+    // Declare the possible week days
     let weekDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thurday', 'Friday', 'Saturday'];
+    // Update the title bar
     $('#dates').text(this.week.toString());
+    // Query the dog list elements from the document to append dogs
     const days = document.querySelectorAll('.dog-list');
+
+    // Iterate over the dog lists
     for (let i = 0; i < days.length; i++) {
+      // Set the title to a week day name
       let dayTitle = days[i].previousElementSibling;
       dayTitle.textContent = weekDays[this.week.getDay(i).getDay()] + ' ' + this.week.getDay(i).getDate();
+
+      // Clear all the dogs in the current list
       clearChildren($(days[i]));
 
+      // Ask the server for the evnts in the current day
       let eventsInDay = this.server.getEventsInDay(this.week.getDay(i));
 
+      // Iterate over the events in the current day
       for (let event of eventsInDay) {
+        // If the event exists
         if (event) {
+          // Delcare a new html element with the event text
           let e = $('<div></div>').text(event.text);
+
+          // Set the class name of the new el to the events color
           $(e).addClass(event.color);
+
+          // Add the event's id to the html el
           $(e).attr('id', event.id);
+
+          // Apeend the created el to the current day
           $(days[i]).append($(e));
         }
       }
@@ -36,59 +54,57 @@ class EventHandler {
   attachHandlers () {
     let self = this;
 
-    // Toggle Full Screen
-    $('#title').click(function toggleFullScreen () {
-      var doc = window.document;
-      var docEl = doc.documentElement;
-
-      var requestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
-      var cancelFullScreen = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen || doc.msExitFullscreen;
-
-      if (!doc.fullscreenElement && !doc.mozFullScreenElement && !doc.webkitFullscreenElement && !doc.msFullscreenElement) {
-        requestFullScreen.call(docEl);
-      } else {
-        cancelFullScreen.call(doc);
-      }
-    });
-
     // Advance One week
     $('#right').click(function () {
+      // Set the current week object to the next Week
       self.week.nextWeek();
+      // Update the dates and days on the html doc
       self.update();
     });
 
     // Decrement One week
     $('#left').click(function () {
+      // Set the current week object to the previous week
       self.week.prevWeek();
+      // Update the dates and days on the html doc
       self.update();
     });
 
     // Menu animation
     $('.scheduler').click(function (e) {
+      // If the click on the app is on cover
       if (e.target.id === 'cover') {
         closeMenu();
-      } else if (e.target.id === 'hb-menu') {
+      } else if (e.target.id === 'hb-menu') { // Open menu if the click is on the menu icon
         openMenu();
       }
     });
 
-    // Search button
+    // Search week menu option
     $('#week-jmp').click(function () {
       closeMenu();
+      // Show the page cover and date search input
       $('#cover').show();
       $('.date-search').show();
     });
 
     $('#dog-search').click(function () {
       closeMenu();
+      // Clear any remaining events in the result list
       clearChildren($('.results-list'));
+
+      // Show the page cover and event search input
       $('#cover').show();
       $('.dog-search').show();
     });
 
     $('.date-search input').keypress(function (e) {
+      // Listen for ENTER key event
       if (e.keyCode === 13) {
+        // Advance week to the input value
         self.week = new Week(new Date(this.value));
+
+        // Clear the value update the app and close
         this.value = '';
         self.update();
         closeMenu();
@@ -96,36 +112,61 @@ class EventHandler {
     });
 
     $('.dog-search input').keypress(function (e) {
+      // Listen for ENTER
       if (e.keyCode === 13) {
+        // Store the input value
         let dogName = this.value;
         this.value = '';
+
+        // Clear the results
         clearChildren($('.results-list'));
+
+        // Ask the server for events with specified name
         let resDogs = self.server.findEvents(dogName);
+
+        // Iterate over the response
         for (let dog of resDogs) {
+          // Add each dog to the result list
           appendDog(dog);
         }
+
+        // Update the app
         self.update();
       }
     });
 
+    // Find and add an event listener to the butttons inside of the result list
     $('.results-list').on('click', '.result-event button', function () {
+      // Get the event result who is the parent of the button
       let $event = $(this).parent();
+
+      // Tell the server to remove the event with the specified ID
       self.server.remove($event.attr('id'));
+
+      // Remove the entry from the result list
       $(this).parent().remove();
+
+      // Update the app
       self.update();
     });
 
+    // Add an event listener to all close buttons on the forms
     $('.close-add-dog').each(function () {
       this.addEventListener('click', function () {
+        // Fade all event forms out of view
         $('#add-dog').fadeOut();
         $('#add-new-dog').fadeOut();
         $('#add-new-event').fadeOut();
       });
     });
 
+    // Declare a variable to save the angle of rotation
     let angle = 0;
     $('.add-button').click(function () {
+      // Toggle the event type list from view
       $('.add-list').toggle();
+      // Call the animation function to rotate the add button
+      // 135 deg to toggle from 45 deg rotated and straight up while adding an overspin
       animateRotate(angle += 135);
     });
 
@@ -148,54 +189,69 @@ class EventHandler {
       });
     }
 
+    // Event Form List click listener
     $('.add-list').click(function (e) {
+      // Declare target el
       let target = e.target;
 
-      if (target.id === 'new-dog') {
+      if (target.id === 'new-dog') { // If new dog event show
         $('#add-new-dog').fadeIn();
-      } else if (target.id === 'new-booking') {
+      } else if (target.id === 'new-booking') { // elif existing dog event show
         $('#add-dog').fadeIn();
-      } else if (target.id === 'other-event') {
+      } else if (target.id === 'other-event') { // elif other type of event show
         $('#add-new-event').fadeIn();
       }
     });
 
     $('#add-new-event').submit(function (e) {
+      // Prevent the default form submit behavior
       e.preventDefault();
+      // Parse the form as an Event
       self.server.newEvent(parseEventField($(this)));
-      $('#add-new-event').trigger('reset');
-      $('#add-new-event').hide();
-      self.update();
-      self.server.store();
+
+      // Reset the form and hide it
+      // Update the app and store the event to the server
+      formOnSubmit($(this));
     });
 
     $('#add-new-dog').submit(function (e) {
       e.preventDefault();
-      self.server.newEvent(parseDogField($(this)));
-      $('#add-new-dog').trigger('reset');
-      $('#add-new-dog').hide();
-      self.update();
-      self.server.store();
+      // Parse the form as a Dog
+      self.server.addEvent(parseDogField($(this)));
+      formOnSubmit($(this));
     });
 
     // Add Event on submit function
     $('#add-dog').submit(function (e) {
       e.preventDefault();
+      // Parse the form as a Dog
       self.server.addEvent(parseDogField($(this)));
-      $('#add-dog').trigger('reset');
-      $('#add-dog').hide();
-      self.update();
-      self.server.store();
+      formOnSubmit($(this));
     });
 
+    // Reset the form and hide it
+    // Update the app and store the event to the server
+    function formOnSubmit ($form) {
+      $form.trigger('reset');
+      $form.hide();
+      self.update();
+      self.server.store();
+    }
+
+    // Swap to adding a daycare booking
     $('.daycare-button').click(function () {
+      // Reset the form
       $('#add-dog').trigger('reset');
+      // Hide boarding inputs
       $('.boarding-dates').hide();
+      // Show the daycare inputs
       $('.daycare-date').show();
     });
 
+    // Swap to boarding booking
     $('.boarding-button').click(function () {
       $('#add-dog').trigger('reset');
+      // Show the boarding inputs hide the daycare ones
       $('.boarding-dates').show();
       $('.daycare-date').hide();
     });
@@ -238,25 +294,44 @@ function closeMenu () {
 // Recive Data from form
 // To-Do change to a different parsing functions
 function parseDogField ($object) {
-  var result = '{';
-  $object.find('select[value!=""], input[value!=""]').each(function () {
-    result += '"' + $(this).attr('name') + '":"' + $(this).val() + '",';
-  });
-  result = result.slice(0, result.length - 1) + '}';
-  result = JSON.parse(result);
+  // Obtain an object from the form
+  let result = parseForm($object);
+
+  // Append the time fields onto both the start date and end date
   result.start += result.timeStart;
   result.end += result.timeEnd;
+
+  // Return the result as a server object with type of Dog
   return {obj: result, type: 'Dog'};
 }
 
 function parseEventField ($object) {
-  var result = '{';
+  // Obtain an object from the form
+  let result = parseForm($object);
+
+  // Append the time to the date field
+  result.date += ' ' + result.time + ' PST';
+
+  // Set the color to general
+  result.type = 'general';
+
+  // return the result as a server object
+  return {obj: result, type: 'SEvent'};
+}
+
+function parseForm ($object) {
+  // Declare the Json string to write form data
+  let result = '{';
+  // Find inputs who's values are not undefined
   $object.find('select[value!=""], input[value!=""]').each(function () {
+    // Iterate over each item adding the name of input with the value to
+    // the JSON string
     result += '"' + $(this).attr('name') + '":"' + $(this).val() + '",';
   });
+
+  // Remove the ending comma from the JSON string and add an ending brace
   result = result.slice(0, result.length - 1) + '}';
-  result = JSON.parse(result);
-  result.date += ' ' + result.time + ' PST';
-  result.type = 'general';
-  return {obj: result, type: 'event'};
+
+  // Parse the JSON string into an object and return it
+  return JSON.parse(result);
 }
