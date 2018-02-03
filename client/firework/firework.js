@@ -4,7 +4,7 @@ class Firework extends Particle {
 
   constructor (x, y) {
     super(x, y);
-    this.vel = createVector(0, random(-height / 50, -height / 66));
+    this.vel = createVector(0, random(-height / 55, -height / 66));
     this.particles = [];
     this.color = color(random(255), random(255), random(255));
     this.exploded = false;
