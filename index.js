@@ -39,6 +39,13 @@ app.use(express.static(path.join(__dirname, 'client')));
 io.on('connection', function (socket) {
   console.log('New connection id : ' + socket.id);
 
+  socket.on('getevents', function (date, fn) {
+    console.log(date);
+    let response = events.getWeek(new Date(date));
+    console.log(response);
+    fn(response);
+  });
+
   socket.on('store', function (data) {
     var eventObj = JSON.parse(data);
     events.addEvent(eventObj);
