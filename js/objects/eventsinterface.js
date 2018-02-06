@@ -8,8 +8,11 @@ const Dog = require('./dog.js');
 class EventsInterface {
 
   constructor () {
+
     if (arguments[0]) this.load(arguments[0]);
+
     else this.events = [];
+
   }
 
   addEvent (evt) {
@@ -50,9 +53,9 @@ class EventsInterface {
 
   }
 
-  getWeek (sDate) {
+  getWeek (date) {
 
-    let date = new Date(sDate.getTime());
+    let sDate = EventsInterface.getWeekStart(date);
     let week = [];
 
     for (let i = 0; i < 7; i++) {
@@ -111,5 +114,18 @@ class EventsInterface {
   }
 
 }
+
+EventsInterface.getWeekStart = function (date) {
+
+  let sDate;
+
+  const currentDate = date;
+
+  sDate = new Date(currentDate.toString());
+  sDate.setDate(currentDate.getDate() - currentDate.getDay());
+
+  return sDate;
+
+};
 
 module.exports = EventsInterface;

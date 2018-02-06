@@ -1,15 +1,16 @@
-/* eslint semi: ["error", "always"] */
+/* eslint-disable */
 
 const EventsInterface = require('./js/objects/eventsinterface.js');
 
-var express = require('express');
-var app = express();
+const express = require('express');
+const app = express();
 
-var path = require('path');
-var fs = require('fs');
+const path = require('path');
+const fs = require('fs');
+// const hat = require('hat');
 
-var server = require('http').createServer(app);
-var io = require('socket.io')(server);
+const server = require('http').createServer(app);
+const io = require('socket.io')(server);
 
 const port = process.env.port || 8080;
 
@@ -34,28 +35,34 @@ server.listen(port, function () {
 //   server.close();
 // });
 
-app.use(express.static(path.join(__dirname, 'client')));
+// Add a week tracker and append new sockets depending on the week they are at
+// Clients = {};
+
+app.use(express.static(path.join(__dirname, 'landing')));
 
 io.on('connection', function (socket) {
   console.log('New connection id : ' + socket.id);
 
-  io.sockets.emit('load', events.getWeek(new Date('2/4/2018')));
+  socket.on('user.login', function (data, ack) {
 
-  console.log(events);
-
-  socket.on('getevents', function (date, fn) {
-    let response = events.getWeek(new Date(date));
-    // console.log(response);
-    fn(response);
   });
 
-  socket.on('push', function (data) {
-    var evt = JSON.parse(data);
-    events.addEvent(evt);
+  socket.on('push', function (data, ack) {
+    try {
+      events.addEvent(evt);
+      ack(data);
+    } catch (e) {
+      ack('Error adding event: ' + e.message);
+    }
   });
 
-  socket.on('remove', function (dogID) {
-    events.remove(dogID);
+  socket.on('remove', function (evtID, ack) {
+    try {
+      events.remove(dogID);
+      ack(evtID);
+    } catch (e) {
+      ack('Error removing: ' + e.message);
+    }
   });
 
   socket.on('disconnect', function () {
