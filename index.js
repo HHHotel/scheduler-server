@@ -29,39 +29,84 @@ server.listen(port, function () {
   console.log('Server running on port ' + port);
 });
 
-// process.on('SIGINT', function () {
-//   console.log('Exiting..');
-//   fs.writeFileSync('dogData.json', JSON.stringify(events));
-//   server.close();
-// });
+process.on('SIGINT', function () {
+  console.log('Exiting..');
+  fs.writeFileSync('data/dogData.json', events.serialize());
+  server.close();
+});
 
-// Add a week tracker and append new sockets depending on the week they are at
-// Clients = {};
+const clients = {
+
+  // Track incoming client connections
+  connections: [],
+
+  // Add a new connection
+  push: function (client) {this.connections.push(client)},
+
+  // Send appropriate datat to each connection
+  update: function () {
+
+    this.connections.forEach(function (client) {
+
+      // Cache stored date
+      let clientDate = client.user.date;
+
+      // Send a load event to each client with week data
+      client.emit('load', events.getWeek(clientDate));
+
+    });
+  }
+};
 
 app.use(express.static(path.join(__dirname, 'landing')));
 
 io.on('connection', function (socket) {
   console.log('New connection id : ' + socket.id);
 
-  socket.on('user.login', function (data, ack) {
+  socket.user = {
+
+    date: new Date(),
+    ID: socket.id
+
+  }
+
+  clients.push(socket);
+  clients.update();
+
+  socket.on('week.change', function (data) {
+
+    socket.user.date = new Date(data);
+    clients.update();
 
   });
 
   socket.on('push', function (data, ack) {
     try {
+
       events.addEvent(evt);
       ack(data);
+
+      clients.update();
+
     } catch (e) {
+
       ack('Error adding event: ' + e.message);
-    }
+
+    };
   });
 
   socket.on('remove', function (evtID, ack) {
     try {
+
       events.remove(dogID);
       ack(evtID);
+
+      clients.update();
+
     } catch (e) {
+
       ack('Error removing: ' + e.message);
+
     }
   });
 
@@ -69,6 +114,7 @@ io.on('connection', function (socket) {
     console.log('id : ' + socket.id + ' disconnected');
   });
 });
+
 
 // var csvData = {
 //   events: [],

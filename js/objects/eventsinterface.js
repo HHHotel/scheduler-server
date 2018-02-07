@@ -113,6 +113,18 @@ class EventsInterface {
 
   }
 
+  serialize () {
+    let evts = '{"events": [';
+
+    for (let evt of this.events) {
+      evts += evt.serialize() + ',';
+
+    }
+
+    evts = evts.substring(0, evts.length - 1) + ']}';
+    return evts;
+  }
+
 }
 
 EventsInterface.getWeekStart = function (date) {
