@@ -16,20 +16,22 @@ class EventsInterface {
   }
 
   addEvent (evt) {
-    let index = this.indexOf(evt.obj.ID);
-    // Prevent Duplicate event Id's from being added
-    if (index > 0) {
 
-      this.events[index] = evt;
+    // Adds a new Event of the appropriate type
+    if (evt.type === 'Dog') this.events.push(new Dog(evt.obj));
 
-    } else {
+    else this.events.push(new SEvent(evt.obj));
 
-      // Adds a new Event of the appropriate type
-      if (evt.type === 'Dog') this.events.push(new Dog(evt.obj));
+  }
 
-      else this.events.push(new SEvent(evt.obj));
+  addBooking (id, booking) {
 
-    }
+    let index = this.indexOf(id);
+
+    if (booking.type === 'boarding') this.events[index].addBoarding(booking.data);
+
+    else if (booking.type === 'daycare') this.events[index].addDaycare(booking.data);
+
   }
 
   load (json) {
@@ -73,8 +75,6 @@ class EventsInterface {
 
     let eventsInDay = this.events.filter(function (evt) {
 
-      // console.log(evt);
-
       return evt.has(date);
 
     });
@@ -101,7 +101,7 @@ class EventsInterface {
 
     return this.events.filter(function (evt) {
 
-      return evt.getText().includes(text);
+      return evt.toString().includes(text);
 
     });
 
@@ -133,7 +133,7 @@ EventsInterface.getWeekStart = function (date) {
 
   const currentDate = date;
 
-  sDate = new Date(currentDate.toString());
+  sDate = new Date(currentDate.toDateString());
   sDate.setDate(currentDate.getDate() - currentDate.getDay());
 
   return sDate;

@@ -25,8 +25,8 @@ class Boarding {
 
   contains (date) {
     let d = new Date(date.getTime());
-    let sTime = d.setHours(0);
-    let eTime = d.setHours(24);
+    let sTime = new Date(d.toDateString()).getTime();
+    let eTime = d.setHours(23);
     return eTime > this.getStart().getTime() && sTime <= this.getEnd().getTime();
   }
 
@@ -56,7 +56,7 @@ class Boarding {
 
 Boarding.formatTime = function (hours) {
   hours = hours % 12 === 0 ? 12 : hours % 12;
-  hours += hours > 12 ? ' PM' : ' AM';
+  hours += hours > 12 ? ':00 PM' : ':00 AM';
   return hours;
 };
 

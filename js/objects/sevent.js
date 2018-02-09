@@ -18,9 +18,18 @@ class SEvent {
 
   getDate () { return new Date(this.date); }
 
-  get (date) { if (date.toDateString() === this.getDate().toDateString()) return {text: this.toString(), color: this.color, id: this.ID}; };
+  getTime () {
+    return ((this.getDate().getHours() > 0) ? '(' + this.getDate().getHours() % 12 + ':00 ' + (this.getDate().getHours() >= 12 ? 'PM) ' : 'AM) ') : '');
+  }
 
-  toString () { return this.getText() + ((this.getDate().getHours() > 0) ? ' (' + this.getDate().getHours() % 12 + ':00 ' + (this.getDate().getHours() >= 12 ? 'PM)' : 'AM)') : ''); }
+  get (date) {
+    if (date.toDateString() === this.getDate().toDateString()) {
+      let text = this.getTime() + this.getText();
+      return {text: text, color: this.color, id: this.ID};
+    }
+  }
+
+  toString () { return this.getText(); }
 
   has (date) {
     return this.getDate().toDateString() === date.toDateString();

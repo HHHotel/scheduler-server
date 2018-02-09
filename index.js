@@ -80,11 +80,12 @@ io.on('connection', function (socket) {
 
   });
 
-  socket.on('push', function (data, ack) {
+  socket.on('event.new', function (data, ack) {
     try {
 
-      events.addEvent(evt);
-      ack(data);
+      events.addEvent(data);
+      ack('Added ' + data);
+      console.log('Added new event')
 
       clients.update();
 
@@ -95,11 +96,11 @@ io.on('connection', function (socket) {
     };
   });
 
-  socket.on('remove', function (evtID, ack) {
+  socket.on('event.remove', function (evtID, ack) {
     try {
 
       events.remove(dogID);
-      ack(evtID);
+      ack('Removed ' + evtID);
 
       clients.update();
 

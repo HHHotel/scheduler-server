@@ -33,9 +33,11 @@ class Dog {
   }
 
   addBoarding (start, end) { this.bookings.push(new Boarding(start, end)); }
+
   addDaycare (date) { this.bookings.push(new Daycare(date)); }
 
   getName () { return this.name; }
+
   getBookings () { return this.bookings; }
 
   getBooking (date) {
@@ -50,9 +52,9 @@ class Dog {
     let dogStatus = booking.dateType(date);
 
     let text;
-    if (dogStatus === 'arriving') {
+    if (dogStatus === 'arrivals') {
       text = '(' + booking.getStartTime() + ') ' + this.getText();
-    } else if (dogStatus === 'departing') {
+    } else if (dogStatus === 'departures') {
       text = '(' + booking.getEndTime() + ') ' + this.getText();
     } else if (dogStatus === 'daycare') {
       text = '(8:00 AM) ' + this.getText();
@@ -64,6 +66,10 @@ class Dog {
 
   getText () {
     return this.name + (this.cName ? ' ' + this.cName[0] : '');
+  }
+
+  toString () {
+    return this.name + ' ' + this.cname;
   }
 
   has (date) {
