@@ -29,11 +29,11 @@ server.listen(port, function () {
   console.log('Server running on port ' + port);
 });
 
-process.on('SIGINT', function () {
-  console.log('Exiting..');
-  fs.writeFileSync('data/dogData.json', events.serialize());
-  server.close();
-});
+// process.on('SIGINT', function () {
+//   console.log('Exiting..');
+//   fs.writeFileSync('data/dogData.json', events.serialize());
+//   server.close();
+// });
 
 const clients = {
 
