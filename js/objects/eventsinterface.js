@@ -28,9 +28,9 @@ class EventsInterface {
 
     let index = this.indexOf(id);
 
-    if (booking.type === 'boarding') this.events[index].addBoarding(booking.data);
+    if (booking.start) this.events[index].addBoarding(booking.start, booking.end);
 
-    else if (booking.type === 'daycare') this.events[index].addDaycare(booking.data);
+    else if (booking.date) this.events[index].addDaycare(booking.date);
 
   }
 

@@ -80,12 +80,11 @@ io.on('connection', function (socket) {
 
   });
 
-  socket.on('event.new', function (data, ack) {
+  socket.on('events.new', function (data, ack) {
     try {
 
       events.addEvent(data);
       ack('Added ' + data);
-      console.log('Added new event')
 
       clients.update();
 
@@ -96,7 +95,30 @@ io.on('connection', function (socket) {
     };
   });
 
-  socket.on('event.remove', function (evtID, ack) {
+  socket.on('events.addbooking', function (data, ack) {
+    try {
+
+      let id = data.id;
+      let booking = {
+        start: data.start,
+        end: data.end
+      };
+
+      events.addBooking(id, booking);
+      clients.update();
+      ack('Added booking to id: ' + id);
+
+    } catch (e) {
+      ack('Error Adding booking: ' + e.message);
+    }
+  });
+
+  socket.on('events.find', function (eventText) {
+    let resEvents = events.findAll(eventText);
+    socket.emit('events.find.response', resEvents);
+  });
+
+  socket.on('events.remove', function (evtID, ack) {
     try {
 
       events.remove(dogID);

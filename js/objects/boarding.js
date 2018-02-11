@@ -5,8 +5,8 @@
 class Boarding {
 
   constructor (sDate, eDate) {
-    this.start = sDate.replace(/-/g, '/');
-    this.end = eDate.replace(/-/g, '/');
+    this.start = sDate.replace(/-/g, '/') + ' PST';
+    this.end = eDate.replace(/-/g, '/') + ' PST';
   }
 
   getStart () { return new Date(this.start); }
