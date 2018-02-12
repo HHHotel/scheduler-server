@@ -100,7 +100,6 @@ class EventsInterface {
   findAll (text) {
 
     return this.events.filter(function (evt) {
-
       return evt.toString().includes(text);
 
     });

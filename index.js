@@ -85,7 +85,7 @@ io.on('connection', function (socket) {
 
       events.addEvent(data);
       ack('Added ' + data);
-      console.log('Added new event ' + data.toString());
+      console.log('Added new event ' + JSON.stringify(data));
 
       clients.update();
 
