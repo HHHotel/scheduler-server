@@ -1,6 +1,6 @@
 {
   "name": "HHH-Scheduler",
-  "version": "0.0.3",
+  "version": "1.0.0",
   "description": "Dog scheduler",
   "main": "index.js",
   "author": "Matt Rochford",

@@ -55,6 +55,14 @@ const clients = {
       client.emit('load', events.getWeek(clientDate));
 
     });
+  },
+
+  remove: function (id) {
+    let index = this.connections.findIndex(function (conn) {
+      return conn.id == id;
+    });
+
+    this.connections.splice(index, 1);
   }
 };
 
@@ -102,7 +110,8 @@ io.on('connection', function (socket) {
       let id = data.id;
       let booking = {
         start: data.start,
-        end: data.end
+        end: data.end,
+        date: data.date
       };
 
       events.addBooking(id, booking);
@@ -136,6 +145,7 @@ io.on('connection', function (socket) {
 
   socket.on('disconnect', function () {
     console.log('id : ' + socket.id + ' disconnected');
+    clients.remove(socket.id);
   });
 });
 

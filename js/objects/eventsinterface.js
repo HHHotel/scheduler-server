@@ -100,7 +100,8 @@ class EventsInterface {
   findAll (text) {
 
     return this.events.filter(function (evt) {
-      return evt.toString().includes(text);
+      if (!text || !evt.toString()) return;
+      return evt.toString().toLowerCase().includes(text.toLowerCase());
 
     });
 
