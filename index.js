@@ -117,6 +117,7 @@ io.on('connection', function (socket) {
       events.addBooking(id, booking);
       clients.update();
       ack('Added booking to id: ' + id);
+      console.log('Added Booking: ' + booking);
 
     } catch (e) {
       ack('Error Adding booking: ' + e.message);
@@ -132,7 +133,9 @@ io.on('connection', function (socket) {
     try {
 
       events.remove(dogID);
-      ack('Removed ' + evtID);
+      ack('Removed id: ' + evtID);
+
+      console.log('Removed id: ' + evtID);
 
       clients.update();
 
