@@ -14,13 +14,11 @@ class Boarding {
   toDateString () { return new Date(this.start).toDateString() + ' - ' + new Date(this.end).toDateString(); }
 
   getStartTime () {
-    let hours = this.getStart().getHours();
-    return Boarding.formatTime(hours);
+    return Boarding.formatTime(this.getStart());
   }
 
   getEndTime () {
-    let hours = this.getEnd().getHours();
-    return Boarding.formatTime(hours);
+    return Boarding.formatTime(this.getEnd());
   }
 
   contains (date) {
