@@ -117,7 +117,8 @@ io.on('connection', function (socket) {
       events.addBooking(id, booking);
       clients.update();
       ack('Added booking to id: ' + id);
-      console.log('Added Booking: ' + booking);
+      console.log('Added Booking: ');
+      console.log(booking);
 
     } catch (e) {
       ack('Error Adding booking: ' + e.message);
