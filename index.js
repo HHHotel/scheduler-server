@@ -104,7 +104,7 @@ io.on('connection', function (socket) {
     };
   });
 
-  socket.on('events.addbooking', function (data, ack) {
+  socket.on('events.new.booking', function (data, ack) {
     try {
 
       let id = data.id;
