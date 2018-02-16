@@ -56,7 +56,7 @@ Boarding.formatTime = function (date) {
   let TOD = date.getHours() < 12 ? 'AM' : 'PM';
 
   let hours = date.getHours();
-  hours = hours % 12 === 0 ? 12 : hours;
+  hours = hours % 12 === 0 ? 12 : hours % 12;
   let mins = date.getMinutes();
   mins = mins >= 10 ? mins : '0' + mins;
 
