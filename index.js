@@ -14,7 +14,7 @@ const io = require('socket.io')(server);
 
 const port = process.env.PORT || 8080;
 
-process.env.TZ = 'Seattle';
+process.env.TZ = 'PST';
 
 let events;
 
