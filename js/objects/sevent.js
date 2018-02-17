@@ -20,7 +20,7 @@ class SEvent {
 
   get (date) {
     if (date.toDateString() === this.getDate().toDateString()) {
-      let text = '(' + SEvent.formatTime(this.getDate()) + ')' + this.getText();
+      let text = '(' + SEvent.formatTime(this.getDate()) + ') ' + this.getText();
 
       return {text: text, color: this.color, id: this.ID};
     }
