@@ -1,5 +1,7 @@
 /* eslint-disable */
 
+process.env.TZ = 'GMT+8';
+
 const EventsInterface = require('./js/objects/eventsinterface.js');
 
 const express = require('express');
@@ -13,8 +15,6 @@ const server = require('http').createServer(app);
 const io = require('socket.io')(server);
 
 const port = process.env.PORT || 8080;
-
-process.env.TZ = 'PST';
 
 let events;
 
@@ -92,8 +92,6 @@ io.on('connection', function (socket) {
 
   socket.on('events.new', function (data, ack) {
     try {
-
-      console.log(data.obj.date);
 
       events.addEvent(data);
       ack('Added ' + data);
