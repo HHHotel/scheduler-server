@@ -18,13 +18,9 @@ class SEvent {
 
   getDate () { return new Date(this.date); }
 
-  getTime () {
-    return ((this.getDate().getHours() > 0) ? '(' + this.getDate().getHours() % 12 + ':00 ' + (this.getDate().getHours() >= 12 ? 'PM) ' : 'AM) ') : '');
-  }
-
   get (date) {
     if (date.toDateString() === this.getDate().toDateString()) {
-      let text = this.getTime() + this.getText();
+      let text = '(' + SEvent.formatTime(this.getDate()) + ')' + this.getText();
 
       return {text: text, color: this.color, id: this.ID};
     }
@@ -49,6 +45,17 @@ SEvent.getNewID = function () {
 
   /*  TO-DO Fix possibility of repeated ids */
   return id;
+};
+
+SEvent.formatTime = function (date) {
+  let TOD = date.getHours() < 12 ? 'AM' : 'PM';
+
+  let hours = date.getHours();
+  hours = hours % 12 === 0 ? 12 : hours % 12;
+  let mins = date.getMinutes();
+  mins = mins >= 10 ? mins : '0' + mins;
+
+  return hours + ':' + mins + ' ' + TOD;
 };
 
 module.exports = SEvent;
