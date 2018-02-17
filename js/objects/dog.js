@@ -61,6 +61,10 @@ class Dog {
     } else {
       text = this.getText();
     }
+    if (text.includes('TEST')) {
+      console.log(text);
+      console.log(booking);
+    }
     return dogStatus ? {text: text, color: dogStatus, id: this.ID} : undefined;
   }
 
