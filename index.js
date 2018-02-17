@@ -14,6 +14,8 @@ const io = require('socket.io')(server);
 
 const port = process.env.PORT || 8080;
 
+process.env.TZ = 'Seattle';
+
 let events;
 
 fs.readFile('data/dogData.json', 'utf8', function (err, data) {
