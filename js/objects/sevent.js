@@ -28,7 +28,7 @@ class SEvent {
 
       if (text.includes('TEST')) {
         console.log(text);
-        console.log(date);
+        console.log(this.getDate());
       }
 
       return {text: text, color: this.color, id: this.ID};
