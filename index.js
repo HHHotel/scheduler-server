@@ -93,6 +93,8 @@ io.on('connection', function (socket) {
   socket.on('events.new', function (data, ack) {
     try {
 
+      console.log(data.date);
+
       events.addEvent(data);
       ack('Added ' + data);
       console.log('Added new event ' + JSON.stringify(data));
