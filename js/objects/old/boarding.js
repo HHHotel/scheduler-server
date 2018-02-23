@@ -1,9 +1,5 @@
-/* eslint semi: ["error", "always"] */
-/* eslint padded-blocks: ["error", { "classes": "always" }] */
-
 const SEvent = require('./sevent.js');
 
-// eslint-disable-next-line no-unused-vars
 class Boarding {
 
   constructor (sDate, eDate) {
