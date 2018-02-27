@@ -5,7 +5,7 @@
 
 process.env.TZ = 'GMT+8';
 
-const EventsInterface = require('./js/objects/eventsinterface.js');
+const EventsInterface = require('./js/objects/old/eventsinterface.js');
 
 const express = require('express');
 const app = express();
@@ -56,8 +56,8 @@ const clients = {
   // Add a new connection
   push: function (client) {
 
-    this.connections.push(client); 
-    
+    this.connections.push(client);
+
   },
 
   // Send appropriate datat to each connection
