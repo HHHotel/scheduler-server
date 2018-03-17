@@ -1,5 +1,3 @@
-const sql = require('mysql');
-
 // DATE - format YYYY-MM-DD
 // DATETIME - format: YYYY-MM-DD HH:MI:SS
 // TIMESTAMP - format: YYYY-MM-DD HH:MI:SS
@@ -14,7 +12,14 @@ const sql = require('mysql');
 
 class SQLInterface {
 
+	constructor () {
+		this.sql = require('mysql');
+	}
 
+    add () {
+
+        
+    }
 
 }
 

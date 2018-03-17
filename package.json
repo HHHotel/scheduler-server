@@ -15,5 +15,8 @@
   },
   "scripts": {
     "start": "node index.js"
+  },
+  "devDependencies": {
+    "eslint": "^4.19.0"
   }
 }
