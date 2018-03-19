@@ -6,10 +6,6 @@
     },
     "extends": "eslint:recommended",
     "rules": {
-        "linebreak-style": [
-            "error",
-            "unix"
-        ],
         "quotes": [
             "error",
             "single"

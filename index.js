@@ -1,7 +1,7 @@
 // Matt Rochford 
 // January 2018
 // Happy Hound Hotel Scheduler Server
-
+/* eslint no-console: "off" */
 
 process.env.TZ = 'GMT+8';
 
@@ -126,7 +126,7 @@ io.on('connection', function (socket) {
 
       ack('Error adding event: ' + e.message);
 
-    };
+    }
 
   });
 
