@@ -111,7 +111,7 @@ io.on('connection', function (socket) {
     clients.update();
 
   });
-
+ 
   socket.on('events.new', function (data, ack) {
 
     try {
