@@ -22,10 +22,10 @@ app.use(express.static(path.join(__dirname, 'landing')));
 
 const DB = new require('./src/DatabaseInterface');
 const database = new DB(
-    'localhost',
-    'matt',
-    'dogsarebest',
-    'HHH_Database'
+    'us-cdbr-iron-east-05.cleardb.net',
+    'b174a353922a1b',
+    '12ccc48f',
+    'heroku_5394de57c9d31a8'
 );
 
 io.on('connection', function (socket) {
