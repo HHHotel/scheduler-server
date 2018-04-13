@@ -5,14 +5,15 @@ class DatabaseInterface {
     constructor (DB_host, DB_user, DB_pass, DB) {
         process.env.TZ = 'GMT+0000';
         this.sql = require('mysql');
-        this.DB = this.sql.createConnection({
+        this.dbOptions = {
             host    : DB_host,
             user    : DB_user,
             password: DB_pass,
             database: DB,
             supportBigNumbers: true,
             bigNumberStrings: true
-        });
+        };
+        this.DB = this.sql.createConnection(this.dbOptions);
     }
 
     /*
@@ -194,6 +195,7 @@ class DatabaseInterface {
     }
 
     query (queryString, callback) {
+        this.DB = this.sql.createConnection(this.dbOptions);
         this.DB.query(queryString,
 
         function (error, results) {
@@ -205,7 +207,7 @@ class DatabaseInterface {
                 callback(results);
             }
         });
-        // this.DB.end();
+        this.DB.end();
     }
 
 }
