@@ -207,7 +207,6 @@ class DatabaseInterface {
                 callback(results);
             }
         });
-        this.DB.end();
     }
 
 }
