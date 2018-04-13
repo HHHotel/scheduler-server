@@ -2,7 +2,7 @@
 // Happy Hound Scheduler Server
 /* eslint no-console: "off" */
 
-process.env.TZ = 'GMT+8';
+process.env.TZ = 'GMT+0000';
 
 const express = require('express');
 const app = express();
@@ -20,20 +20,34 @@ server.listen(port, () => console.log('Server running on port ' + port) );
 
 app.use(express.static(path.join(__dirname, 'landing')));
 
-
 const DB = new require('./src/DatabaseInterface');
+const database = new DB(
+    'localhost',
+    'matt',
+    'dogsarebest',
+    'HHH_Database'
+);
 
 io.on('connection', function (socket) {
 
-    // TODO: Clean event name
-    socket.on('new', function () {
-            
+    console.log('New Connection');
+    socket.emit('update');
+
+    socket.on('load', function(date, callback) {
+        database.getWeek(date, callback);
+    });
+
+    socket.on('add', function (event) {
+        database.add(event);
         io.sockets.emit('update'); 
     });
 
-    socket.on('load', function(date, callback) {
-        let week = DB.getWeek(date);
-        callback(week);
+    socket.on('find', function (searchText, callback) {
+        database.findDogs(searchText, callback);
+    });
+
+    socket.on('remove_event', function (id) {
+        database.removeEvent(id);
     });
 
     
