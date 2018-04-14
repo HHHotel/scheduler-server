@@ -33,11 +33,11 @@ class DatabaseInterface {
     */
 
 
-    add (event) {
+    add (event, callback) {
         if (event.type === 'dog') {
-            this.insertDog(event);
+            this.insertDog(event, callback);
         } else {
-            this.insertEvent(event);
+            this.insertEvent(event, callback);
         }
     }
 
@@ -49,14 +49,14 @@ class DatabaseInterface {
     }
     */
 
-    insertDog (dog) {
+    insertDog (dog, callback) {
 
         // CREATE TABLE dogs (id BIGINT NOT NULL, dog_name TEXT NOT NULL, client_name TEXT NOT NULL);
 
         this.DB.query(
             `INSERT INTO dogs (id, dog_name, client_name)
              VALUES (UUID_SHORT(), "` + dog.name + '", "' + dog.cName + '");'
-        );
+        , callback);
     }
 
     /*
@@ -71,7 +71,7 @@ class DatabaseInterface {
     INSERT INTO events (id, event_start, event_end, event_type, event_text);
     */
 
-    insertEvent (event) {
+    insertEvent (event, callback) {
         let eventID = event.id ? event.id : 'uuid_short()';
         if (!event.end) event.end = event.start;
 
@@ -80,7 +80,7 @@ class DatabaseInterface {
             (id, event_start, event_end, event_type, event_text)
             VALUES
             (` + eventID + ', "' + event.start + '", "' + event.end + '", "' + event.type + '", "' + event.text + '");'
-        );
+        , callback);
 
     }
 
