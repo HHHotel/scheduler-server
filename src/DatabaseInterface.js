@@ -206,7 +206,7 @@ class DatabaseInterface {
                     if (results.affectedRows) {
                         console.log('Effected ' + results.affectedRows + ' rows');
                         console.log('With ' + results.warningCount + ' warnings ' + results.message);
-                        callback(results);
+                        if (callback) callback(results);
                     } else if (results) {
                         callback(results);
                     }
