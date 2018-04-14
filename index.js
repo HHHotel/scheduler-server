@@ -38,8 +38,9 @@ io.on('connection', function (socket) {
     });
 
     socket.on('add', function (event) {
-        database.add(event);
-        io.sockets.emit('update'); 
+        database.add(event, function () {
+            io.sockets.emit('update'); 
+        });
     });
 
     socket.on('find', function (searchText, callback) {
