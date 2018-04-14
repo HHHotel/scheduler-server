@@ -13,7 +13,7 @@ class DatabaseInterface {
             supportBigNumbers: true,
             bigNumberStrings: true
         };
-        this.DB = this.sql.createConnection(this.dbOptions);
+        this.pool = this.sql.createPool(this.dbOptions);
     }
 
     /*
@@ -195,18 +195,26 @@ class DatabaseInterface {
     }
 
     query (queryString, callback) {
-        this.DB.connect();
-        this.DB.query(queryString,
 
-        function (error, results) {
+        this.pool.getConnection(function (error, connection) {
             if (error) throw error;
-            if (results.affectedRows) {
-                console.log('Effected ' + results.affectedRows + ' rows');
-                console.log('With ' + results.warningCount + ' warnings ' + results.message);
-            } else if (results) {
-                callback(results);
-            }
+
+            connection.query(queryString,
+
+                function (error, results) {
+                    if (error) throw error;
+                    if (results.affectedRows) {
+                        console.log('Effected ' + results.affectedRows + ' rows');
+                        console.log('With ' + results.warningCount + ' warnings ' + results.message);
+                    } else if (results) {
+                        callback(results);
+                    }
+                }
+            );
+
+            connection.release();
         });
+
     }
 
 }
