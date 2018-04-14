@@ -72,14 +72,13 @@ class DatabaseInterface {
     */
 
     insertEvent (event, callback) {
-        let eventID = event.id ? event.id : 'uuid_short()';
         if (!event.end) event.end = event.start;
 
         this.query(
             `INSERT INTO events
-            (id, event_start, event_end, event_type, event_text)
+            (id, event_start, event_end, event_type, event_text, event_id)
             VALUES
-            (` + eventID + ', "' + event.start + '", "' + event.end + '", "' + event.type + '", "' + event.text + '");'
+            (` + event.id + ', "' + event.start + '", "' + event.end + '", "' + event.type + '", "' + event.text + '", uuid_short());'
         , callback);
 
     }
@@ -143,42 +142,46 @@ class DatabaseInterface {
             (event_end <= "` + endDate.toISOString() + '" AND event_end >= "' + startDate.toISOString() + `") OR
             (event_start < "`+ startDate.toISOString() + '" AND event_end > "' + endDate.toISOString() + `");
         `, function (results) {
-            // TODO change results into a form for the front end
-            // [{event}, {} ...];
-            /*
-            * event = {
-            * type : event.type,
-            * text : dogName + cName || event_text,
-            * 
-            * }
-            * */
+           
             let week = [];
             for (let i = 0; i < 7; i++) week[i] = [];
 
             results.map(function (e) {
+                // Shift event times to PST 
                 e.event_start = timeZoneShift(new Date(e.event_start));
                 e.event_end = timeZoneShift(new Date(e.event_end));
 
+                // Set start and end days for boarding
                 let endDay = e.event_end.getTime() < endDate.getTime() ? e.event_end.getDay(): 6;
                 let startDay = e.event_start.getTime() <= startDate.getTime() ? 0 : e.event_start.getDay();
 
+                // Loop from start of boarding to the end of the boarding
                 for (let i = startDay; i <= endDay; i++) {
+                    // Cache type and text
                     let type = e.event_type;
                     let time = null; 
                     let text = e.dog_name ? e.dog_name + ' ' + e.client_name : e.event_text;
 
                     if (type === 'boarding') {
-                        if (e.event_start.toDateString() === new Date(new Date(startDate).setDate(startDate.getDate() + i)).toDateString()) {
+                        // Get loop day in string form MM-DD-YYYY
+                        let currentDayString = new Date(new Date(startDate).setDate(startDate.getDate() + i)).toDateString();
+
+                        // Set type to arriving or departing
+                        if (e.event_start.toDateString() === currentDayString) {
                             type = 'arriving';
                             time = formatTime(e.event_start);
-                        } else if (e.event_end.toDateString() === new Date(new Date(startDate).setDate(startDate.getDate() + i)).toDateString()) {
+                        } else if (e.event_end.toDateString() === currentDayString) {
                             type = 'departing';
                             time = formatTime(e.event_end);
                         }
+
                     } else {
+
                         time = formatTime(e.event_start);
+
                     }
 
+                    // Form text with time at the beggining for events with times
                     text = (time ? '(' + time + ') ' : '') + text;
 
                     week[i].push({
@@ -186,13 +189,18 @@ class DatabaseInterface {
                         type : type,
                         id : e.id
                     });
-               }
+                }
             });
-
+            // Callback with the week
             callback(week);
         });
 
     }
+
+    /*
+    SQL pool wrapper to simplify queries
+    Gets Sql queryString and a callback function to return the results
+    */
 
     query (queryString, callback) {
 
@@ -220,6 +228,10 @@ class DatabaseInterface {
 
 }
 
+// Format time to HH:MM 24 Hour time
+/* 
+Gets date as js date object
+*/
 function formatTime(date) {
     let hours = date.getHours();
     let mins = date.getMinutes();
@@ -231,27 +243,13 @@ function formatTime(date) {
     return hours + ':' + mins;
 }
 
+// Shifts timezone default to PST from GMT+0000 with optional control over tz shift
+
 function timeZoneShift (date, timeZoneOffset) {
     let nDate = new Date(date);
     timeZoneOffset = timeZoneOffset ? timeZoneOffset : -7;
     nDate.setHours(nDate.getHours() + timeZoneOffset);
     return nDate;
 }
-
-// const DB = new DatabaseInterface(
-//     'localhost',
-//     'matt',
-//     'dogsarebest',
-//     'HHH_Database'
-// );
-
-// DB.retreiveDog('97596790081060869', function (results) {
-//     console.log(results);
-// });
-
-// DB.findDogs('Blitz', 'Weinstein', function (results) {
-//     console.log(results[0]);
-// });
-
 
 module.exports = DatabaseInterface;

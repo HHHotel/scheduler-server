@@ -6,22 +6,18 @@ process.env.TZ = 'GMT+0000';
 
 const express = require('express');
 const app = express();
-
-const path = require('path');
-// const fs = require('fs');
-// const hat = require('hat');
-
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);
 
+const path = require('path');
 const port = process.env.PORT || 8080;
 
 server.listen(port, () => console.log('Server running on port ' + port) );
 
 app.use(express.static(path.join(__dirname, 'landing')));
 
-const DB = new require('./src/DatabaseInterface');
-const database = new DB(
+const DBInterface = new require('./src/DatabaseInterface');
+const database = new DBInterface(
     'us-cdbr-iron-east-05.cleardb.net',
     'b174a353922a1b',
     '12ccc48f',
@@ -50,8 +46,6 @@ io.on('connection', function (socket) {
     socket.on('remove_event', function (id) {
         database.removeEvent(id);
     });
-
-    
 
 });
 
