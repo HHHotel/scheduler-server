@@ -53,7 +53,7 @@ class DatabaseInterface {
 
         // CREATE TABLE dogs (id BIGINT NOT NULL, dog_name TEXT NOT NULL, client_name TEXT NOT NULL);
 
-        this.DB.query(
+        this.query(
             `INSERT INTO dogs (id, dog_name, client_name)
              VALUES (UUID_SHORT(), "` + dog.name + '", "' + dog.cName + '");'
         , callback);
