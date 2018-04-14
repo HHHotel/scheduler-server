@@ -195,7 +195,7 @@ class DatabaseInterface {
     }
 
     query (queryString, callback) {
-        this.DB = this.sql.createConnection(this.dbOptions);
+        this.DB.connect();
         this.DB.query(queryString,
 
         function (error, results) {
