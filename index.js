@@ -18,7 +18,7 @@ app.use(express.static(path.join(__dirname, 'landing')));
 
 const CLEARDB_URL       = process.env.CLEARDB_DATABASE_URL;
 const CLEARDB_USERNAME  = CLEARDB_URL.substring(8, CLEARDB_URL.indexOf(':', 8));
-const CLEARDB_PASSWORD  = CLEARDB_URL.substring(CLEARDB_URL.indexOf(':') + 1, CLEARDB_URL.indexOf('@'));
+const CLEARDB_PASSWORD  = CLEARDB_URL.substring(CLEARDB_URL.indexOf(':', 8) + 1, CLEARDB_URL.indexOf('@'));
 const CLEARDB_HOST      = CLEARDB_URL.substring(CLEARDB_URL.indexOf('@') + 1, CLEARDB_URL.indexOf('/', CLEARDB_URL.indexOf('@')));
 const CLEARDB_DB_NAME   = CLEARDB_URL.substring(CLEARDB_URL.indexOf('/', CLEARDB_URL.indexOf('@')) + 1, CLEARDB_URL.indexOf('?'));
 console.log(CLEARDB_USERNAME, CLEARDB_PASSWORD, CLEARDB_HOST, CLEARDB_DB_NAME);
