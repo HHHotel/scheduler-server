@@ -132,7 +132,7 @@ class DatabaseInterface {
     getWeek (date, callback) {
         date = new Date(new Date(date).toDateString());
         const startDate = new Date(date.setDate(date.getDate() - date.getDay()));
-        const endDate   = new Date(date.setDate(date.getDate() + 8));
+        const endDate   = new Date(date.setDate(date.getDate() + 7));
 
         this.query(`
             SELECT * FROM events
