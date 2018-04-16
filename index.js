@@ -34,6 +34,7 @@ io.on('connection', function (socket) {
 
     console.log('New Connection');
     socket.emit('update');
+    socket.emit('connected');
 
     socket.on('load', function(date, callback) {
         database.getWeek(date, callback);

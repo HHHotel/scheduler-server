@@ -78,7 +78,7 @@ class DatabaseInterface {
             `INSERT INTO events
             (id, event_start, event_end, event_type, event_text, event_id)
             VALUES
-            (` + event.id + ', "' + event.start + '", "' + event.end + '", "' + event.type + '", "' + event.text + '", uuid_short());'
+            ("` + event.id + '", "' + event.start + '", "' + event.end + '", "' + event.type + '", "' + event.text + '", uuid_short());'
         , callback);
 
     }
