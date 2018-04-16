@@ -16,12 +16,18 @@ server.listen(port, () => console.log('Server running on port ' + port) );
 
 app.use(express.static(path.join(__dirname, 'landing')));
 
+const CLEARDB_URL       = process.env.CLEARDB_DATABASE_URL;
+const CLEARDB_USERNAME  = CLEARDB_URL.substring(8, CLEARDB_URL.indexOf(8, ':'));
+const CLEARDB_PASSWORD  = CLEARDB_URL.substring(CLEARDB_URL.indexOf(8, ':') + 1, CLEARDB_URL.indexOf('@'));
+const CLEARDB_HOST      = CLEARDB_URL.substring(CLEARDB_URL.indexOf('@') + 1, CLEARDB_URL.indexOf(CLEARDB_URL.indexOf('@'), '/'));
+const CLEARDB_DB_NAME   = CLEARDB_URL.substring(CLEARDB_URL.indexOf(CLEARDB_URL.indexOf('@'), '/') + 1, CLEARDB_URL.indexOf('?'));
+
 const DBInterface = new require('./src/DatabaseInterface');
 const database = new DBInterface(
-    'us-cdbr-iron-east-05.cleardb.net',
-    'b174a353922a1b',
-    '12ccc48f',
-    'heroku_5394de57c9d31a8'
+    CLEARDB_HOST,
+    CLEARDB_USERNAME,
+    CLEARDB_PASSWORD,
+    CLEARDB_DB_NAME
 );
 
 io.on('connection', function (socket) {

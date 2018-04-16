@@ -83,13 +83,12 @@ class DatabaseInterface {
 
     }
 
-    // removeEvent (id) {
-    //     // TODO make a nice way of removing individual events without removing all of them doi
-    //     this.query(`
-    //         DELETE FROM events
-    //         WHERE id = ` + id + `
-    //     ;`);
-    // }
+    removeEvent (eventId) {
+        this.query(`
+            DELETE FROM events
+            WHERE event_id = ` + eventId + `
+        ;`);
+    }
 
     /*
         Gets ID, Table, and ColumnName to be Edited
