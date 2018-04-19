@@ -215,7 +215,7 @@ class DatabaseInterface {
                         console.log('With ' + results.warningCount + ' warnings ' + results.message);
                         if (callback) callback(results);
                     } else if (results) {
-                        callback(results);
+                        if (callback) callback(results);
                     }
                 }
             );
