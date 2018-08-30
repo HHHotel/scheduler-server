@@ -1,4 +1,4 @@
-// Matt Rochford 
+// Matt Rochford
 // Happy Hound Scheduler Server
 /* eslint no-console: "off" */
 
@@ -42,7 +42,7 @@ io.on('connection', function (socket) {
 
     socket.on('add', function (event) {
         database.add(event, function () {
-            io.sockets.emit('update'); 
+            io.sockets.emit('update');
         });
     });
 
@@ -52,6 +52,10 @@ io.on('connection', function (socket) {
 
     socket.on('remove_event', function (id) {
         database.removeEvent(id);
+    });
+
+    socket.on('find_info', function (dogID, callback) {
+        database.find_info(dogID, callback);
     });
 
 });

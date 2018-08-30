@@ -24,10 +24,10 @@ class DatabaseInterface {
             start: datetime*,
             end: datetime*,
             text: String*,
-            id: int** 
+            id: int**
         }
 
-        * = nreq 
+        * = nreq
         ** = only if adding an event for a dog
 
     */
@@ -141,12 +141,12 @@ class DatabaseInterface {
             (event_end <= "` + endDate.toISOString() + '" AND event_end >= "' + startDate.toISOString() + `") OR
             (event_start < "`+ startDate.toISOString() + '" AND event_end > "' + endDate.toISOString() + `");
         `, function (results) {
-           
+
             let week = [];
             for (let i = 0; i < 7; i++) week[i] = [];
 
             results.map(function (e) {
-                // Shift event times to PST 
+                // Shift event times to PST
                 e.event_start = timeZoneShift(new Date(e.event_start));
                 e.event_end = timeZoneShift(new Date(e.event_end));
 
@@ -158,7 +158,7 @@ class DatabaseInterface {
                 for (let i = startDay; i <= endDay; i++) {
                     // Cache type and text
                     let type = e.event_type;
-                    let time = null; 
+                    let time = null;
                     let text = e.dog_name ? e.dog_name + ' ' + e.client_name : e.event_text;
 
                     if (type === 'boarding') {
@@ -228,7 +228,7 @@ class DatabaseInterface {
 }
 
 // Format time to HH:MM 24 Hour time
-/* 
+/*
 Gets date as js date object
 */
 function formatTime(date) {
