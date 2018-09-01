@@ -106,12 +106,32 @@ class DatabaseInterface {
         );
     }
 
-    retreiveDog (ID, callback) {
+    retrieveDog (ID, callback) {
         this.query(`
             SELECT * FROM dogs
             INNER JOIN events ON dogs.id = events.id
             WHERE dogs.id = "` + ID + '";'
-        , callback);
+        , function (res) {
+          if (res[0]) {
+            let dog = {
+              name: res[0].dog_name,
+              clientName: res[0].client_name,
+              id: res[0].id,
+              bookings: []
+            };
+            for (let entry of res) {
+              dog.bookings.push({
+                start: entry.event_start,
+                end: entry.event_end,
+                id: entry.event_id
+              });
+            }
+            dog.bookings.reverse();
+            callback(dog);
+
+          }
+
+       });
     }
 
     getEvents (ID, callback) {
@@ -126,6 +146,14 @@ class DatabaseInterface {
         this.query(`
             SELECT * FROM dogs
             WHERE dog_name LIKE "%` + searchText + `%";
+        `, callback);
+    }
+
+    findEvents (searchText, callback) {
+      this.query(`
+        SELECT * from events
+        WHERE event_text LIKE "%` + searchText + `%" AND
+        event_text <> 'undefined';
         `, callback);
     }
 

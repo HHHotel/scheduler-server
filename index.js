@@ -47,16 +47,25 @@ io.on('connection', function (socket) {
     });
 
     socket.on('find', function (searchText, callback) {
-        database.findDogs(searchText, callback);
+      let result = [];
+      database.findDogs(searchText, function (res) {
+        for (entry of res) result.push(entry);
+        database.findEvents(searchText, function (res) {
+          for (entry of res) result.push(entry);
+          callback(result);
+        });
+      });
     });
 
     socket.on('remove_event', function (id) {
         database.removeEvent(id);
+        io.sockets.emit('update');
     });
 
-    socket.on('find_info', function (dogID, callback) {
-        database.find_info(dogID, callback);
+    socket.on('retrieve_dog', function (id, callback) {
+      database.retrieveDog(id, callback);
     });
+
 
 });
 
