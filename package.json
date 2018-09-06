@@ -4,13 +4,12 @@
   "description": "Dog scheduler",
   "main": "index.js",
   "author": "Matt Rochford",
-  "private": true,
-  "license": "BSD",
+  "repository": "https://github.com/hhhotel/scheduler-server",
+  "license": "MIT",
   "dependencies": {
     "bcrypt": "^3.0.0",
     "csv": "^2.0.0",
     "express": "4.13.4",
-    "hat": "0.0.3",
     "mysql": "^2.15.0",
     "socket.io": "^2.0.4"
   },
