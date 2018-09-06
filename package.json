@@ -7,6 +7,7 @@
   "private": true,
   "license": "BSD",
   "dependencies": {
+    "bcrypt": "^3.0.0",
     "csv": "^2.0.0",
     "express": "4.13.4",
     "hat": "0.0.3",
@@ -14,7 +15,8 @@
     "socket.io": "^2.0.4"
   },
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "lint": "eslint ."
   },
   "devDependencies": {
     "eslint": "^4.19.0"
