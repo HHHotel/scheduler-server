@@ -34,12 +34,12 @@ const UN_AUTHORIZED_ACCESS_ERROR = new Error('The required permissions for acces
 
 io.on('connection', function (socket) {
 
-  console.log('New Connection');
+  console.log('New connection from ' + socket.request.connection.remoteAddress);
+
   socket.emit('update');
   socket.emit('connected');
 
   socket.on('login', function (user, callback) {
-    console.log(user);
     database.login(user.username, user.password, function (result) {
       socket.permissions = result.permissions;
       callback(result);

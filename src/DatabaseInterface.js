@@ -20,7 +20,6 @@ class DatabaseInterface {
   login (username, password, callback) {
 
     let self = this;
-    console.log(username, password);
 
     self.query(`
       SELECT * from users
