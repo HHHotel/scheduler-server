@@ -1,6 +1,5 @@
 // Matt Rochford
-// Happy Hound Scheduler Server
-/* eslint no-console: "off" */
+/*eslint no-console: "off" */
 
 process.env.TZ = 'GMT+0000';
 
@@ -30,36 +29,39 @@ const database = new DBInterface(
   CLEARDB_DB_NAME
 );
 
-const UN_AUTHORIZED_ACCESS_ERROR = new Error('The required permissions for access were not met');
+const UNAUTHORIZED_ACCESS_ERROR = new Error('The required permissions for access were not met');
 
 io.on('connection', function (socket) {
 
   console.log('New connection from ' + socket.request.connection.remoteAddress);
+  socket.permissions = 0;
 
-  socket.emit('update');
   socket.emit('connected');
 
-  socket.on('login', function (user, callback) {
+  handleEvent(socket, 'login', function (user, callback) {
     database.login(user.username, user.password, function (result) {
       socket.permissions = result.permissions;
+      socket.emit('update');
       callback(result);
+      applyHandlers(socket);
     });
   });
 
-  socket.on('load', function(date, callback) {
-    if (socket.permissions < 5) throw UN_AUTHORIZED_ACCESS_ERROR;
+});
+
+
+function applyHandlers(socket) {
+  handleEvent(socket, 'load', function(date, callback) {
     database.getWeek(date, callback);
   });
 
-  socket.on('add', function (event) {
-    if (socket.permissions < 5) throw UN_AUTHORIZED_ACCESS_ERROR;
+  handleEvent(socket, 'add', function (event) {
     database.add(event, function () {
       io.sockets.emit('update');
     });
-  });
+  }, 5);
 
-  socket.on('find', function (searchText, callback) {
-    if (socket.permissions < 5) throw UN_AUTHORIZED_ACCESS_ERROR;
+  handleEvent(socket, 'find', function (searchText, callback) {
     let result = [];
     database.findDogs(searchText, function (res) {
       for (let entry of res) result.push(entry);
@@ -70,16 +72,27 @@ io.on('connection', function (socket) {
     });
   });
 
-  socket.on('remove_event', function (id) {
-    if (socket.permissions < 5) throw UN_AUTHORIZED_ACCESS_ERROR;
+  handleEvent(socket, 'remove_event', function (id) {
     database.removeEvent(id);
     io.sockets.emit('update');
-  });
+  }, 5);
 
-  socket.on('retrieve_dog', function (id, callback) {
-    if (socket.permissions < 5) throw UN_AUTHORIZED_ACCESS_ERROR;
+  handleEvent(socket, 'remove_dog', function (id) {
+    database.removeDog(id);
+    io.sockets.emit('update');
+  }, 6);
+
+  handleEvent(socket, 'retrieve_dog', function (id, callback) {
     database.retrieveDog(id, callback);
   });
+}
 
+function handleEvent (socket, eventName, handler, permissionLevel) {
+  if (!permissionLevel) permissionLevel = 0;
 
-});
+  if (socket.permissions < permissionLevel) {
+    console.error('Error: required permissions not met for event ' + eventName + ' from ' + socket.request.connection.remoteAddress);
+  } else {
+    socket.on(eventName, handler);
+  }
+ }

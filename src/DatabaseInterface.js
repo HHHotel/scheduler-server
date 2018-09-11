@@ -2,7 +2,7 @@
 
 class DatabaseInterface {
 
-  constructor (DB_host, DB_user, DB_pass, DB) {
+ constructor (DB_host, DB_user, DB_pass, DB) {
     process.env.TZ = 'GMT+0000';
     this.sql = require('mysql');
     this.bcrypt = require('bcrypt');
@@ -126,8 +126,13 @@ class DatabaseInterface {
   removeEvent (eventId) {
     this.query(`
       DELETE FROM events
-      WHERE event_id = ` + eventId + `
-    ;`);
+      WHERE event_id = ` + eventId + `;
+      `);
+  }
+
+  removeDog (dogID) {
+    this.query('DELETE FROM dogs WHERE dogs.id = ' + dogID + ';');
+    this.query('DELETE FROM events WHERE events.id = ' + dogID + ';');
   }
 
   /*
