@@ -143,11 +143,19 @@ class DatabaseInterface {
       value: value to insert
   */
 
-  edit (ID, tableName, columnName, value) {
+  editDog (ID, columnName, value) {
     this.query(`
-      UPDATE ` + tableName + `
-      SET ` + columnName + ' = ' + value + `
-      WHERE id = ` +  ID
+      UPDATE dogs
+      SET ` + columnName + ' = "' + value + `"
+      WHERE id = ` +  ID + ';'
+    );
+  }
+
+  editEvent (eventID, columnName, value) {
+    this.query(`
+      UPDATE events
+      SET ` + columnName + ' = "' + value + `"
+      WHERE event_id = ` + eventID + ';'
     );
   }
 
@@ -168,7 +176,7 @@ class DatabaseInterface {
         dog.bookings.push({
         start: entry.event_start,
         end: entry.event_end,
-        id: entry.event_id
+        eventID: entry.event_id
         });
       }
       dog.bookings.reverse();
@@ -204,7 +212,7 @@ class DatabaseInterface {
 
   getWeek (date, callback) {
     date = new Date(new Date(date).toDateString());
-    const startDate = new Date(date.setDate(date.getDate() - date.getDay()));
+    const startDate = new Date(date.setDate(date.getDate() - date.getDay() + 1));
     const endDate   = new Date(date.setDate(date.getDate() + 7));
 
     this.query(`
@@ -219,19 +227,18 @@ class DatabaseInterface {
       for (let i = 0; i < 7; i++) week[i] = [];
 
       results.map(function (e) {
-        // Shift event times to PST
-        e.event_start = timeZoneShift(new Date(e.event_start));
-        e.event_end = timeZoneShift(new Date(e.event_end));
+        e.event_start = new Date(e.event_start);
+        e.event_end = new Date(e.event_end);
 
-        // Set start and end days for boarding
-        let endDay = e.event_end.getTime() < endDate.getTime() ? e.event_end.getDay(): 6;
-        let startDay = e.event_start.getTime() <= startDate.getTime() ? 0 : e.event_start.getDay();
+        // Set start and end days for boarding inside current week
+        let endDay = e.event_end.getTime() < endDate.getTime() ? e.event_end.getDay() - 1: 6;
+        let startDay = e.event_start.getTime() <= startDate.getTime() ? 0 : e.event_start.getDay() - 1;
 
         // Loop from start of boarding to the end of the boarding
         for (let i = startDay; i <= endDay; i++) {
           // Cache type and text
           let type = e.event_type;
-          let time = null;
+          let date = null;
           let text = e.dog_name ? e.dog_name + ' ' + e.client_name : e.event_text;
 
           if (type === 'boarding') {
@@ -241,23 +248,17 @@ class DatabaseInterface {
             // Set type to arriving or departing
             if (e.event_start.toDateString() === currentDayString) {
               type = 'arriving';
-              time = formatTime(e.event_start);
+              date = e.event_start;
             } else if (e.event_end.toDateString() === currentDayString) {
               type = 'departing';
-              time = formatTime(e.event_end);
+              date = e.event_end;
             }
-
-          } else {
-
-            time = formatTime(e.event_start);
 
           }
 
-          // Form text with time at the beggining for events with times
-          text = (time ? '(' + time + ') ' : '') + text;
-
           week[i].push({
             text : text,
+            date : date,
             type : type,
             id : e.id
           });
@@ -304,24 +305,24 @@ class DatabaseInterface {
 /*
 Gets date as js date object
 */
-function formatTime(date) {
-  let hours = date.getHours();
-  let mins = date.getMinutes();
+//function formatTime(date) {
+//  let hours = date.getHours();
+//  let mins = date.getMinutes();
+//
+//  if (mins < 10) {
+//    mins = '0' + mins;
+//  }
+//
+//  return hours + ':' + mins;
+//}
 
-  if (mins < 10) {
-    mins = '0' + mins;
-  }
-
-  return hours + ':' + mins;
-}
-
-// Shifts timezone default to PST from GMT+0000 with optional control over tz shift
-
-function timeZoneShift (date, timeZoneOffset) {
-  let nDate = new Date(date);
-  timeZoneOffset = timeZoneOffset ? timeZoneOffset : -7;
-  nDate.setHours(nDate.getHours() + timeZoneOffset);
-  return nDate;
-}
+//// Shifts timezone default to PST from GMT+0000 with optional control over tz shift
+//
+//function timeZoneShift (date, timeZoneOffset) {
+//  let nDate = new Date(date);
+//  timeZoneOffset = timeZoneOffset ? timeZoneOffset : -7;
+//  nDate.setHours(nDate.getHours() + timeZoneOffset);
+//  return nDate;
+//}
 
 module.exports = DatabaseInterface;

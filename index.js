@@ -85,6 +85,18 @@ function applyHandlers(socket) {
   handleEvent(socket, 'retrieve_dog', function (id, callback) {
     database.retrieveDog(id, callback);
   });
+
+  handleEvent(socket, 'edit_dog', function (dogProfile, callback) {
+    database.editDog(dogProfile.id, 'dog_name', dogProfile.name);
+    database.editDog(dogProfile.id, 'client_name', dogProfile.clientName);
+
+    for ( let booking of dogProfile.bookings ) {
+      database.editEvent(booking.eventID, 'event_start', booking.start);
+      database.editEvent(booking.eventID, 'event_end', booking.end);
+    }
+
+    io.sockets.emit('update');
+  }, 6);
 }
 
 function handleEvent (socket, eventName, handler, permissionLevel) {
