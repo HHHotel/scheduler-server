@@ -3,7 +3,7 @@
 class DatabaseInterface {
 
  constructor (DB_host, DB_user, DB_pass, DB) {
-    process.env.TZ = 'GMT+0000';
+    process.env.TZ = 'UTC';
     this.sql = require('mysql');
     this.bcrypt = require('bcrypt');
     this.dbOptions = {
@@ -254,6 +254,8 @@ class DatabaseInterface {
               date = e.event_end;
             }
 
+          } else {
+            date = e.event_start;
           }
 
           week[i].push({
