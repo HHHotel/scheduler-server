@@ -123,16 +123,17 @@ class DatabaseInterface {
 
   }
 
-  removeEvent (eventId) {
+  removeEvent (eventId, callback) {
     this.query(`
       DELETE FROM events
       WHERE event_id = ` + eventId + `;
-      `);
+    `, callback);
   }
 
-  removeDog (dogID) {
-    this.query('DELETE FROM dogs WHERE dogs.id = ' + dogID + ';');
-    this.query('DELETE FROM events WHERE events.id = ' + dogID + ';');
+  removeDog (dogID, callback) {
+    this.query('DELETE FROM dogs WHERE dogs.id = ' + dogID + ';', () => {
+      this.query('DELETE FROM events WHERE events.id = ' + dogID + ';', callback);
+    });
   }
 
   /*
@@ -160,28 +161,44 @@ class DatabaseInterface {
   }
 
   retrieveDog (ID, callback) {
-    this.query(`
+    let self = this;
+
+    self.query(`
       SELECT * FROM dogs
       INNER JOIN events ON dogs.id = events.id
       WHERE dogs.id = "` + ID + '";'
     , function (res) {
       if (res[0]) {
-      let dog = {
-        name: res[0].dog_name,
-        clientName: res[0].client_name,
-        id: res[0].id,
-        bookings: []
-      };
-      for (let entry of res) {
-        dog.bookings.push({
-        start: entry.event_start,
-        end: entry.event_end,
-        eventID: entry.event_id
+        let dog = {
+          name: res[0].dog_name,
+          clientName: res[0].client_name,
+          id: res[0].id,
+          bookings: []
+        };
+        for (let entry of res) {
+          dog.bookings.push({
+          start: entry.event_start,
+          end: entry.event_end,
+          eventID: entry.event_id
+          });
+        }
+        dog.bookings.reverse();
+        callback(dog);
+      } else {
+        self.query(`
+          SELECT * FROM dogs
+          WHERE dogs.id = "` + ID + '";'
+        , function (result) {
+          if (result[0] && result.length === 1) {
+            let dog = {
+              name: result[0].dog_name,
+              clientName: result[0].client_name,
+              id: result[0].id,
+              bookings: []
+            };
+            callback(dog);
+          }
         });
-      }
-      dog.bookings.reverse();
-      callback(dog);
-
       }
 
      });

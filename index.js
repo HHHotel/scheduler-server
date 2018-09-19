@@ -72,13 +72,13 @@ function applyHandlers(socket) {
     });
   });
 
-  handleEvent(socket, 'remove_event', function (id) {
-    database.removeEvent(id);
+  handleEvent(socket, 'remove_event', function (id, callback) {
+    database.removeEvent(id, callback);
     io.sockets.emit('update');
   }, 5);
 
-  handleEvent(socket, 'remove_dog', function (id) {
-    database.removeDog(id);
+  handleEvent(socket, 'remove_dog', function (id, callback) {
+    database.removeDog(id, callback);
     io.sockets.emit('update');
   }, 6);
 
