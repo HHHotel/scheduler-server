@@ -72,7 +72,7 @@ class DatabaseInterface {
               self.query(`
                 UPDATE users
                 SET hashed_password = "` + hash + `"
-                WHERE users.username = "` + username + '"', function (err, result) {
+                WHERE users.username = "` + username + '";', function (err, result) {
                   if (err) throw err;
                   callback(result);
                 });
@@ -92,7 +92,7 @@ class DatabaseInterface {
 
     self.query(`
       DELETE users
-      WHERE users.username = "` + username + '"', function (err, result) {
+      WHERE users.username = "` + username + '";', function (err, result) {
         if (err) throw err;
         callback(result);
       }
