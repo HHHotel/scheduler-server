@@ -88,6 +88,8 @@ class DatabaseInterface {
   }
 
   deleteUser (username, callback) {
+    let self = this;
+
     self.query(`
       DELETE users
       WHERE users.username = "` + username + '"', function (err, result) {
