@@ -29,8 +29,6 @@ const database = new DBInterface(
   CLEARDB_DB_NAME
 );
 
-const UNAUTHORIZED_ACCESS_ERROR = new Error('The required permissions for access were not met');
-
 io.on('connection', function (socket) {
 
   console.log('New connection from ' + socket.request.connection.remoteAddress);

@@ -56,6 +56,47 @@ class DatabaseInterface {
 
   }
 
+  changePassword (username, password, newPassword, callback) {
+    let self = this;
+
+    self.query(`
+      SELECT * from users
+      WHERE users.username = "` + username + `";`
+    , function (result) {
+      if (result[0]) {
+        let user = result[0];
+        self.bcrypt.compare(password, user.hashed_password, function (err, result) {
+          if (err) throw err;
+          if (result) {
+            self.bcrypt.hash(password, 12, function (err, hash) {
+              self.query(`
+                UPDATE users
+                SET hashed_password = "` + hash + `"
+                WHERE users.username = "` + username + '"', function (err, result) {
+                  if (err) throw err;
+                  callback(result);
+                });
+            });
+          } else {
+            callback('Wrong Password');
+          }
+        });
+      } else {
+        callback('User not found');
+      }
+    });
+  }
+
+  deleteUser (username, permissions, callback) {
+    self.query(`
+      DELETE users
+      WHERE users.username = "` + username + '"', function (err, result) {
+        if (err) throw err;
+        callback(result);
+      }
+    );
+  }
+
   /*
     event : {
       type: String,
