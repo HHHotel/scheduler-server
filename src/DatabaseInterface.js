@@ -56,7 +56,7 @@ class DatabaseInterface {
 
   }
 
-  changePassword (username, password, newPassword, callback) {
+  changePassword (username, oldPassword, newPassword, callback) {
     let self = this;
 
     self.query(`
@@ -65,10 +65,10 @@ class DatabaseInterface {
     , function (result) {
       if (result[0]) {
         let user = result[0];
-        self.bcrypt.compare(password, user.hashed_password, function (err, result) {
+        self.bcrypt.compare(oldPassword, user.hashed_password, function (err, result) {
           if (err) throw err;
           if (result) {
-            self.bcrypt.hash(password, 12, function (err, hash) {
+            self.bcrypt.hash(newPassword, 12, function (err, hash) {
               self.query(`
                 UPDATE users
                 SET hashed_password = "` + hash + `"
@@ -87,7 +87,7 @@ class DatabaseInterface {
     });
   }
 
-  deleteUser (username, permissions, callback) {
+  deleteUser (username, callback) {
     self.query(`
       DELETE users
       WHERE users.username = "` + username + '"', function (err, result) {

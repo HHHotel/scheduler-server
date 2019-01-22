@@ -49,6 +49,7 @@ io.on('connection', function (socket) {
 
 
 function applyHandlers(socket) {
+
   handleEvent(socket, 'load', function(date, callback) {
     database.getWeek(date, callback);
   });
@@ -73,7 +74,7 @@ function applyHandlers(socket) {
   handleEvent(socket, 'remove_event', function (id, callback) {
     database.removeEvent(id, callback);
     io.sockets.emit('update');
-  }, 5);
+  }, 6);
 
   handleEvent(socket, 'remove_dog', function (id, callback) {
     database.removeDog(id, callback);
@@ -82,9 +83,9 @@ function applyHandlers(socket) {
 
   handleEvent(socket, 'retrieve_dog', function (id, callback) {
     database.retrieveDog(id, callback);
-  });
+  }, 5);
 
-  handleEvent(socket, 'edit_dog', function (dogProfile, callback) {
+  handleEvent(socket, 'edit_dog', function (dogProfile) {
     database.editDog(dogProfile.id, 'dog_name', dogProfile.name);
     database.editDog(dogProfile.id, 'client_name', dogProfile.clientName);
 
@@ -95,6 +96,23 @@ function applyHandlers(socket) {
 
     io.sockets.emit('update');
   }, 6);
+
+  handleEvent(socket, 'add_user', function (username, password, permissions) {
+    if (socket.permissions < permissions) {
+      console.error('Permission Level not great enough');
+    } else {
+      database.addUser(username, password, permissions);
+    }
+
+  }, 7);
+
+  handleEvent(socket, 'delete_user', function (username) {
+    database.deleteUser(username);
+  }, 7);
+
+  handleEvent(socket, 'change_password', function (username, oldPassword, newPassword) {
+    database.changePassword(username, oldPassword, newPassword);
+  });
 }
 
 function handleEvent (socket, eventName, handler, permissionLevel) {
