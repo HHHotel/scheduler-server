@@ -97,11 +97,11 @@ function applyHandlers(socket) {
     io.sockets.emit('update');
   }, 6);
 
-  handleEvent(socket, 'add_user', function (username, password, permissions) {
-    if (socket.permissions < permissions) {
+  handleEvent(socket, 'add_user', function (user) {
+    if (socket.permissions < user.permissions) {
       console.error('Permission Level not great enough');
     } else {
-      database.addUser(username, password, permissions);
+      database.addUser(user.username, user.password, user.permissionLevel);
     }
 
   }, 7);
@@ -110,17 +110,15 @@ function applyHandlers(socket) {
     database.deleteUser(username);
   }, 7);
 
-  handleEvent(socket, 'change_password', function (username, oldPassword, newPassword) {
-    database.changePassword(username, oldPassword, newPassword);
+  handleEvent(socket, 'change_password', function (user) {
+    database.changePassword(user.username, user.oldPassword, user.newPassword);
   });
 }
 
 function handleEvent (socket, eventName, handler, permissionLevel) {
   if (!permissionLevel) permissionLevel = 0;
 
-  if (socket.permissions < permissionLevel) {
-    console.error('Error: required permissions not met for event ' + eventName + ' from ' + socket.request.connection.remoteAddress);
-  } else {
+  if (socket.permissions >= permissionLevel) {
     socket.on(eventName, handler);
   }
  }

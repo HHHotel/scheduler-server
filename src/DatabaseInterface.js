@@ -23,7 +23,7 @@ class DatabaseInterface {
 
     self.query(`
       SELECT * from users
-      WHERE users.username = "` + username + `";`
+      WHERE users.username = "` + username + '";'
     , function (result) {
       if (result[0]) {
         let user = result[0];
@@ -48,9 +48,9 @@ class DatabaseInterface {
     self.bcrypt.hash(password, 12, function (err, hash) {
       self.query(`
         INSERT INTO users (username, hashed_password, permissions) VALUES
-        ("` + username + `","` + hash + `",` + permissions + `);`, function (err, result) {
+        ("` + username + '","' + hash + '",' + permissions + ');', function (err, result) {
           if (err) throw err;
-          callback(result);
+          if (callback) callback(result);
         });
     });
 
@@ -61,7 +61,7 @@ class DatabaseInterface {
 
     self.query(`
       SELECT * from users
-      WHERE users.username = "` + username + `";`
+      WHERE users.username = "` + username + '";'
     , function (result) {
       if (result[0]) {
         let user = result[0];
@@ -74,7 +74,7 @@ class DatabaseInterface {
                 SET hashed_password = "` + hash + `"
                 WHERE users.username = "` + username + '";', function (err, result) {
                   if (err) throw err;
-                  callback(result);
+                  if (callback) callback(result);
                 });
             });
           } else {
@@ -91,12 +91,8 @@ class DatabaseInterface {
     let self = this;
 
     self.query(`
-      DELETE users
-      WHERE users.username = "` + username + '";', function (err, result) {
-        if (err) throw err;
-        callback(result);
-      }
-    );
+      DELETE FROM users
+      WHERE users.username = "` + username + '";', callback);
   }
 
   /*

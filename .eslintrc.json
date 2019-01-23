@@ -7,7 +7,7 @@
     "extends": "eslint:recommended",
     "rules": {
         "quotes": [
-            "error",
+            "warn",
             "single"
         ],
         "semi": [
