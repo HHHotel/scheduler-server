@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "outDir": "./bin",
+    "allowJs": true,
+    "target": "es5"
+  },
+  "types" : [
+    "node"
+  ],
+  "include": [
+    "./src/**/*"
+  ]
+}

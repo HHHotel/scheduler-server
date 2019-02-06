@@ -1,20 +1,19 @@
 /* eslint no-console: "off" */
+import {Pool, PoolConfig} from 'mysql';
 
 class DatabaseInterface {
+  sql: any;
+  bcrypt: any;
+  pool: Pool;
 
- constructor (DB_host, DB_user, DB_pass, DB) {
-    process.env.TZ = 'UTC';
-    this.sql = require('mysql');
-    this.bcrypt = require('bcrypt');
-    this.dbOptions = {
-      host  : DB_host,
-      user  : DB_user,
-      password: DB_pass,
-      database: DB,
-      supportBigNumbers: true,
-      bigNumberStrings: true
-    };
-    this.pool = this.sql.createPool(this.dbOptions);
+ constructor (options: PoolConfig) {
+   process.env.TZ = 'UTC';
+   this.sql = require('mysql');
+   this.bcrypt = require('bcrypt');
+
+   options.supportBigNumbers = true;
+   options.bigNumberStrings = true;
+   this.pool = this.sql.createPool(options);
   }
 
   login (username, password, callback) {
@@ -43,13 +42,15 @@ class DatabaseInterface {
   }
 
   addUser (username, password, permissions, callback) {
+    // TODO : Check if the user already exists and block
     let self = this;
 
     self.bcrypt.hash(password, 12, function (err, hash) {
+      if (err) throw err;
+
       self.query(`
         INSERT INTO users (username, hashed_password, permissions) VALUES
-        ("` + username + '","' + hash + '",' + permissions + ');', function (err, result) {
-          if (err) throw err;
+        ("` + username + '","' + hash + '",' + permissions + ');', function (result) {
           if (callback) callback(result);
         });
     });
@@ -65,6 +66,7 @@ class DatabaseInterface {
     , function (result) {
       if (result[0]) {
         let user = result[0];
+
         self.bcrypt.compare(oldPassword, user.hashed_password, function (err, result) {
           if (err) throw err;
           if (result) {
@@ -72,17 +74,19 @@ class DatabaseInterface {
               self.query(`
                 UPDATE users
                 SET hashed_password = "` + hash + `"
-                WHERE users.username = "` + username + '";', function (err, result) {
-                  if (err) throw err;
+                WHERE users.username = "` + username + '";',
+                function (result) {
+                  console.log(result);
                   if (callback) callback(result);
                 });
             });
+
           } else {
-            callback('Wrong Password');
+            if (callback) callback('Wrong Password');
           }
         });
       } else {
-        callback('User not found');
+        if (callback) callback('User not found');
       }
     });
   }
@@ -183,20 +187,20 @@ class DatabaseInterface {
       value: value to insert
   */
 
-  editDog (ID, columnName, value) {
+  editDog (ID, columnName, value, callback) {
     this.query(`
       UPDATE dogs
       SET ` + columnName + ' = "' + value + `"
       WHERE id = ` +  ID + ';'
-    );
+    , callback);
   }
 
-  editEvent (eventID, columnName, value) {
+  editEvent (eventID, columnName, value, callback) {
     this.query(`
       UPDATE events
       SET ` + columnName + ' = "' + value + `"
       WHERE event_id = ` + eventID + ';'
-    );
+    , callback);
   }
 
   retrieveDog (ID, callback) {
@@ -299,7 +303,7 @@ class DatabaseInterface {
 
           if (type === 'boarding') {
             // Get loop day in string form MM-DD-YYYY
-            let currentDayString = new Date(new Date(startDate).setDate(startDate.getDate() + i)).toDateString();
+            let currentDayString: string = new Date(new Date(startDate.getSeconds()).setDate(startDate.getDate() + i)).toDateString();
 
             // Set type to arriving or departing
             if (e.event_start.toDateString() === currentDayString) {
@@ -342,6 +346,7 @@ class DatabaseInterface {
 
         function (error, results) {
           if (error) throw error;
+
           if (results.affectedRows) {
             console.log('Effected ' + results.affectedRows + ' rows');
             console.log('With ' + results.warningCount + ' warnings ' + results.message);
@@ -383,4 +388,4 @@ Gets date as js date object
 //  return nDate;
 //}
 
-module.exports = DatabaseInterface;
+export = DatabaseInterface;

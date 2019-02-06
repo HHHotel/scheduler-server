@@ -7,6 +7,7 @@
   "repository": "https://github.com/hhhotel/scheduler-server",
   "license": "MIT",
   "dependencies": {
+    "typescript": "^3.3.1",
     "bcrypt": "^3.0.0",
     "csv": "^2.0.0",
     "express": "4.13.4",
@@ -14,10 +15,16 @@
     "socket.io": "^2.0.4"
   },
   "scripts": {
-    "start": "node index.js",
+    "start": "tsc; node ./bin/index.js",
     "lint": "eslint ."
   },
   "devDependencies": {
-    "eslint": "^4.19.0"
+    "@types/bcrypt": "^3.0.0",
+    "@types/mysql": "^2.15.5",
+    "@types/socket.io": "^2.1.2",
+    "@types/express": "^4.16.1",
+    "@types/node": "^10.12.21",
+    "@typescript-eslint/parser": "^1.2.0",
+    "eslint": "^4.19.1"
   }
 }
