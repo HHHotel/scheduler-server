@@ -364,28 +364,4 @@ class DatabaseInterface {
 
 }
 
-// Format time to HH:MM 24 Hour time
-/*
-Gets date as js date object
-*/
-//function formatTime(date) {
-//  let hours = date.getHours();
-//  let mins = date.getMinutes();
-//
-//  if (mins < 10) {
-//    mins = '0' + mins;
-//  }
-//
-//  return hours + ':' + mins;
-//}
-
-//// Shifts timezone default to PST from GMT+0000 with optional control over tz shift
-//
-//function timeZoneShift (date, timeZoneOffset) {
-//  let nDate = new Date(date);
-//  timeZoneOffset = timeZoneOffset ? timeZoneOffset : -7;
-//  nDate.setHours(nDate.getHours() + timeZoneOffset);
-//  return nDate;
-//}
-
 export = DatabaseInterface;

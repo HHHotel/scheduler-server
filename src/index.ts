@@ -44,9 +44,9 @@ function parseDatabaseString (databaseUrl) {
   const dbName = databaseUrl.substring(databaseUrl.indexOf('/', databaseUrl.indexOf('@')) + 1, databaseUrl.indexOf('?'));
 
   return {
-    host: dbUser,
-    user: dbPass,
-    password: dbHost,
+    user: dbUser,
+    password: dbPass,
+    host: dbHost,
     database: dbName
   };
 
