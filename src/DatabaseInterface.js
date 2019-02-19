@@ -23,7 +23,7 @@ class DatabaseInterface {
 
     self.query(`
       SELECT * from users
-      WHERE users.username = "` + username + `";`
+      WHERE users.username = "` + username + '";'
     , function (result) {
       if (result[0]) {
         let user = result[0];
@@ -48,7 +48,7 @@ class DatabaseInterface {
     self.bcrypt.hash(password, 12, function (err, hash) {
       self.query(`
         INSERT INTO users (username, hashed_password, permissions) VALUES
-        ("` + username + `","` + hash + `",` + permissions + `);`, function (err, result) {
+        ("` + username + '","' + hash + '",' + permissions + ');', function (err, result) {
           if (err) throw err;
           callback(result);
         });
@@ -176,6 +176,7 @@ class DatabaseInterface {
           bookings: []
         };
         for (let entry of res) {
+          console.log(entry);
           dog.bookings.push({
           start: entry.event_start,
           end: entry.event_end,
@@ -275,12 +276,15 @@ class DatabaseInterface {
             date = e.event_start;
           }
 
-          week[i].push({
-            text : text,
-            date : date,
-            type : type,
-            id : e.id
-          });
+
+          if (week[i]) {
+            week[i].push({
+              text : text,
+              date : date,
+              type : type,
+              id : e.id
+            });
+          }
         }
       });
       // Callback with the week
