@@ -50,6 +50,7 @@ class DatabaseInterface {
 
       self.query(`
         INSERT INTO users (username, hashed_password, permissions) VALUES
+<<<<<<< HEAD:src/DatabaseInterface.ts
         ("` + username + '","' + hash + '",' + permissions + ');', function (result) {
           if (callback) callback(result);
         });
@@ -68,6 +69,9 @@ class DatabaseInterface {
         let user = result[0];
 
         self.bcrypt.compare(oldPassword, user.hashed_password, function (err, result) {
+=======
+        ("` + username + '","' + hash + '",' + permissions + ');', function (err, result) {
+>>>>>>> master:src/DatabaseInterface.js
           if (err) throw err;
           if (result) {
             self.bcrypt.hash(newPassword, 12, function (err, hash) {
@@ -157,6 +161,8 @@ class DatabaseInterface {
   insertEvent (event, callback) {
     if (!event.end) event.end = event.start;
 
+    console.log(event);
+
     this.query(
       `INSERT INTO events
       (id, event_start, event_end, event_type, event_text, event_id)
@@ -221,8 +227,8 @@ class DatabaseInterface {
         for (let entry of res) {
           dog.bookings.push({
           start: entry.event_start,
-          end: entry.event_end,
-          eventID: entry.event_id
+          end: new Date(entry.event_end),
+          eventID: new Date(entry.event_id)
           });
         }
         dog.bookings.reverse();
@@ -278,21 +284,22 @@ class DatabaseInterface {
     this.query(`
       SELECT * FROM events
       LEFT JOIN dogs ON dogs.id = events.id
-      WHERE (event_start <= "` + endDate.toISOString() + '" AND event_start >= "' + startDate.toISOString() + `") OR
-      (event_end <= "` + endDate.toISOString() + '" AND event_end >= "' + startDate.toISOString() + `") OR
-      (event_start < "`+ startDate.toISOString() + '" AND event_end > "' + endDate.toISOString() + `");
+      WHERE (event_start <= "` + endDate.valueOf() + '" AND event_start >= "' + startDate.valueOf() + `") OR
+      (event_end <= "` + endDate.valueOf() + '" AND event_end >= "' + startDate.valueOf() + `") OR
+      (event_start < "`+ startDate.valueOf() + '" AND event_end > "' + endDate.valueOf() + `");
     `, function (results) {
+      console.log(results);
 
       let week = [];
       for (let i = 0; i < 7; i++) week[i] = [];
 
       results.map(function (e) {
-        e.event_start = new Date(e.event_start);
-        e.event_end = new Date(e.event_end);
+        let eventStart = new Date(parseInt(e.event_start));
+        let eventEnd = new Date(parseInt(e.event_end));
 
         // Set start and end days for boarding inside current week
-        let endDay = e.event_end.getTime() < endDate.getTime() ? e.event_end.getDay() - 1: 6;
-        let startDay = e.event_start.getTime() <= startDate.getTime() ? 0 : e.event_start.getDay() - 1;
+        let endDay = eventEnd.getTime() < endDate.getTime() ? eventEnd.getDay() - 1: 6;
+        let startDay = eventStart.getTime() <= startDate.getTime() ? 0 : eventStart.getDay() - 1;
 
         // Loop from start of boarding to the end of the boarding
         for (let i = startDay; i <= endDay; i++) {
@@ -306,24 +313,26 @@ class DatabaseInterface {
             let currentDayString: string = new Date(new Date(startDate.getSeconds()).setDate(startDate.getDate() + i)).toDateString();
 
             // Set type to arriving or departing
-            if (e.event_start.toDateString() === currentDayString) {
+            if (eventStart.toDateString() === currentDayString) {
               type = 'arriving';
-              date = e.event_start;
-            } else if (e.event_end.toDateString() === currentDayString) {
+              date = eventStart;
+            } else if (eventEnd.toDateString() === currentDayString) {
               type = 'departing';
-              date = e.event_end;
+              date = eventEnd;
             }
 
           } else {
-            date = e.event_start;
+            date = eventStart;
           }
 
-          week[i].push({
-            text : text,
-            date : date,
-            type : type,
-            id : e.id
-          });
+          if (week[i]) {
+            week[i].push({
+              text : text,
+              date : date,
+              type : type,
+              id : e.id
+            });
+          }
         }
       });
       // Callback with the week
@@ -363,5 +372,9 @@ class DatabaseInterface {
   }
 
 }
+<<<<<<< HEAD:src/DatabaseInterface.ts
 
 export = DatabaseInterface;
+=======
+module.exports = DatabaseInterface;
+>>>>>>> master:src/DatabaseInterface.js
