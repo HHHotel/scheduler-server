@@ -176,7 +176,6 @@ class DatabaseInterface {
           bookings: []
         };
         for (let entry of res) {
-          console.log(entry);
           dog.bookings.push({
           start: entry.event_start,
           end: entry.event_end,
@@ -275,7 +274,6 @@ class DatabaseInterface {
           } else {
             date = e.event_start;
           }
-
 
           if (week[i]) {
             week[i].push({
