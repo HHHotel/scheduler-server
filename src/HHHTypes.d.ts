@@ -1,13 +1,13 @@
-export interface HHHEvent {
+export interface IHHHEvent {
   startDate: Date;
   endDate: Date;
-  type: String;
-  text: String;
+  type: string;
+  text: string;
   id: number;
 }
 
-export interface HHHBoarding extends HHHEvent {
-  dogName: String;
-  clientName: String;
+export interface IHHHBoarding extends IHHHEvent {
+  dogName: string;
+  clientName: string;
   dogId: number;
 }

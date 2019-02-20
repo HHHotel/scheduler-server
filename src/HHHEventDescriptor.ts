@@ -1,47 +1,45 @@
-import {HHHEvent, HHHBoarding} from './HHHTypes';
+import {IHHHBoarding, IHHHEvent} from "./HHHTypes";
 
 export class HHHEventDescriptor {
 
-  start_date: number;
-  end_date: number;
-  id: number;
-  event_id: number;
-  event_text: String;
-  event_type: String;
-  dog_name: String;
-  client_name: String;
+  public startDate: number;
+  public endDate: number;
+  public id: number;
+  public eventId: number;
+  public eventText: string;
+  public eventType: string;
+  public dogName: string;
+  public clientName: string;
 
-  constructor ( eventDescriptor : any ) {
+  constructor( eventDescriptor: any ) {
 
-    this.start_date = parseInt(eventDescriptor.event_start);
-    this.end_date = parseInt(eventDescriptor.event_end);
+    this.startDate = parseInt(eventDescriptor.event_start, 10);
+    this.endDate = parseInt(eventDescriptor.event_end, 10);
     this.id = eventDescriptor.id;
-    this.event_id = eventDescriptor.event_id;
-    this.event_text = eventDescriptor.event_text;
-    this.event_type = eventDescriptor.event_type;
-    this.dog_name = eventDescriptor.dog_name;
-    this.client_name = eventDescriptor.client_name;
+    this.eventId = eventDescriptor.event_id;
+    this.eventText = eventDescriptor.event_text;
+    this.eventType = eventDescriptor.event_type;
+    this.dogName = eventDescriptor.dog_name;
+    this.clientName = eventDescriptor.client_name;
 
   }
 
-  getHHHEvent(): HHHEvent {
-    let event: HHHEvent = {
-      startDate: new Date(this.start_date),
-      endDate: new Date(this.end_date),
-      text: this.event_text,
-      type: this.event_type,
-      id: this.event_id
-    }
+  public getHHHEvent(): IHHHEvent {
+    const event: IHHHEvent = {
+      endDate: new Date(this.endDate),
+      id: this.eventId,
+      startDate: new Date(this.startDate),
+      text: this.eventText,
+      type: this.eventType,
+    };
 
-    if (this.dog_name) {
-      (event as HHHBoarding).dogId = this.id;
-      (event as HHHBoarding).dogName = this.dog_name;
-      (event as HHHBoarding).clientName = this.client_name;
+    if (this.dogName) {
+      (event as IHHHBoarding).dogId = this.id;
+      (event as IHHHBoarding).dogName = this.dogName;
+      (event as IHHHBoarding).clientName = this.clientName;
     }
 
     return event;
   }
-
-
 
 }

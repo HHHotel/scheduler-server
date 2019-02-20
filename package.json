@@ -1,8 +1,8 @@
 {
   "name": "HHH-Scheduler",
-  "version": "0.0.3",
+  "version": "0.2.3",
   "description": "Dog scheduler",
-  "main": "index.js",
+  "main": "./bin/index.js",
   "author": "Matt Rochford",
   "repository": "https://github.com/hhhotel/scheduler-server",
   "license": "MIT",
@@ -20,11 +20,14 @@
     "socket.io": "^2.0.4"
   },
   "scripts": {
-    "start": "tsc; node ./bin/index.js",
-    "lint": "eslint ."
+    "start": "npm run build; node ./bin/index.js",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "lint": "tslint",
+    "test": "mocha"
   },
   "devDependencies": {
-    "@typescript-eslint/parser": "^1.2.0",
-    "eslint": "^4.19.1"
+    "mocha": "^6.0.0",
+    "tslint": "^5.12.1"
   }
 }

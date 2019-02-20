@@ -1,109 +1,108 @@
-/* eslint no-console: "off" */
-import {Pool, PoolConfig} from 'mysql';
-import {HHHEvent, HHHBoarding} from './HHHTypes';
-import {HHHEventDescriptor} from './HHHEventDescriptor';
-  
+import {Pool, PoolConfig} from "mysql";
+import {HHHEventDescriptor} from "./HHHEventDescriptor";
+import {IHHHBoarding, IHHHEvent} from "./HHHTypes";
 
 class HHHDatabaseInterface {
-  sql: any;
-  bcrypt: any;
-  pool: Pool;
+  private sql: any;
+  private bcrypt: any;
+  private pool: Pool;
 
- constructor (options: PoolConfig) {
-   process.env.TZ = 'UTC';
-   this.sql = require('mysql');
-   this.bcrypt = require('bcrypt');
+  constructor(options: PoolConfig) {
+    this.sql = require("mysql");
+    this.bcrypt = require("bcrypt");
 
-   options.supportBigNumbers = true;
-   options.bigNumberStrings = true;
-   this.pool = this.sql.createPool(options);
+    options.supportBigNumbers = true;
+    options.bigNumberStrings = true;
+    this.pool = this.sql.createPool(options);
   }
 
-  login (username, password, callback) {
+  public login(username: string, password: string, callback: ({success, permissions}) => void) {
 
-    let self = this;
+    const self = this;
 
     self.query(`
       SELECT * from users
       WHERE users.username = "` + username + '";'
-    , function (result) {
+      , (result) => {
       if (result[0]) {
-        let user = result[0];
-        self.bcrypt.compare(password, user.hashed_password, function (err, result) {
-          if (err) throw err;
+        const user = result[0];
+        self.bcrypt.compare(password, user.hashed_password, (err, success) => {
+          if (err) { throw err; }
           callback({
-            success: result,
-            permissions: user.permissions
+            permissions: success ? user.permissions : -1,
+            success,
           });
         });
       } else {
-        callback({success: false});
+        callback({
+            permissions: -1,
+            success: false,
+          });
       }
     });
 
-
   }
 
-  addUser (username, password, permissions, callback) {
-    // TODO : Check if the user already exists and block
-    let self = this;
+  public addUser(username, password, permissions, callback) {
+    const self = this;
 
     self.query(`
       SELECT * FROM users WHERE users.username = "` + username + '";',
-      function (result) {
-        if (result) {
+      (result) => {
+        if (result[0]) {
           callback("User already exists");
-          return;
+        } else {
+          self.bcrypt.hash(password, 12, (err, hash) => {
+            if (err) { throw err; }
+
+            self.query(`
+              INSERT INTO users (username, hashed_password, permissions) VALUES
+              ("` + username + '","' + hash + '",' + permissions + ");", callback);
+          });
+
         }
-      });
-
-    self.bcrypt.hash(password, 12, function (err, hash) {
-      if (err) throw err;
-
-      self.query(`
-        INSERT INTO users (username, hashed_password, permissions) VALUES
-        ("` + username + '","' + hash + '",' + permissions + ');', function (result) {
-          if (callback) callback(result);
-        });
-    });
-
+      },
+    );
   }
 
-  changePassword (username, oldPassword, newPassword, callback) {
-    let self = this;
+  public changePassword(username: string, oldPassword: string, newPassword: string, callback: (a: string) => void) {
+    const self = this;
 
     self.query(`
       SELECT * from users
       WHERE users.username = "` + username + '";'
-    , function (result) {
-      if (result[0]) {
-        let user = result[0];
+    , (resultUsers) => {
+      if (resultUsers[0]) {
+        const user = resultUsers[0];
 
-        self.bcrypt.compare(oldPassword, user.hashed_password, function (err, result) {
-          if (err) throw err;
-          if (result) {
-            self.bcrypt.hash(newPassword, 12, function (err, hash) {
+        self.bcrypt.compare(oldPassword, user.hashed_password, (passwordError, passwordsMatch) => {
+          if (passwordError) { throw passwordError; }
+
+          if (passwordsMatch) {
+            self.bcrypt.hash(newPassword, 12, (hashingError, hash) => {
+              if (hashingError) { throw hashingError; }
+
               self.query(`
                 UPDATE users
                 SET hashed_password = "` + hash + `"
                 WHERE users.username = "` + username + '";',
-                function (result) {
-                  if (callback) callback(result);
+                (result) => {
+                  if (callback) { callback(result); }
                 });
             });
 
           } else {
-            if (callback) callback('Wrong Password');
+            if (callback) { callback("Wrong Password"); }
           }
         });
       } else {
-        if (callback) callback('User not found');
+        if (callback) { callback("User not found"); }
       }
     });
   }
 
-  deleteUser (username, callback) {
-    let self = this;
+  public deleteUser(username, callback) {
+    const self = this;
 
     self.query(`
       DELETE FROM users
@@ -126,9 +125,8 @@ class HHHDatabaseInterface {
 
   */
 
-
-  add (event, callback) {
-    if (event.type === 'dog') {
+  public add(event, callback) {
+    if (event.type === "dog") {
       this.insertDog(event, callback);
     } else {
       this.insertEvent(event, callback);
@@ -143,7 +141,7 @@ class HHHDatabaseInterface {
   }
   */
 
-  insertDog (dog, callback) {
+  public insertDog(dog, callback) {
 
     // CREATE TABLE dogs (id BIGINT NOT NULL, dog_name TEXT NOT NULL, client_name TEXT NOT NULL);
 
@@ -165,28 +163,30 @@ class HHHDatabaseInterface {
   INSERT INTO events (id, event_start, event_end, event_type, event_text);
   */
 
-  insertEvent (event, callback) {
-    if (!event.end) event.end = event.start;
+  public insertEvent(event, callback) {
+    if (!event.end) { event.end = event.start; }
 
     this.query(
       `INSERT INTO events
       (id, event_start, event_end, event_type, event_text, event_id)
       VALUES
-      ("` + event.id + '", "' + event.start + '", "' + event.end + '", "' + event.type + '", "' + event.text + '", uuid_short());'
+      ("` + event.id + '", "' + event.start + '", "' + event.end + '", "'
+      + event.type + '", "' + event.text + '", uuid_short());'
+
     , callback);
 
   }
 
-  removeEvent (eventId, callback) {
+  public removeEvent(eventId, callback) {
     this.query(`
       DELETE FROM events
       WHERE event_id = ` + eventId + `;
     `, callback);
   }
 
-  removeDog (dogID, callback) {
-    this.query('DELETE FROM dogs WHERE dogs.id = ' + dogID + ';', () => {
-      this.query('DELETE FROM events WHERE events.id = ' + dogID + ';', callback);
+  public removeDog(dogID, callback) {
+    this.query("DELETE FROM dogs WHERE dogs.id = " + dogID + ";", () => {
+      this.query("DELETE FROM events WHERE events.id = " + dogID + ";", callback);
     });
   }
 
@@ -198,42 +198,42 @@ class HHHDatabaseInterface {
       value: value to insert
   */
 
-  editDog (ID, columnName, value, callback) {
+  public editDog(ID, columnName, value, callback) {
     this.query(`
       UPDATE dogs
       SET ` + columnName + ' = "' + value + `"
-      WHERE id = ` +  ID + ';'
+      WHERE id = ` +  ID + ";"
     , callback);
   }
 
-  editEvent (eventID, columnName, value, callback) {
+  public editEvent(eventID, columnName, value, callback) {
     this.query(`
       UPDATE events
       SET ` + columnName + ' = "' + value + `"
-      WHERE event_id = ` + eventID + ';'
+      WHERE event_id = ` + eventID + ";"
     , callback);
   }
 
-  retrieveDog (ID, callback) {
-    let self = this;
+  public retrieveDog(ID, callback) {
+    const self = this;
 
     self.query(`
       SELECT * FROM dogs
       INNER JOIN events ON dogs.id = events.id
       WHERE dogs.id = "` + ID + '";'
-    , function (res) {
+    , (res) => {
       if (res[0]) {
-        let dog = {
-          name: res[0].dog_name,
+        const dog = {
+          bookings: [],
           clientName: res[0].client_name,
           id: res[0].id,
-          bookings: []
+          name: res[0].dog_name,
         };
-        for (let entry of res) {
+        for (const entry of res) {
           dog.bookings.push({
-          start: entry.event_start,
           end: new Date(entry.event_end),
-          eventID: new Date(entry.event_id)
+          eventID: new Date(entry.event_id),
+          start: entry.event_start,
           });
         }
         dog.bookings.reverse();
@@ -242,13 +242,13 @@ class HHHDatabaseInterface {
         self.query(`
           SELECT * FROM dogs
           WHERE dogs.id = "` + ID + '";'
-        , function (result) {
+        , (result) => {
           if (result[0] && result.length === 1) {
-            let dog = {
-              name: result[0].dog_name,
+            const dog = {
+              bookings: [],
               clientName: result[0].client_name,
               id: result[0].id,
-              bookings: []
+              name: result[0].dog_name,
             };
             callback(dog);
           }
@@ -258,14 +258,14 @@ class HHHDatabaseInterface {
      });
   }
 
-  getEvents (ID, callback) {
+  public getEvents(ID, callback) {
     this.query(`
       SELECT * FROM events
-      WHERE id = ` + ID + ';'
+      WHERE id = ` + ID + ";"
     , callback);
   }
 
-  findDogs (searchText, callback) {
+  public findDogs(searchText, callback) {
 
     this.query(`
       SELECT * FROM dogs
@@ -273,7 +273,7 @@ class HHHDatabaseInterface {
     `, callback);
   }
 
-  findEvents (searchText, callback) {
+  public findEvents(searchText, callback) {
     this.query(`
     SELECT * from events
     WHERE event_text LIKE "%` + searchText + `%" AND
@@ -281,7 +281,7 @@ class HHHDatabaseInterface {
     `, callback);
   }
 
-  getWeek (date: Date, callback: Function) {
+  public getWeek(date: Date, callback: ([]) => void ) {
     date = new Date(new Date(date.valueOf()).toDateString());
 
     const startDate: Date = new Date(date.setDate(date.getDate() - date.getDay() + 1));
@@ -292,10 +292,10 @@ class HHHDatabaseInterface {
       LEFT JOIN dogs ON dogs.id = events.id
       WHERE (event_start <= "` + endDate.valueOf() + '" AND event_start >= "' + startDate.valueOf() + `") OR
       (event_end <= "` + endDate.valueOf() + '" AND event_end >= "' + startDate.valueOf() + `") OR
-      (event_start < "`+ startDate.valueOf() + '" AND event_end > "' + endDate.valueOf() + `");
-    `, function (results) {
+      (event_start < "` + startDate.valueOf() + '" AND event_end > "' + endDate.valueOf() + `");
+    `, (results) => {
 
-      let week = formatWeek(results);
+      const week = formatWeek(results);
 
       callback(week);
     });
@@ -307,24 +307,22 @@ class HHHDatabaseInterface {
   Gets Sql queryString and a callback function to return the results
   */
 
-  query (queryString, callback) {
+  public query(queryString, callback) {
 
-    this.pool.getConnection(function (error, connection) {
-      if (error) throw error;
+    this.pool.getConnection((connError, connection) => {
+      if (connError) { throw connError; }
 
-      connection.query(queryString,
-
-        function (error, results) {
-          if (error) throw error;
+      connection.query(queryString, (queryError, results) => {
+          if (queryError) { throw queryError; }
 
           if (results.affectedRows) {
-            console.log('Effected ' + results.affectedRows + ' rows');
-            console.log('With ' + results.warningCount + ' warnings ' + results.message);
-            if (callback) callback(results);
+            // console.log("Effected " + results.affectedRows + " rows");
+            // console.log("With " + results.warningCount + " warnings " + results.message);
+            if (callback) { callback(results); }
           } else if (results) {
-            if (callback) callback(results);
+            if (callback) { callback(results); }
           }
-        }
+        },
       );
 
       connection.release();
@@ -334,15 +332,13 @@ class HHHDatabaseInterface {
 
 }
 
-function formatWeek(dbEvents: Array<HHHEventDescriptor>): Array<any> {
+function formatWeek(dbEvents: HHHEventDescriptor[]): any[] {
 
-  let weekEvents: Array<HHHEvent> = [];
+  const weekEvents: IHHHEvent[] = [];
 
-  dbEvents.map(function (eventDescriptor: HHHEventDescriptor) {
-    console.log(eventDescriptor);
+  dbEvents.map((eventDescriptor: HHHEventDescriptor) => {
     eventDescriptor = new HHHEventDescriptor(eventDescriptor);
-    let event: HHHEvent = eventDescriptor.getHHHEvent();
-    console.log(event);
+    const event: IHHHEvent = eventDescriptor.getHHHEvent();
     weekEvents.push(event);
   });
 
