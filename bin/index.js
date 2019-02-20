@@ -12,7 +12,7 @@ var path = require("path");
 var port = process.env.PORT || 8080;
 server.listen(port, function () { return console.log('Server running on port ' + port); });
 app.use(express.static(path.join(__dirname, 'landing')));
-var DBInterface = require("./DatabaseInterface");
+var DBInterface = require("./HHHDatabaseInterface");
 var database = new DBInterface(parseDatabaseString(process.env.CLEARDB_DATABASE_URL));
 var applyHandlers = require("./SocketEvents");
 io.on('connection', function (socket) {

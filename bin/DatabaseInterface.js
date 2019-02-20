@@ -120,6 +120,7 @@ var DatabaseInterface = /** @class */ (function () {
     DatabaseInterface.prototype.insertEvent = function (event, callback) {
         if (!event.end)
             event.end = event.start;
+        console.log(event);
         this.query("INSERT INTO events\n      (id, event_start, event_end, event_type, event_text, event_id)\n      VALUES\n      (\"" + event.id + '", "' + event.start + '", "' + event.end + '", "' + event.type + '", "' + event.text + '", uuid_short());', callback);
     };
     DatabaseInterface.prototype.removeEvent = function (eventId, callback) {
@@ -158,8 +159,8 @@ var DatabaseInterface = /** @class */ (function () {
                     var entry = res_1[_i];
                     dog.bookings.push({
                         start: entry.event_start,
-                        end: entry.event_end,
-                        eventID: entry.event_id
+                        end: new Date(entry.event_end),
+                        eventID: new Date(entry.event_id)
                     });
                 }
                 dog.bookings.reverse();
@@ -190,19 +191,20 @@ var DatabaseInterface = /** @class */ (function () {
         this.query("\n    SELECT * from events\n    WHERE event_text LIKE \"%" + searchText + "%\" AND\n    event_text <> 'undefined';\n    ", callback);
     };
     DatabaseInterface.prototype.getWeek = function (date, callback) {
-        date = new Date(new Date(date).toDateString());
+        date = new Date(new Date(date.valueOf()).toDateString());
         var startDate = new Date(date.setDate(date.getDate() - date.getDay() + 1));
         var endDate = new Date(date.setDate(date.getDate() + 7));
-        this.query("\n      SELECT * FROM events\n      LEFT JOIN dogs ON dogs.id = events.id\n      WHERE (event_start <= \"" + endDate.toISOString() + '" AND event_start >= "' + startDate.toISOString() + "\") OR\n      (event_end <= \"" + endDate.toISOString() + '" AND event_end >= "' + startDate.toISOString() + "\") OR\n      (event_start < \"" + startDate.toISOString() + '" AND event_end > "' + endDate.toISOString() + "\");\n    ", function (results) {
+        this.query("\n      SELECT * FROM events\n      LEFT JOIN dogs ON dogs.id = events.id\n      WHERE (event_start <= \"" + endDate.valueOf() + '" AND event_start >= "' + startDate.valueOf() + "\") OR\n      (event_end <= \"" + endDate.valueOf() + '" AND event_end >= "' + startDate.valueOf() + "\") OR\n      (event_start < \"" + startDate.valueOf() + '" AND event_end > "' + endDate.valueOf() + "\");\n    ", function (results) {
+            console.log(results);
             var week = [];
             for (var i = 0; i < 7; i++)
                 week[i] = [];
             results.map(function (e) {
-                e.event_start = new Date(e.event_start);
-                e.event_end = new Date(e.event_end);
+                var eventStart = new Date(parseInt(e.event_start));
+                var eventEnd = new Date(parseInt(e.event_end));
                 // Set start and end days for boarding inside current week
-                var endDay = e.event_end.getTime() < endDate.getTime() ? e.event_end.getDay() - 1 : 6;
-                var startDay = e.event_start.getTime() <= startDate.getTime() ? 0 : e.event_start.getDay() - 1;
+                var endDay = eventEnd.getTime() < endDate.getTime() ? eventEnd.getDay() - 1 : 6;
+                var startDay = eventStart.getTime() <= startDate.getTime() ? 0 : eventStart.getDay() - 1;
                 // Loop from start of boarding to the end of the boarding
                 for (var i = startDay; i <= endDay; i++) {
                     // Cache type and text
@@ -213,24 +215,26 @@ var DatabaseInterface = /** @class */ (function () {
                         // Get loop day in string form MM-DD-YYYY
                         var currentDayString = new Date(new Date(startDate.getSeconds()).setDate(startDate.getDate() + i)).toDateString();
                         // Set type to arriving or departing
-                        if (e.event_start.toDateString() === currentDayString) {
+                        if (eventStart.toDateString() === currentDayString) {
                             type = 'arriving';
-                            date_1 = e.event_start;
+                            date_1 = eventStart;
                         }
-                        else if (e.event_end.toDateString() === currentDayString) {
+                        else if (eventEnd.toDateString() === currentDayString) {
                             type = 'departing';
-                            date_1 = e.event_end;
+                            date_1 = eventEnd;
                         }
                     }
                     else {
-                        date_1 = e.event_start;
+                        date_1 = eventStart;
                     }
-                    week[i].push({
-                        text: text,
-                        date: date_1,
-                        type: type,
-                        id: e.id
-                    });
+                    if (week[i]) {
+                        week[i].push({
+                            text: text,
+                            date: date_1,
+                            type: type,
+                            id: e.id
+                        });
+                    }
                 }
             });
             // Callback with the week
@@ -264,4 +268,7 @@ var DatabaseInterface = /** @class */ (function () {
     };
     return DatabaseInterface;
 }());
+function formatWeek() {
+    return null;
+}
 module.exports = DatabaseInterface;

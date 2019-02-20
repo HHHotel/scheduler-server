@@ -1,7 +1,10 @@
 /* eslint no-console: "off" */
 import {Pool, PoolConfig} from 'mysql';
+import {HHHEvent, HHHBoarding} from './HHHTypes';
+import {HHHEventDescriptor} from './HHHEventDescriptor';
+  
 
-class DatabaseInterface {
+class HHHDatabaseInterface {
   sql: any;
   bcrypt: any;
   pool: Pool;
@@ -45,12 +48,20 @@ class DatabaseInterface {
     // TODO : Check if the user already exists and block
     let self = this;
 
+    self.query(`
+      SELECT * FROM users WHERE users.username = "` + username + '";',
+      function (result) {
+        if (result) {
+          callback("User already exists");
+          return;
+        }
+      });
+
     self.bcrypt.hash(password, 12, function (err, hash) {
       if (err) throw err;
 
       self.query(`
         INSERT INTO users (username, hashed_password, permissions) VALUES
-<<<<<<< HEAD:src/DatabaseInterface.ts
         ("` + username + '","' + hash + '",' + permissions + ');', function (result) {
           if (callback) callback(result);
         });
@@ -69,9 +80,6 @@ class DatabaseInterface {
         let user = result[0];
 
         self.bcrypt.compare(oldPassword, user.hashed_password, function (err, result) {
-=======
-        ("` + username + '","' + hash + '",' + permissions + ');', function (err, result) {
->>>>>>> master:src/DatabaseInterface.js
           if (err) throw err;
           if (result) {
             self.bcrypt.hash(newPassword, 12, function (err, hash) {
@@ -80,7 +88,6 @@ class DatabaseInterface {
                 SET hashed_password = "` + hash + `"
                 WHERE users.username = "` + username + '";',
                 function (result) {
-                  console.log(result);
                   if (callback) callback(result);
                 });
             });
@@ -129,10 +136,10 @@ class DatabaseInterface {
   }
 
   /*
-  Gets Dog object
+  Gets HHHDog object
   {
     name: "",   Dogs Name
-    cName; ""   Client's Last Name
+    clientName; ""   Client's Last Name
   }
   */
 
@@ -160,8 +167,6 @@ class DatabaseInterface {
 
   insertEvent (event, callback) {
     if (!event.end) event.end = event.start;
-
-    console.log(event);
 
     this.query(
       `INSERT INTO events
@@ -276,10 +281,11 @@ class DatabaseInterface {
     `, callback);
   }
 
-  getWeek (date, callback) {
-    date = new Date(new Date(date).toDateString());
-    const startDate = new Date(date.setDate(date.getDate() - date.getDay() + 1));
-    const endDate   = new Date(date.setDate(date.getDate() + 7));
+  getWeek (date: Date, callback: Function) {
+    date = new Date(new Date(date.valueOf()).toDateString());
+
+    const startDate: Date = new Date(date.setDate(date.getDate() - date.getDay() + 1));
+    const endDate: Date   = new Date(date.setDate(date.getDate() + 7));
 
     this.query(`
       SELECT * FROM events
@@ -288,54 +294,9 @@ class DatabaseInterface {
       (event_end <= "` + endDate.valueOf() + '" AND event_end >= "' + startDate.valueOf() + `") OR
       (event_start < "`+ startDate.valueOf() + '" AND event_end > "' + endDate.valueOf() + `");
     `, function (results) {
-      console.log(results);
 
-      let week = [];
-      for (let i = 0; i < 7; i++) week[i] = [];
+      let week = formatWeek(results);
 
-      results.map(function (e) {
-        let eventStart = new Date(parseInt(e.event_start));
-        let eventEnd = new Date(parseInt(e.event_end));
-
-        // Set start and end days for boarding inside current week
-        let endDay = eventEnd.getTime() < endDate.getTime() ? eventEnd.getDay() - 1: 6;
-        let startDay = eventStart.getTime() <= startDate.getTime() ? 0 : eventStart.getDay() - 1;
-
-        // Loop from start of boarding to the end of the boarding
-        for (let i = startDay; i <= endDay; i++) {
-          // Cache type and text
-          let type = e.event_type;
-          let date = null;
-          let text = e.dog_name ? e.dog_name + ' ' + e.client_name : e.event_text;
-
-          if (type === 'boarding') {
-            // Get loop day in string form MM-DD-YYYY
-            let currentDayString: string = new Date(new Date(startDate.getSeconds()).setDate(startDate.getDate() + i)).toDateString();
-
-            // Set type to arriving or departing
-            if (eventStart.toDateString() === currentDayString) {
-              type = 'arriving';
-              date = eventStart;
-            } else if (eventEnd.toDateString() === currentDayString) {
-              type = 'departing';
-              date = eventEnd;
-            }
-
-          } else {
-            date = eventStart;
-          }
-
-          if (week[i]) {
-            week[i].push({
-              text : text,
-              date : date,
-              type : type,
-              id : e.id
-            });
-          }
-        }
-      });
-      // Callback with the week
       callback(week);
     });
 
@@ -372,9 +333,20 @@ class DatabaseInterface {
   }
 
 }
-<<<<<<< HEAD:src/DatabaseInterface.ts
 
-export = DatabaseInterface;
-=======
-module.exports = DatabaseInterface;
->>>>>>> master:src/DatabaseInterface.js
+function formatWeek(dbEvents: Array<HHHEventDescriptor>): Array<any> {
+
+  let weekEvents: Array<HHHEvent> = [];
+
+  dbEvents.map(function (eventDescriptor: HHHEventDescriptor) {
+    console.log(eventDescriptor);
+    eventDescriptor = new HHHEventDescriptor(eventDescriptor);
+    let event: HHHEvent = eventDescriptor.getHHHEvent();
+    console.log(event);
+    weekEvents.push(event);
+  });
+
+  return weekEvents;
+}
+
+export = HHHDatabaseInterface;

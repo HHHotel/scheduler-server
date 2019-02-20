@@ -16,7 +16,7 @@ server.listen(port, () => console.log('Server running on port ' + port) );
 
 app.use(express.static(path.join(__dirname, 'landing')));
 
-import DBInterface = require('./DatabaseInterface');
+import DBInterface = require('./HHHDatabaseInterface');
 const database = new DBInterface(parseDatabaseString(process.env.CLEARDB_DATABASE_URL));
 
 import applyHandlers = require('./SocketEvents');
