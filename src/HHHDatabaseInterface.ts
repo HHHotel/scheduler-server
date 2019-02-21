@@ -165,12 +165,13 @@ class HHHDatabaseInterface {
 
   public insertEvent(event, callback) {
     if (!event.end) { event.end = event.start; }
+    if (!event.id) { event.id = 0; }
 
     this.query(
       `INSERT INTO events
       (id, event_start, event_end, event_type, event_text, event_id)
       VALUES
-      ("` + event.id + '", "' + event.start + '", "' + event.end + '", "'
+      (` + event.id + ', "' + event.start + '", "' + event.end + '", "'
       + event.type + '", "' + event.text + '", uuid_short());'
 
     , callback);
