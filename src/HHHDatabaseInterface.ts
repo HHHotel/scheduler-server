@@ -8,6 +8,8 @@ class HHHDatabaseInterface {
   private bcrypt: any;
   private pool: Pool;
 
+  private TOKEN_EXPIRE_PERIOD = 86400000;
+
   constructor(options: PoolConfig) {
     this.sql = require("mysql");
     this.bcrypt = require("bcrypt");
@@ -17,31 +19,41 @@ class HHHDatabaseInterface {
     this.pool = this.sql.createPool(options);
   }
 
-  public login(username: string, password: string, callback: ({success, permissions}) => void) {
+  public login(username: string, password: string, callback: ({success, permissions, token}) => void) {
 
     const self = this;
 
-    self.query(`
-      SELECT * from users
-      WHERE users.username = "` + username + '";'
-      , (result) => {
-      if (result[0]) {
-        const user = result[0];
-        self.bcrypt.compare(password, user.hashed_password, (err, success) => {
-          if (err) { throw err; }
-          callback({
-            permissions: success ? user.permissions : -1,
-            success,
-          });
-        });
-      } else {
-        callback({
-            permissions: -1,
-            success: false,
-          });
-      }
-    });
+    const token = Math.round(Math.random() * 1000000);
+    const tokenTimestamp = new Date().valueOf();
 
+    self.query(`
+       UPDATE users
+       SET token = ` + token + `, token_timestamp = ` + tokenTimestamp + `
+       WHERE username = '` + username + `';`
+      , () => {
+        self.query(`
+         SELECT * from users
+         WHERE users.username = '` + username + "';"
+         , (result) => {
+         if (result[0]) {
+           const user = result[0];
+           self.bcrypt.compare(password, user.hashed_password, (err, success) => {
+             if (err) { throw err; }
+             callback({
+               permissions: success ? user.permissions : -1,
+               success,
+               token: success ? token : null,
+             });
+           });
+         } else {
+           callback({
+               permissions: -1,
+               success: false,
+               token: null,
+             });
+         }
+        });
+    });
   }
 
   public addUser(username, password, permissions, callback) {
@@ -108,6 +120,32 @@ class HHHDatabaseInterface {
     self.query(`
       DELETE FROM users
       WHERE users.username = "` + username + '";', callback);
+  }
+
+  public getToken(username, callback) {
+    const self = this;
+
+    self.query(`
+      SELECT username, token, token_timestamp, permissions FROM users
+      WHERE users.username = '` + username + `';`, (result) => {
+        if (result[0]
+          && new Date().valueOf() - result[0].token_timestamp < self.TOKEN_EXPIRE_PERIOD) {
+
+          callback({
+            permissions: result[0].permissions,
+            success: true,
+            token: result[0].token,
+            username: result[0].username,
+          });
+        } else {
+          callback({
+            permissions: -1,
+            success: false,
+            token: -1,
+            username: "",
+          });
+        }
+      });
   }
 
   /*
@@ -228,8 +266,10 @@ class HHHDatabaseInterface {
         const dog: HHHDog = new HHHDog(res[0]);
 
         res.reverse().map((record) => {
-          const event: IHHHEvent = new HHHEventDescriptor(record).getHHHEvent();
-          dog.addBooking(event as IHHHBooking);
+          if (record.startDate && record.endDate) {
+            const event: IHHHEvent = new HHHEventDescriptor(record).getHHHEvent();
+            dog.addBooking(event as IHHHBooking);
+          }
         });
 
         callback(dog);

@@ -1,6 +1,6 @@
 import {Server, Socket} from "socket.io";
 
-function applyHandlers(socket: Socket, io: Server, permissions: number, database) {
+export function applyHandlers(socket: Socket, io: Server, permissions: number, database) {
   generalHandlers(socket, permissions, io, database);
   dogHandlers(socket, permissions, io, database);
   userHandlers(socket, permissions, io, database);
@@ -81,5 +81,3 @@ function userHandlers(socket: Socket, permissions: number, io: Server, database)
 function handleEvent(socket: Socket, eventName: string, handler,  userPermissions: number, permissionLevel: number) {
   if (userPermissions >= permissionLevel) { socket.on(eventName, handler); }
 }
-
-export = applyHandlers;

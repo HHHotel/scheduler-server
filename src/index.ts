@@ -17,7 +17,7 @@ app.use(express.static(path.join(__dirname, "landing")));
 import DBInterface = require("./HHHDatabaseInterface");
 const database = new DBInterface(parseDatabaseString(process.env.CLEARDB_DATABASE_URL));
 
-import applyHandlers = require("./SocketEvents");
+import {applyHandlers} from "./SocketEvents";
 
 io.on("connection", (socket) => {
 
@@ -30,6 +30,16 @@ io.on("connection", (socket) => {
       socket.emit("update");
       callback(result);
       applyHandlers(socket, io, result.permissions, database);
+    });
+  });
+
+  socket.on("check_token", (user, callback) => {
+    database.getToken(user.username, (result) => {
+      if (parseInt(result.token, 10) === user.token) {
+        socket.emit("update");
+        applyHandlers(socket, io, result.permissions, database);
+        callback(result);
+      }
     });
   });
 
