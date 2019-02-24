@@ -38,8 +38,8 @@ io.on("connection", (socket) => {
       if (parseInt(result.token, 10) === user.token) {
         socket.emit("update");
         applyHandlers(socket, io, result.permissions, database);
-        callback(result);
       }
+      callback(result);
     });
   });
 

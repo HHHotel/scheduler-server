@@ -128,9 +128,9 @@ class HHHDatabaseInterface {
     self.query(`
       SELECT username, token, token_timestamp, permissions FROM users
       WHERE users.username = '` + username + `';`, (result) => {
+        console.log(result, new Date().valueOf());
         if (result[0]
-          && new Date().valueOf() - result[0].token_timestamp < self.TOKEN_EXPIRE_PERIOD) {
-
+          && (new Date().valueOf() - result[0].token_timestamp) < self.TOKEN_EXPIRE_PERIOD) {
           callback({
             permissions: result[0].permissions,
             success: true,
