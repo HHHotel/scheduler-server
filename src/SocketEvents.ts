@@ -21,13 +21,7 @@ function dogHandlers(socket: Socket, permissions: number, io: Server, database) 
 
   handleEvent(socket, "find", (searchText, callback) => {
     const result = [];
-    database.findDogs(searchText, (resultDogs) => {
-      for (const entry of resultDogs) { result.push(entry); }
-      database.findEvents(searchText, (resEvents) => {
-      for (const entry of resEvents) { result.push(entry); }
-      callback(result);
-      });
-    });
+    database.find(searchText, callback);
   }, permissions, 0);
 
   handleEvent(socket, "remove_event", (id, callback) => {

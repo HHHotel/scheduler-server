@@ -6,7 +6,7 @@ export interface IHHHEvent {
   id: number;
 }
 
-export interface IHHHBoarding extends IHHHEvent {
+export interface IHHHBooking extends IHHHEvent {
   dogName: string;
   clientName: string;
   dogId: number;

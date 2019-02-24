@@ -1,4 +1,4 @@
-import {IHHHBoarding, IHHHEvent} from "./HHHTypes";
+import {IHHHBooking, IHHHEvent} from "./HHHTypes";
 
 export class HHHEventDescriptor {
 
@@ -34,9 +34,9 @@ export class HHHEventDescriptor {
     };
 
     if (this.dogName) {
-      (event as IHHHBoarding).dogId = this.id;
-      (event as IHHHBoarding).dogName = this.dogName;
-      (event as IHHHBoarding).clientName = this.clientName;
+      (event as IHHHBooking).dogId = this.id;
+      (event as IHHHBooking).dogName = this.dogName;
+      (event as IHHHBooking).clientName = this.clientName;
     }
 
     return event;

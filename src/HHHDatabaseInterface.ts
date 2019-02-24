@@ -1,6 +1,7 @@
 import {Pool, PoolConfig} from "mysql";
+import {HHHDog} from "./HHHDog";
 import {HHHEventDescriptor} from "./HHHEventDescriptor";
-import {IHHHBoarding, IHHHEvent} from "./HHHTypes";
+import {IHHHBooking, IHHHEvent} from "./HHHTypes";
 
 class HHHDatabaseInterface {
   private sql: any;
@@ -220,40 +221,18 @@ class HHHDatabaseInterface {
 
     self.query(`
       SELECT * FROM dogs
-      INNER JOIN events ON dogs.id = events.id
+      LEFT JOIN events ON dogs.id = events.id
       WHERE dogs.id = "` + ID + '";'
     , (res) => {
       if (res[0]) {
-        const dog = {
-          bookings: [],
-          clientName: res[0].client_name,
-          id: res[0].id,
-          name: res[0].dog_name,
-        };
-        for (const entry of res) {
-          dog.bookings.push({
-          end: new Date(entry.event_end),
-          eventID: new Date(entry.event_id),
-          start: entry.event_start,
-          });
-        }
-        dog.bookings.reverse();
-        callback(dog);
-      } else {
-        self.query(`
-          SELECT * FROM dogs
-          WHERE dogs.id = "` + ID + '";'
-        , (result) => {
-          if (result[0] && result.length === 1) {
-            const dog = {
-              bookings: [],
-              clientName: result[0].client_name,
-              id: result[0].id,
-              name: result[0].dog_name,
-            };
-            callback(dog);
-          }
+        const dog: HHHDog = new HHHDog(res[0]);
+
+        res.reverse().map((record) => {
+          const event: IHHHEvent = new HHHEventDescriptor(record).getHHHEvent();
+          dog.addBooking(event as IHHHBooking);
         });
+
+        callback(dog);
       }
 
      });
@@ -266,33 +245,48 @@ class HHHDatabaseInterface {
     , callback);
   }
 
-  public findDogs(searchText, callback) {
-
-    this.query(`
+  public find(searchText, callback) {
+    const self = this;
+    self.query(`
       SELECT * FROM dogs
       WHERE dog_name LIKE "%` + searchText + `%";
-    `, callback);
-  }
 
-  public findEvents(searchText, callback) {
-    this.query(`
-    SELECT * from events
-    WHERE event_text LIKE "%` + searchText + `%" AND
-    event_text <> 'undefined';
-    `, callback);
+    `, (resDogs) => {
+      self.query(`
+        SELECT * from events
+        WHERE event_text LIKE "%` + searchText + `%" AND
+        id = 0 AND
+        event_text <> 'undefined';
+        `, (resEvents) => {
+          const matches = [];
+          for (let dog of resDogs) {
+            dog = new HHHDog(dog);
+            matches.push(dog);
+          }
+          for (let event of resEvents) {
+            event = new HHHEventDescriptor(event).getHHHEvent();
+            matches.push(event);
+          }
+          callback(matches);
+      });
+    });
   }
 
   public getWeek(date: Date, callback: ([]) => void ) {
+
+    // Remove time data
     date = new Date(new Date(date.valueOf()).toDateString());
 
-    const startDate: Date = new Date(date.setDate(date.getDate() - date.getDay() + 1));
+    // This week start date at 00:00
+    const startDate: Date = new Date(date.setDate(date.getDate() - date.getDay()));
+    // Next week start date at 00:00
     const endDate: Date   = new Date(date.setDate(date.getDate() + 7));
 
     this.query(`
       SELECT * FROM events
       LEFT JOIN dogs ON dogs.id = events.id
-      WHERE (event_start <= "` + endDate.valueOf() + '" AND event_start >= "' + startDate.valueOf() + `") OR
-      (event_end <= "` + endDate.valueOf() + '" AND event_end >= "' + startDate.valueOf() + `") OR
+      WHERE (event_start < "` + endDate.valueOf() + '" AND event_start >= "' + startDate.valueOf() + `") OR
+      (event_end < "` + endDate.valueOf() + '" AND event_end >= "' + startDate.valueOf() + `") OR
       (event_start < "` + startDate.valueOf() + '" AND event_end > "' + endDate.valueOf() + `");
     `, (results) => {
 
