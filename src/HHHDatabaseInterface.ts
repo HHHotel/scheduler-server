@@ -266,7 +266,7 @@ class HHHDatabaseInterface {
         const dog: HHHDog = new HHHDog(res[0]);
 
         res.reverse().map((record) => {
-          if (record.startDate && record.endDate) {
+          if (record.event_start && record.event_end) {
             const event: IHHHEvent = new HHHEventDescriptor(record).getHHHEvent();
             dog.addBooking(event as IHHHBooking);
           }
