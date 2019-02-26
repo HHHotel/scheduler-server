@@ -163,14 +163,6 @@ class HHHDatabaseInterface {
 
   */
 
-  public add(event, callback) {
-    if (event.type === "dog") {
-      this.insertDog(event, callback);
-    } else {
-      this.insertEvent(event, callback);
-    }
-  }
-
   /*
   Gets HHHDog object
   {
@@ -179,9 +171,7 @@ class HHHDatabaseInterface {
   }
   */
 
-  public insertDog(dog, callback) {
-
-    // CREATE TABLE dogs (id BIGINT NOT NULL, dog_name TEXT NOT NULL, client_name TEXT NOT NULL);
+  public addDog(dog, callback) {
 
     this.query(
       `INSERT INTO dogs (id, dog_name, client_name)
@@ -192,17 +182,15 @@ class HHHDatabaseInterface {
   /*
   Gets Event Object
   {
-    type: "",           Boarding --- Daycare --- (Other Grooming etc.)
-    text: "",           if type === Other
-    start: "datetime",      In Sql Format yyyy-mm-dd
-    end: "datetime",      In Sql Format yyyy-mm-dd
+    type: "string",  Boarding --- Daycare --- (Other Grooming etc.)
+    text: "string",  if type === Other
+    start: "BIGINT", Time since epoch (ms)
+    end: "BIGINT", Time since epoch (ms)
     id: null || existing dog id
   }
-  INSERT INTO events (id, event_start, event_end, event_type, event_text);
   */
 
-  public insertEvent(event, callback) {
-    if (!event.end) { event.end = event.start; }
+  public addEvent(event, callback) {
     if (!event.id) { event.id = 0; }
 
     this.query(
@@ -211,7 +199,6 @@ class HHHDatabaseInterface {
       VALUES
       (` + event.id + ', "' + event.start + '", "' + event.end + '", "'
       + event.type + '", "' + event.text + '", uuid_short());'
-
     , callback);
 
   }

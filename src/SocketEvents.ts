@@ -13,8 +13,14 @@ function generalHandlers(socket: Socket, permissions: number, io: Server, databa
 }
 
 function dogHandlers(socket: Socket, permissions: number, io: Server, database) {
-  handleEvent(socket, "add", (event) => {
-    database.add(event, () => {
+  handleEvent(socket, "add_dog", (event) => {
+    database.addDog(event, () => {
+      io.sockets.emit("update");
+    });
+  }, permissions, 5);
+
+  handleEvent(socket, "add_event", (event) => {
+    database.addEvent(event, () => {
       io.sockets.emit("update");
     });
   }, permissions, 5);
