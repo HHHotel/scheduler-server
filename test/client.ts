@@ -1,75 +1,63 @@
 #!/usr/bin/env node
 
 /* tslint:disable:no-console no-empty */
+
+import fs = require("fs");
+import os = require("os");
+import path = require("path");
 import readline = require("readline");
 import io = require("socket.io-client");
+import {HHHDog} from "../src/HHHDog";
+import {IHHHBooking, IHHHEvent} from "../src/HHHTypes";
 const socket = io("http://localhost:8080");
-
-const r1 = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-});
 
 console.log("Welcome to the HHH Scheduler CLI");
 
-let loginToken: number = null;
-
 socket.on("connected", () => { login(); });
+let Settings;
+const args = process.argv;
 
 function login() {
-  r1.question("Username: ", (username) => {
-    r1.question("Password: ", (password) => {
-      const user = {
-        password,
-        username,
-      };
-      socket.emit("login", user, (result) => {
-        if (result.success) {
-          console.log("Logged in: ", result.token);
-          loginToken = result.token;
-        } else {
-          login();
-        }
-      });
-      r1.close();
-    });
-  });
-}
 
-function prompt() {
-  r1.question("-> ", (command) => {
-    if (command !== "q") {
-      const args = command.split(" ")[0];
-      socket.emit(command, args, (result) => {console.log(result); });
-      prompt();
-    } else {
-      socket.disconnect();
-      process.exit(0);
+  const data: Buffer = fs.readFileSync(path.join(os.homedir(), ".hhhsched/settings.json"));
+  Settings = JSON.parse(data.toString("utf-8"));
+
+  socket.emit("check_token", Settings.user, (result) => {
+    if (result.success) {
+      console.log("Logged in...");
+      console.log();
+      main();
     }
   });
 }
 
-prompt();
-
 socket.on("disconnect", () => {
+  console.log("Disconneced! Quitting");
+  process.exit(0);
 });
 
-socket.on("update", (result) => {
-  console.log(result);
-});
+function main() {
+  socket.emit(args[2], args[3] ? args[3] : new Date(), (result) => {
+    print(result);
+    process.exit(0);
+  });
+}
 
-socket.on("load", (result) => {
-  console.log(result);
-});
+function print(events) {
 
-/* COMMAND LIST
- * add
- * find
- * remove_event
- * remove_dog
- * retrieve_dog
- * edit_dog
- * add_user
- * delete_user
- * change_password
- */
+  events.forEach((event: IHHHEvent) => {
+    if ((event as IHHHBooking).dogName) {
+      const booking: IHHHBooking = event as IHHHBooking;
+      console.log(booking.dogName, booking.clientName);
+    } else {
+      console.log(event.text);
+    }
+
+    console.log("  ",
+      new Date(event.startDate.toString()).toDateString(),
+      " - ",
+      new Date(event.endDate.toString()).toDateString());
+    console.log();
+  });
+
+}

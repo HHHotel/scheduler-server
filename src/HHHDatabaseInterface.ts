@@ -318,7 +318,7 @@ class HHHDatabaseInterface {
 
       const week = formatWeek(results);
 
-      callback(week);
+      if (callback) { callback(week); }
     });
 
   }
