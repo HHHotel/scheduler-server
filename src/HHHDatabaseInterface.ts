@@ -175,7 +175,7 @@ class HHHDatabaseInterface {
 
     this.query(
       `INSERT INTO dogs (id, dog_name, client_name)
-       VALUES (UUID_SHORT(), "` + dog.name + '", "' + dog.cName + '");'
+       VALUES (UUID_SHORT(), "` + dog.name + '", "' + dog.clientName + '");'
     , callback);
   }
 
