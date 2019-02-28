@@ -6,7 +6,7 @@ export class HHHDog {
   public name: string;
   public clientName: string;
   public id: string;
-  private bookings: IHHHEvent[];
+  public bookings: IHHHEvent[];
 
   constructor(record: any) {
 

@@ -1,4 +1,5 @@
 import {Server, Socket} from "socket.io";
+import {HHHDog} from "./HHHDog";
 
 export function applyHandlers(socket: Socket, io: Server, permissions: number, database) {
   generalHandlers(socket, permissions, io, database);
@@ -44,13 +45,13 @@ function dogHandlers(socket: Socket, permissions: number, io: Server, database) 
     database.retrieveDog(id, callback);
   }, permissions, 5);
 
-  handleEvent(socket, "edit_dog", (dogProfile) => {
+  handleEvent(socket, "edit_dog", (dogProfile: HHHDog) => {
     database.editDog(dogProfile.id, "dog_name", dogProfile.name);
     database.editDog(dogProfile.id, "client_name", dogProfile.clientName);
 
-    for ( const booking of dogProfile.bookings ) {
-      database.editEvent(booking.eventID, "event_start", booking.start);
-      database.editEvent(booking.eventID, "event_end", booking.end);
+    for (const booking of dogProfile.bookings ) {
+      database.editEvent(booking.id, "event_start", booking.startDate);
+      database.editEvent(booking.id, "event_end", booking.endDate);
     }
 
     io.sockets.emit("update");
