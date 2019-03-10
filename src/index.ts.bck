@@ -14,8 +14,8 @@ server.listen(port, () => console.log("Server running on port " + port) );
 
 app.use(express.static(path.join(__dirname, "landing")));
 
-import HHHDB = require("./HHHDatabase");
-const database = HHHDB.createDatabase(parseDatabaseString(process.env.CLEARDB_DATABASE_URL));
+import DBInterface = require("./HHHDatabaseInterface");
+const database = new DBInterface(parseDatabaseString(process.env.CLEARDB_DATABASE_URL));
 
 import {applyHandlers} from "./SocketEvents";
 
@@ -26,9 +26,7 @@ io.on("connection", (socket) => {
         socket.emit("connected");
 
         socket.on("login", (user, callback) => {
-                HHHDB.login(database, user.username, user.password, (result) => {
-                        if (! result) { return; }
-
+                database.login(user.username, user.password, (result) => {
                         socket.emit("update");
                         callback(result);
                         applyHandlers(socket, io, result.permissions, database);
@@ -36,8 +34,8 @@ io.on("connection", (socket) => {
         });
 
         socket.on("check_token", (user, callback) => {
-                HHHDB.getToken(database, user.username, (result) => {
-                        if (result && parseInt(result.token, 10) === user.token) {
+                database.getToken(user.username, (result) => {
+                        if (parseInt(result.token, 10) === user.token) {
                                 socket.emit("update");
                                 applyHandlers(socket, io, result.permissions, database);
                         }

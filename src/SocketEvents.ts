@@ -1,90 +1,84 @@
 import {Server, Socket} from "socket.io";
-import {HHHDog} from "./HHHDog";
+import {Database,
+        HHHBooking, HHHDog, HHHEvent,
+        HHHSQLDog, HHHSQLEvent, HHHSQLUser,
+        HHHUser, SchedulerEvent} from "./HHHTypes";
 
-export function applyHandlers(socket: Socket, io: Server, permissions: number, database) {
-  generalHandlers(socket, permissions, io, database);
-  dogHandlers(socket, permissions, io, database);
-  userHandlers(socket, permissions, io, database);
+import HHHDB = require("./HHHDatabase");
+
+export function applyHandlers(socket: Socket, io: Server, permissions: number, db: Database) {
+        generalHandlers(socket, permissions, io, db);
+        dogHandlers(socket, permissions, io, db);
+        userHandlers(socket, permissions, io, db);
 }
 
-function generalHandlers(socket: Socket, permissions: number, io: Server, database) {
-  handleEvent(socket, "load", (date, callback) => {
-    database.getWeek(date, callback);
-  }, permissions, 0);
+function generalHandlers(socket: Socket, permissions: number, io: Server, db: Database) {
+        handleEvent(socket, "load", (date, callback) => {
+                HHHDB.getWeek(db, date, callback);
+        }, permissions, 0);
 }
 
-function dogHandlers(socket: Socket, permissions: number, io: Server, database) {
-  handleEvent(socket, "add_dog", (event) => {
-    database.addDog(event, () => {
-      io.sockets.emit("update");
-    });
-  }, permissions, 5);
+function dogHandlers(socket: Socket, permissions: number, io: Server, db) {
 
-  handleEvent(socket, "add_event", (event) => {
-    database.addEvent(event, () => {
-      io.sockets.emit("update");
-    });
-  }, permissions, 5);
+        handleEvent(socket, "add_dog", (event) => {
+                HHHDB.addDog(db, event, () => { io.sockets.emit("update"); });
+        }, permissions, 5);
 
-  handleEvent(socket, "find", (searchText, callback) => {
-    const result = [];
-    database.find(searchText, callback);
-  }, permissions, 0);
+        handleEvent(socket, "add_event", (event) => {
+                HHHDB.addEvent(db, event, () => { io.sockets.emit("update"); });
+        }, permissions, 5);
 
-  handleEvent(socket, "remove_event", (id, callback) => {
-    database.removeEvent(id, callback);
-    io.sockets.emit("update");
-  }, permissions, 6);
+        handleEvent(socket, "find", (searchText, callback) => {
+                HHHDB.find(db, searchText, callback);
+        }, permissions, 0);
 
-  handleEvent(socket, "remove_dog", (id, callback) => {
-    database.removeDog(id, callback);
-    io.sockets.emit("update");
-  }, permissions, 6);
+        handleEvent(socket, "remove_event", (id, callback) => {
+                HHHDB.removeEvent(db, id, () => { io.sockets.emit("update"); });
+        }, permissions, 6);
 
-  handleEvent(socket, "retrieve_dog", (id, callback) => {
-    database.retrieveDog(id, callback);
-  }, permissions, 5);
+        handleEvent(socket, "remove_dog", (id, callback) => {
+                HHHDB.removeDog(db, id, () => { io.sockets.emit("update"); });
+        }, permissions, 6);
 
-  handleEvent(socket, "edit_dog", (dogProfile: HHHDog) => {
-    database.editDog(dogProfile.id, "dog_name", dogProfile.name);
-    database.editDog(dogProfile.id, "client_name", dogProfile.clientName);
+        handleEvent(socket, "retrieve_dog", (id, callback) => {
+                HHHDB.retrieveDog(db, id, callback);
+        }, permissions, 5);
 
-    for (const booking of dogProfile.bookings ) {
-      database.editEvent(booking.id, "event_start", booking.startDate);
-      database.editEvent(booking.id, "event_end", booking.endDate);
-    }
+        handleEvent(socket, "edit_dog", (dogProfile: HHHDog) => {
+                HHHDB.editDog(db, dogProfile.id, "dog_name", dogProfile.name);
+                HHHDB.editDog(db, dogProfile.id, "client_name", dogProfile.clientName);
 
-    io.sockets.emit("update");
-  }, permissions, 6);
+                for (const booking of dogProfile.bookings ) {
+                        HHHDB.editEvent(db, booking.id, "event_start", booking.startDate.valueOf() + "");
+                        HHHDB.editEvent(db, booking.id, "event_end", booking.endDate.valueOf() + "");
+                }
+
+                io.sockets.emit("update");
+        }, permissions, 6);
 }
 
-function userHandlers(socket: Socket, permissions: number, io: Server, database) {
-  handleEvent(socket, "add_user", (user, callback) => {
-    if (permissions < user.permissions) {
-      callback("Permission Level not great enough");
-    } else {
-      database.addUser(user.username, user.password, user.permissionLevel,
-        (result) => {
-          callback(result);
-        },
-      );
-    }
+function userHandlers(socket: Socket, permissions: number, io: Server, db) {
 
-  }, permissions, 7);
+        handleEvent(socket, "add_user", (user, callback) => {
+                if (permissions < user.permissions) {
+                        callback("Permission Level not great enough");
+                } else {
+                        HHHDB.addUser(db, user.username, user.password, user.permissionLevel);
+                        callback("Success");
+                }
 
-  handleEvent(socket, "delete_user", (username, callback) => {
-    database.deleteUser(username, (result) => { callback(result); } );
-  }, permissions, 7);
+        }, permissions, 7);
 
-  handleEvent(socket, "change_password", (user, callback) => {
-    database.changePassword(user.username, user.oldPassword, user.newPassword,
-      (result) => {
-        callback(result);
-      },
-    );
-  }, permissions, 0);
+        handleEvent(socket, "delete_user", (username, callback) => {
+                HHHDB.deleteUser(db, username);
+        }, permissions, 7);
+
+        handleEvent(socket, "change_password", (user, callback) => {
+                HHHDB.changePassword(db, user.username, user.oldPassword, user.newPassword,
+                        (result) => { if (result) { callback(result); } });
+        }, permissions, 0);
 }
 
 function handleEvent(socket: Socket, eventName: string, handler,  userPermissions: number, permissionLevel: number) {
-  if (userPermissions >= permissionLevel) { socket.on(eventName, handler); }
+        if (userPermissions >= permissionLevel) { socket.on(eventName, handler); }
 }
