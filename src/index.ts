@@ -15,51 +15,36 @@ server.listen(port, () => console.log("Server running on port " + port) );
 app.use(express.static(path.join(__dirname, "landing")));
 
 import HHHDB = require("./HHHDatabase");
-const database = HHHDB.createDatabase(parseDatabaseString(process.env.CLEARDB_DATABASE_URL));
+const database = HHHDB.createDatabase(HHHDB.parseDatabaseString(process.env.CLEARDB_DATABASE_URL));
 
+import {HHHUser} from "./HHHTypes";
 import {applyHandlers} from "./SocketEvents";
 
 io.on("connection", (socket) => {
 
-        console.log("New connection from " + socket.request.connection.remoteAddress);
+    console.log("New connection from " + socket.request.connection.remoteAddress);
 
-        socket.emit("connected");
+    socket.emit("connected");
 
-        socket.on("login", (user, callback) => {
-                HHHDB.login(database, user.username, user.password, (result) => {
-                        if (! result) { return; }
+    socket.on("login", (user, callback) => {
+        HHHDB.login(database, user.username, user.password, (result) => {
+            if (!result) { return; }
 
-                        socket.emit("update");
-                        callback(result);
-                        applyHandlers(socket, io, result.permissions, database);
-                });
+            socket.emit("update");
+            callback(result);
+            applyHandlers(socket, io, result.permissions, database);
         });
+    });
 
-        socket.on("check_token", (user, callback) => {
-                HHHDB.getToken(database, user.username, (result) => {
-                        if (result && parseInt(result.token, 10) === user.token) {
-                                socket.emit("update");
-                                applyHandlers(socket, io, result.permissions, database);
-                        }
-                        callback(result);
-                });
+    socket.on("check_token", (user, callback) => {
+        HHHDB.checkToken(database, user.username, user.token, (result: HHHUser) => {
+            if (result) {
+                socket.emit("update");
+                applyHandlers(socket, io, result.permissions, database);
+            }
+            callback(result);
+
         });
+    });
 
 });
-
-function parseDatabaseString(databaseUrl) {
-        const dbUser = databaseUrl.substring(8, databaseUrl.indexOf(":", 8));
-        const dbPass = databaseUrl.substring(databaseUrl.indexOf(":", 8) + 1, databaseUrl.indexOf("@"));
-        const dbHost = databaseUrl.substring(databaseUrl.indexOf("@") + 1,
-                databaseUrl.indexOf("/", databaseUrl.indexOf("@")));
-        const dbName = databaseUrl.substring(databaseUrl.indexOf("/",
-                databaseUrl.indexOf("@")) + 1, databaseUrl.indexOf("?"));
-
-        return {
-                database: dbName,
-                host: dbHost,
-                password: dbPass,
-                user: dbUser,
-        };
-
-}

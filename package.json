@@ -8,26 +8,29 @@
   "license": "MIT",
   "dependencies": {
     "@types/bcrypt": "^3.0.0",
-    "@types/mysql": "^2.15.5",
-    "@types/socket.io": "^2.1.2",
     "@types/express": "^4.16.1",
-    "@types/node": "^10.12.21",
-    "typescript": "^3.3.1",
-    "bcrypt": "^3.0.0",
-    "csv": "^2.0.0",
+    "@types/mysql": "^2.15.5",
+    "@types/node": "^10.14.3",
+    "@types/socket.io": "^2.1.2",
+    "bcrypt": "^3.0.5",
     "express": "4.13.4",
-    "mysql": "^2.15.0",
-    "socket.io": "^2.0.4"
+    "mysql": "^2.16.0",
+    "socket.io": "^2.2.0",
+    "typescript": "^3.3.4000"
   },
   "scripts": {
     "start": "npm run build; node ./bin/index.js",
     "build": "tsc",
     "build:watch": "tsc --watch",
     "lint": "tslint",
-    "test": "mocha"
+    "test": "ts-mocha ./test/*.test.ts"
   },
   "devDependencies": {
-    "mocha": "^6.0.0",
-    "tslint": "^5.12.1"
+    "@types/expect": "^1.20.4",
+    "@types/mocha": "^5.2.6",
+    "mocha": "^6.0.2",
+    "ts-mocha": "^6.0.0",
+    "ts-node": "^8.0.3",
+    "tslint": "^5.14.0"
   }
 }
