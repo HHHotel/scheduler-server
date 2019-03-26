@@ -194,13 +194,13 @@ function addDog(db: Database, dog: HHHDog, doneCall) {
         , doneCall);
 }
 
-function addEvent(db: Database, event: HHHEvent, doneCall) {
+function addEvent(db: Database, event: HHHSQLEvent, doneCall) {
     if (!event.id) { event.id = "0"; }
 
     query(db, `
           INSERT INTO events (id, event_start, event_end, event_type, event_text, event_id)
-          VALUES (` + event.id + ', "' + event.startDate + '", "' + event.endDate +
-        '", "' + event.type + '", "' + event.text + '", UUID_SHORT());'
+          VALUES (` + event.id + ', "' + event.event_start + '", "' + event.event_end +
+        '", "' + event.event_type + '", "' + event.event_text + '", UUID_SHORT());'
         , doneCall);
 }
 

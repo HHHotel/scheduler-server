@@ -1,6 +1,6 @@
 import assert = require("assert");
 import HHHDB = require("../src/HHHDatabase");
-import {HHHDog} from "../src/HHHTypes";
+import {HHHDog, HHHSQLEvent} from "../src/HHHTypes";
 const database = HHHDB.createDatabase(HHHDB.parseDatabaseString(process.env.CLEARDB_DATABASE_URL));
 
 describe("HHH Database", () => {
@@ -55,7 +55,17 @@ describe("HHH Database", () => {
             let eventNum = major.bookings.length;
             for (const booking of major.bookings) {
                 booking.id = major.id;
-                HHHDB.addEvent(database, booking,
+                const event: HHHSQLEvent = {
+                    client_name: major.clientName,
+                    dog_name: major.name,
+                    event_end: booking.endDate.valueOf().toString(),
+                    event_id: null,
+                    event_start: booking.startDate.valueOf().toString(),
+                    event_text: "",
+                    event_type: booking.type,
+                    id: booking.id,
+                };
+                HHHDB.addEvent(database, event,
                     (results) => {
                         assert.deepEqual(results.warningCount, 0);
                         if (--eventNum === 0) { done(); }
