@@ -33,11 +33,11 @@ function dogHandlers(socket: Socket, permissions: number, io: Server, db) {
     }, permissions, 0);
 
     handleEvent(socket, "remove_event", (id, callback) => {
-        HHHDB.removeEvent(db, id, () => { io.sockets.emit("update"); });
+        HHHDB.removeEvent(db, id, () => { io.sockets.emit("update"); callback(); });
     }, permissions, 6);
 
     handleEvent(socket, "remove_dog", (id, callback) => {
-        HHHDB.removeDog(db, id, () => { io.sockets.emit("update"); });
+        HHHDB.removeDog(db, id, () => { io.sockets.emit("update"); callback(); });
     }, permissions, 6);
 
     handleEvent(socket, "retrieve_dog", (id, callback) => {
