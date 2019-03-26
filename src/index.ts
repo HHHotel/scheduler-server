@@ -12,7 +12,7 @@ const port = process.env.PORT || 8080;
 
 server.listen(port, () => console.log("Server running on port " + port) );
 
-app.use(express.static(path.join(__dirname, "landing")));
+app.use(express.static(path.join(__dirname, "../landing")));
 
 import HHHDB = require("./HHHDatabase");
 const database = HHHDB.createDatabase(HHHDB.parseDatabaseString(process.env.CLEARDB_DATABASE_URL));
