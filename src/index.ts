@@ -28,7 +28,7 @@ io.on("connection", (socket) => {
 
     socket.on("login", (user, callback) => {
         HHHDB.login(database, user.username, user.password, (result) => {
-            if (!result) { return; }
+            if (!result) { callback(null); return; }
 
             socket.emit("update");
             callback(result);

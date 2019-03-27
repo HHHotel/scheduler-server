@@ -72,6 +72,8 @@ function query(db: Database, qstr: string, callback: (results: any[]) => void) {
 function login(db: Database, username: string, password: string,
     callback: (HHHUser) => void) {
 
+    if (!username || !password) { callback(null); return; }
+
     // TODO More resilient token generation
     const token = Math.round(Math.random() * 1000000);
     const tokenTimestamp = new Date().valueOf();
@@ -93,17 +95,22 @@ function login(db: Database, username: string, password: string,
 
     // Check hash with password
     function comparePass(results) {
-        if (!results[0]) { callback(null); return null; }
-
         const user = results[0];
+        if (!user) { callback(null); return; }
+
         bcrypt.compare(password, user.hashed_password,
             (err, success) => {
                 if (err) { throw err; }
-                callback({
-                    permissions: user.permissions,
-                    token: user.token,
-                    username: user.username,
-                });
+                if (!success) {
+                    callback(null);
+                } else {
+                    callback({
+                        permissions: user.permissions,
+                        token: user.token,
+                        username: user.username,
+                    });
+                }
+
             });
     }
 }
