@@ -296,7 +296,7 @@ function find(db: Database, searchText: string, callback: (matches: SchedulerEve
                 endDate: null,
                 eventId: "0",
                 startDate: null,
-                text: dog.dog_name + " " + dog.client_name,
+                text: dog.dog_name,
                 type: "dog",
             });
 
