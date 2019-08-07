@@ -44,6 +44,14 @@ app.use("/api/*/delete", (req, res, next) => {
     }
 });
 
+app.use("/api/events|dogs", (req, res, next) => {
+    if (req.user.permissions > 4) {
+        next();
+    } else {
+        res.send("Insufficent privileges");
+    }
+});
+
 import HHHDB = require("./HHHDatabase"); // Interface with all logic for database
 const database = HHHDB.createDatabase(HHHDB.parseDatabaseString(process.env.CLEARDB_DATABASE_URL));
 
