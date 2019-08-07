@@ -1,4 +1,3 @@
-// TODO add documentation and implement new functions for socketio events
 import {MysqlError, Pool, PoolConfig} from "mysql";
 import {Database,
     HHHBooking, HHHDog, HHHEvent, HHHSQLDog, HHHSQLEvent, HHHSQLUser,
