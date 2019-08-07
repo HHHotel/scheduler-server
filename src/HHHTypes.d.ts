@@ -63,3 +63,15 @@ export interface Database {
     pool: Pool;
     connOpts: PoolConfig;
 }
+
+declare global {
+    namespace Express {
+        export interface Request {
+            user?: {
+                username: string,
+                token: string,
+                permissions: number,
+            };
+        }
+    }
+}
