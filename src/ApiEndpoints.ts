@@ -69,7 +69,6 @@ function ApplyApiEndpoints(app, database: Database) {
     });
 
     app.put("/api/user/password", (req, res) => {
-        console.log(req.url);
         HHHDB.changePassword(database, req.user.username, req.body.oldPassword,
             req.body.newPassword, (result) => res.send(result));
     });
