@@ -36,15 +36,15 @@ function ApplyApiEndpoints(app, database: Database) {
         res.send("Edited Dog");
     });
 
-    app.get("/api/dogs/delete/:id", (req, res) => {
+    app.get("/api/dogs/:id/delete", (req, res) => {
         HHHDB.removeDog(database, req.params.id, (result) => res.send(result));
     });
 
-    app.get("/api/events/delete/:id", (req, res) => {
+    app.get("/api/events/:id/delete", (req, res) => {
         HHHDB.removeEvent(database, req.params.id, (result) => res.send(result));
     });
 
-    app.get("/api/users/delete/:user", (req, res) => {
+    app.get("/api/users/:user/delete", (req, res) => {
         HHHDB.deleteUser(database, req.params.user);
         res.send("Deleted User");
     });
