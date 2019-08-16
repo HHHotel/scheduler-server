@@ -1,14 +1,14 @@
 process.env.TZ = "GMT+0000";
 
+import cors = require("cors");
 import express = require("express");
-const app = express();
-import http = require("http");
-const server = http.createServer(app);
-
 import path = require("path");
+
+const app = express();
 const port = process.env.PORT || 8080;
 
-server.listen(port, () => console.log("Server running on port " + port) );
+app.listen(port, () => console.log("Server running on port " + port) );
+app.use(cors());
 
 app.use(express.static(path.join(__dirname, "../landing")));
 import bodyParser = require("body-parser");
