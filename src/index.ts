@@ -10,7 +10,7 @@ const port = process.env.PORT || 8080;
 app.listen(port, () => console.log("Server running on port " + port) );
 app.use(cors());
 
-app.use(express.static(path.join(__dirname, "../landing")));
+app.use(express.static(path.join(__dirname, "../srv")));
 import bodyParser = require("body-parser");
 app.use(bodyParser.json());       // to support JSON-encoded bodies
 
