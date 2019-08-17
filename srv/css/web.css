@@ -49,6 +49,7 @@ pre {
 }
 
 #prev-week,
+#refresh,
 #next-week {
     color: var(--font-light);
     padding: .5rem;
