@@ -39,7 +39,7 @@ window.hhhLogin = (event) => {
                     update();
                 });
             } else {
-                alert("Something went wrong!");
+                alert("Login Failed");
             }
         });
     return false;
@@ -114,8 +114,8 @@ function queryWeek() {
         if (res.status === 200) {
             res.json().then((data) => {
                 const fow = getFirstOfWeek(window.schedulerDate);
-                const low = new Date(getFirstOfWeek(window.schedulerDate)).
-                    setDate(fow.getDate() + 6);
+                const low = new Date(new Date(getFirstOfWeek(window.schedulerDate)).
+                    setDate(fow.getDate() + 6));
 
                 const events = loadEventData(data, fow, low);
 
@@ -163,7 +163,6 @@ function loadEventData(serverEventResponse, firstDayOfWeek, lastDayOfWeek) {
         const endDay = event.endDate >= lastDayOfWeek ?
             6 : event.endDate.getDay();
 
-
         for (let i = startDay; i <= endDay; i++) {
             const record = {
                 text: event.text,
@@ -172,14 +171,15 @@ function loadEventData(serverEventResponse, firstDayOfWeek, lastDayOfWeek) {
                 date: event.startDate,
             };
 
+            const loopDate = new Date(new Date(firstDayOfWeek)
+                .setDate(firstDayOfWeek.getDate() + i));
+
             if (event.type === DEFAULT.CONSTANTS.BOARDING &&
-                new Date(new Date(firstDayOfWeek).setDate(i)).toDateString() ===
-                event.startDate.toDateString()) {
+                loopDate.toDateString() === event.startDate.toDateString()) {
                 record.date = event.startDate;
                 record.type = DEFAULT.CONSTANTS.ARRIVING;
             } else if (event.type === DEFAULT.CONSTANTS.BOARDING &&
-                new Date(new Date(lastDayOfWeek).setDate(i)).toDateString() ===
-                event.endDate.toDateString()) {
+                loopDate.toDateString() === event.endDate.toDateString()) {
                 record.date = event.endDate;
                 record.type = DEFAULT.CONSTANTS.DEPARTING;
             } else if (event.type === DEFAULT.CONSTANTS.BOARDING) {
