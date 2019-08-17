@@ -1,0 +1,127 @@
+.header {
+    height: 3rem;
+
+    color: var(--font-light);
+    background-color: var(--background-dark);
+
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.header div {
+    height: 100%;
+}
+
+.header * {
+    line-height: 3rem;
+    vertical-align: middle;
+
+    padding: 0px 5px;
+}
+
+disconnect-notice {
+    background-color: #961919;
+
+    font-size: 1.2rem;
+    text-align: center;
+
+    padding: .3rem;
+    width: 100%;
+    position: fixed;
+    left    : 0;
+    bottom  : 0;
+}
+
+.week-wrapper {
+    height: calc(100vh - 5rem);
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+.day {
+    height: calc(100vh - 6rem);
+    box-shadow: 3px 3px 5px var(--shadow);
+
+    background-color: var(--background-ex-light);
+}
+
+.week {
+    width: 95%;
+    margin: .25rem auto;
+
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    grid-gap: .5rem;
+}
+
+.day-title {
+    text-align: center;
+}
+
+.dog-list {
+    display: flex;
+    flex-flow: column nowrap;
+    height: 95%;
+    width: 100%;
+    overflow: auto;
+}
+
+.dog-list * {
+    min-height: 1rem;
+    color: black;
+    order: 10;
+    display: inline-flex;
+    margin: 0 4px;
+}
+
+.arriving {
+    color: blue;
+    order: 3;
+}
+
+/*
+.arriving::after {
+content: ' - Arrives';
+}
+ */
+
+    .departing {
+        color: red;
+        order: 4;
+    }
+
+    /*
+    .departing::after {
+    content: ' - Leaves';
+    }
+     */
+
+    .boarding {
+        order: 1;
+        color: maroon;
+    }
+
+    .daycare {
+        order: 5;
+        color: hotpink;
+    }
+
+    .grooming {
+        order: 9;
+        color: green;
+    }
+    .foster {
+        color: darkblue;
+        order: 2;
+    }
+    .visit {
+        color: purple;
+        order: 10;
+
+    }
+
+    .general {
+        order: 10;
+        color: darkslategrey;
+    }

@@ -1,0 +1,69 @@
+body, html {
+    background-color: #FFF !important;
+    overflow: visible !important;
+}
+
+#titleBar,
+#titleBar > *,
+.header > *,
+.sidebar-wrapper,
+.sidebar-wrapper > * {
+    display: none !important;
+}
+
+.header,
+.header > h1 {
+    display: inline-block !important;
+    color: #000;
+    width: 100%;
+    text-align: center;
+    background: #FFF;
+}
+
+.app-wrapper {
+    margin: 0;
+}
+
+.week {
+    display: inline-block !important;
+}
+
+.day-title {
+    font-size: 1.4rem;
+}
+
+.week-wrapper,
+.week,
+.main-content {
+    width: 100% !important;
+    overflow: visible !important;
+}
+
+.day {
+    display: inline-block;
+    background-color: #FFF !important;
+    border: 1px solid black;
+    border-radius: .2rem;
+    height: calc(100vh - 5.3rem) !important;
+    font-size: .7rem;
+    overflow: hidden;
+    box-shadow: none !important;
+}
+.day-0,
+.day-1,
+.day-2 {
+    width: 33.3%;
+
+}
+
+.day-3,
+.day-4,
+.day-5,
+.day-6 {
+    height: 99vh !important;
+    width: 25%;
+}
+
+.dog-list {
+    overflow: visible !important;
+}

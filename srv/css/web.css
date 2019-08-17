@@ -1,0 +1,55 @@
+pre {
+    font-family: "Poppins";
+}
+
+.web-header {
+    text-align: center;
+    background-color: var(--background-dark);
+    color: var(--font-light);
+    padding: .5rem;
+    margin: 0;
+}
+
+.content-wrapper {
+    background-color: var(--background-light);
+    width: 100%;
+    height: calc(100vh - 3rem);
+    margin: auto;
+}
+
+.week-wrapper {
+    height: calc(100vh - 3rem);
+    overflow-y: scroll;
+}
+.day-wrapper {
+    background-color: var(--background-ex-light);
+    height: calc(100vh - 7rem);
+    margin: 1rem auto;
+    width: 95%;
+    box-shadow: 2px 2px 10px var(--shadow);
+    overflow-y: scroll;
+    display: flex;
+    flex-direction: column;
+}
+
+.day-header {
+    text-align: center;
+    padding: .5rem 0;
+}
+
+.event-text {
+    line-height: 1.25rem;
+    padding: 0 .25rem;
+}
+
+.week-scroller {
+    background-color: var(--background-ex-dark);
+    display: flex;
+    justify-content: space-between;
+}
+
+#prev-week,
+#next-week {
+    color: var(--font-light);
+    padding: .5rem;
+}

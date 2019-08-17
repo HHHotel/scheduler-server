@@ -1,0 +1,20 @@
+.highlighted {
+  background-color: #38635155;
+}
+
+.form-wrapper .search {
+  height: 8rem;
+}
+
+.booking-type-wrapper {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: space-around;
+}
+
+#booking-type-btn {
+  width: 40%;
+  float: left;
+  margin: 0;
+}

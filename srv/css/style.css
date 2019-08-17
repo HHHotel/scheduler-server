@@ -1,0 +1,161 @@
+@import url('https://fonts.googleapis.com/css?family=Poppins|Raleway');
+
+:root {
+    --background-light: #e1e7ec;
+    --background-ex-light: #f2efef;
+    --background-dark: #386351;
+    --background-ex-dark: #131418;
+
+    --input-background-color: #d3dadf;
+
+    --cover-color: #444a;
+
+    --font-light: #ebebeb;
+    --font-dark: #282C34;
+
+    --shadow: #AAA;
+}
+
+* {
+    padding: 0;
+    margin: 0;
+
+    box-sizing: border-box;
+    font-family: 'Poppins';
+
+    -webkit-user-select: none;
+    user-select: none;
+    cursor: default;
+}
+
+body,
+html {
+    background-color: var(--background-light);
+    overflow: hidden;
+}
+
+input {
+    cursor: text;
+    user-select: all;
+
+    background: var(--input-background-color);
+
+    border: none;
+    border-bottom: 2px solid var(--background-dark);
+    border-radius: 2px;
+
+    box-shadow: 1px 1px 3px var(--shadow);
+
+    margin: .5rem 0 1rem;
+    padding: .5rem;
+    width: 100%;
+}
+
+.radio {
+    width: 1rem;
+}
+
+select {
+    background: var(--input-background-color);
+
+    border: none;
+    border-bottom: 2px solid var(--background-dark);
+    border-radius: 2px;
+
+    box-shadow: 1px 1px 3px var(--shadow);
+
+    margin: .5rem 0 1rem;
+    padding: .5rem;
+    width: 100%;
+}
+
+
+button {
+    padding: .5rem;
+
+    background-color: var(--background-dark);
+    color: var(--font-light);
+
+    border: none;
+    border-radius: .2rem .5rem;
+
+    box-shadow: 3px 2px 5px var(--shadow)
+    , -2px 2px 5px var(--shadow);
+
+    transition-duration: .25s;
+}
+
+button:focus {
+    outline: 0px;
+}
+
+button:active {
+    opacity: .7;
+}
+
+button:hover {
+    box-shadow: 3px 2px 20px var(--shadow)
+    , -2px 2px 20px var(--shadow);
+}
+
+.page-break {
+    height: 1px;
+    background-color: black;
+    margin: 1rem;
+    box-shadow: 3px 2px 5px var(--shadow);
+}
+
+.hand,
+.hand * {
+    user-select: none;
+    cursor: pointer;
+}
+
+.clearfix {
+    overflow: auto;
+}
+
+.clearfix::after {
+    content: "";
+    clear: both;
+    display: table;
+}
+
+*::-webkit-scrollbar {
+    width: .5rem;
+    border-radius: 20px;
+}
+
+*::-webkit-scrollbar-track {
+    background: var(--background-ex-light);
+    box-shadow: inset 0 0 3px var(--shadow);
+}
+
+*::-webkit-scrollbar-thumb {
+    border-radius: 20px;
+    background-color: var(--background-dark);
+    box-shadow: 3px 0px 5px var(--shadow);
+}
+
+.app-wrapper {
+    margin-top: 2rem;
+}
+
+.app-wrapper > * {
+    float: left;
+}
+
+.main-content {
+    width: 70%;
+}
+
+.sidebar-closed {
+    width: 100%;
+}
+
+.sidebar-wrapper {
+    width: 30%;
+    height: calc(100vh - 5rem);
+}
+
+

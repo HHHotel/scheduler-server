@@ -1,0 +1,30 @@
+.login-logo {
+  margin-top: 3rem;
+  margin-left: 40%;
+  width: 20%;
+}
+
+.login-inputs {
+  margin-top: 3vh;
+}
+
+.login-input {
+  width: 30%;
+  margin-left: 35%;
+}
+
+.login-label {
+  width: 100%;
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.login-button {
+  margin-left: 45%;
+  width: 10%;
+}
+
+.login-failed {
+  color: #F33;
+}
