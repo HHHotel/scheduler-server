@@ -178,7 +178,7 @@ function loadEventData(serverEventResponse, firstDayOfWeek, lastDayOfWeek) {
                 record.date = event.startDate;
                 record.type = DEFAULT.CONSTANTS.ARRIVING;
             } else if (event.type === DEFAULT.CONSTANTS.BOARDING &&
-                new Date(new Date(firstDayOfWeek).setDate(i)).toDateString() ===
+                new Date(new Date(lastDayOfWeek).setDate(i)).toDateString() ===
                 event.endDate.toDateString()) {
                 record.date = event.endDate;
                 record.type = DEFAULT.CONSTANTS.DEPARTING;
