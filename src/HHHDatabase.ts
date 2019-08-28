@@ -114,7 +114,7 @@ function login(db: Database, username: string, password: string,
 }
 
 function addUser(db: Database, username: string, password: string, permissions: number,
-    callback: () => void) {
+    callback: (res: unknown) => void) {
     query(db, `
          SELECT * FROM users WHERE users.username = "` + username + '";'
         , insertUser);
@@ -194,14 +194,14 @@ function checkToken(db: Database, username: string, token: number,
         });
 }
 
-function addDog(db: Database, dog: HHHDog, doneCall: () => void) {
+function addDog(db: Database, dog: HHHDog, doneCall: (res: unknown) => void) {
     query(db, `
           INSERT INTO dogs (id, dog_name, client_name)
           VALUES (UUID_SHORT(), "` + dog.name + '", "' + dog.clientName + '");'
         , doneCall);
 }
 
-function addEvent(db: Database, event: HHHSQLEvent, doneCall: () => void) {
+function addEvent(db: Database, event: HHHSQLEvent, doneCall: (res: unknown) => void) {
     if (!event.id) { event.id = "0"; }
 
     query(db, `
@@ -211,14 +211,14 @@ function addEvent(db: Database, event: HHHSQLEvent, doneCall: () => void) {
         , doneCall);
 }
 
-function removeEvent(db: Database, eventId: string, doneCall: () => void) {
+function removeEvent(db: Database, eventId: string, doneCall: (res: unknown) => void) {
     query(db, `
           DELETE FROM events
           WHERE event_id = ` + eventId + `;`
         , doneCall);
 }
 
-function removeDog(db: Database, dogID: string, doneCall: () => void) {
+function removeDog(db: Database, dogID: string, doneCall: (res: unknown) => void) {
     query(db, "DELETE FROM dogs WHERE dogs.id = " + dogID + ";", noop);
     query(db, "DELETE FROM events WHERE events.id = " + dogID + ";", doneCall);
 }
