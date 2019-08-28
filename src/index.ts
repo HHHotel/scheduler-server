@@ -88,7 +88,7 @@ app.post("/login", (req, res) => {
         HHHDB.login(database, req.body.username, req.body.password, respondToLogin);
     }
 
-    function respondToLogin(result) {
+    function respondToLogin(result: any) {
         if (result) {
             res.send(result);
         } else {

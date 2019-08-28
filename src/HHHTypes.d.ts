@@ -18,6 +18,7 @@ export interface HHHUser {
     id: string;
     username: string;
     permissions: number;
+    token: number;
 }
 
 export interface HHHDog {
@@ -30,6 +31,7 @@ export interface HHHDog {
 export interface HHHSQLUser {
     id: string;
     username: string;
+    hashed_password: string;
     permissions: number;
     token: number;
     token_timestamp: number;
@@ -54,7 +56,7 @@ export interface SchedulerEvent {
     type: string;
     desc: string;
     dogId: string;
-    eventId: string;
+    id: string;
     startDate: Date;
     endDate: Date;
 }
@@ -69,7 +71,7 @@ declare global {
         export interface Request {
             user?: {
                 username: string,
-                token: string,
+                token: number,
                 permissions: number,
             };
         }

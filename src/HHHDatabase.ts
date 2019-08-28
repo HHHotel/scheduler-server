@@ -1,13 +1,11 @@
-import {MysqlError, Pool, PoolConfig} from "mysql";
-import {Database,
-    HHHBooking, HHHDog, HHHEvent, HHHSQLDog, HHHSQLEvent, HHHSQLUser,
-    HHHUser, SchedulerEvent} from "./HHHTypes";
+import {MysqlError, PoolConfig} from "mysql";
+import {Database, HHHDog, HHHEvent, HHHSQLDog, HHHSQLEvent, HHHSQLUser, HHHUser, SchedulerEvent} from "./HHHTypes";
 
 import bcrypt = require("bcrypt");
 
 const TOKEN_EXPIRE_PERIOD: number = 86400000;
 
-function parseDatabaseString(databaseUrl) {
+function parseDatabaseString(databaseUrl: string) {
     const dbUser = databaseUrl.substring(8, databaseUrl.indexOf(":", 8));
     const dbPass = databaseUrl.substring(databaseUrl.indexOf(":", 8) + 1, databaseUrl.indexOf("@"));
     const dbHost = databaseUrl.substring(databaseUrl.indexOf("@") + 1,
@@ -69,7 +67,7 @@ function query(db: Database, qstr: string, callback: (results: any[]) => void) {
 }
 
 function login(db: Database, username: string, password: string,
-    callback: (HHHUser) => void) {
+    callback: (user: HHHUser) => void) {
 
     if (!username || !password) { callback(null); return; }
 
@@ -93,7 +91,7 @@ function login(db: Database, username: string, password: string,
     }
 
     // Check hash with password
-    function comparePass(results) {
+    function comparePass(results: HHHSQLUser[]) {
         const user = results[0];
         if (!user) { callback(null); return; }
 
@@ -104,6 +102,7 @@ function login(db: Database, username: string, password: string,
                     callback(null);
                 } else {
                     callback({
+                        id: user.id,
                         permissions: user.permissions,
                         token: user.token,
                         username: user.username,
@@ -115,12 +114,12 @@ function login(db: Database, username: string, password: string,
 }
 
 function addUser(db: Database, username: string, password: string, permissions: number,
-    callback) {
+    callback: () => void) {
     query(db, `
          SELECT * FROM users WHERE users.username = "` + username + '";'
         , insertUser);
 
-    function insertUser(results) {
+    function insertUser(results: HHHSQLUser[]) {
         if (results[0]) { return null; }
         bcrypt.hash(password, 12, (err, hash) => {
             if (err) { throw err; }
@@ -140,8 +139,8 @@ function changePassword(db: Database, username: string,
           WHERE users.username = "` + username + '";'
         , checkPassword);
 
-    function checkPassword(results) {
-        if (! results[0]) { callback("User Not Found"); return; }
+    function checkPassword(results: HHHSQLUser[]) {
+        if (!results[0]) { callback("User Not Found"); return; }
         const user = results[0];
 
         bcrypt.compare(oldPassword, user.hashed_password,
@@ -175,7 +174,7 @@ function deleteUser(db: Database, username: string) {
 }
 
 function checkToken(db: Database, username: string, token: number,
-    callback: (HHHUser) => void) {
+    callback: (user: HHHUser) => void) {
     query(db, `
           SELECT username, token, token_timestamp, permissions FROM users
           WHERE users.username = '` + username + `';`
@@ -184,7 +183,9 @@ function checkToken(db: Database, username: string, token: number,
                 && (new Date().valueOf() - result[0].token_timestamp) < TOKEN_EXPIRE_PERIOD
                 && token === result[0].token) {
                 callback({
+                    id: result[0].id,
                     permissions: result[0].permissions,
+                    token: result[0].token,
                     username: result[0].username,
                 });
             } else {
@@ -193,14 +194,14 @@ function checkToken(db: Database, username: string, token: number,
         });
 }
 
-function addDog(db: Database, dog: HHHDog, doneCall) {
+function addDog(db: Database, dog: HHHDog, doneCall: () => void) {
     query(db, `
           INSERT INTO dogs (id, dog_name, client_name)
           VALUES (UUID_SHORT(), "` + dog.name + '", "' + dog.clientName + '");'
         , doneCall);
 }
 
-function addEvent(db: Database, event: HHHSQLEvent, doneCall) {
+function addEvent(db: Database, event: HHHSQLEvent, doneCall: () => void) {
     if (!event.id) { event.id = "0"; }
 
     query(db, `
@@ -210,14 +211,14 @@ function addEvent(db: Database, event: HHHSQLEvent, doneCall) {
         , doneCall);
 }
 
-function removeEvent(db: Database, eventId: string, doneCall) {
+function removeEvent(db: Database, eventId: string, doneCall: () => void) {
     query(db, `
           DELETE FROM events
           WHERE event_id = ` + eventId + `;`
         , doneCall);
 }
 
-function removeDog(db: Database, dogID: string, doneCall) {
+function removeDog(db: Database, dogID: string, doneCall: () => void) {
     query(db, "DELETE FROM dogs WHERE dogs.id = " + dogID + ";", noop);
     query(db, "DELETE FROM events WHERE events.id = " + dogID + ";", doneCall);
 }
@@ -236,7 +237,7 @@ function editEvent(db: Database, eventId: string, columnName: string, value: str
         , noop);
 }
 
-function retrieveDog(db: Database, id: string, callback: (HHHDog) => void) {
+function retrieveDog(db: Database, id: string, callback: (dog: HHHDog) => void) {
     query(db, `
           SELECT * FROM dogs
           LEFT JOIN events ON dogs.id = events.id
@@ -278,7 +279,7 @@ function find(db: Database, searchText: string, callback: (matches: SchedulerEve
           WHERE dog_name LIKE "%` + searchText + `%"; `
         , findEvents);
 
-    function findEvents(resDogs) {
+    function findEvents(resDogs: HHHSQLDog[]) {
         query(db, `
                   SELECT * from events WHERE event_text LIKE "%` + searchText + `%" AND
                   id = 0 AND event_text <> 'undefined';`
@@ -293,7 +294,7 @@ function find(db: Database, searchText: string, callback: (matches: SchedulerEve
                 desc: null /* dog.dog_breed */,
                 dogId: dog.id,
                 endDate: null,
-                eventId: "0",
+                id: "-1",
                 startDate: null,
                 text: dog.dog_name,
                 type: "dog",
@@ -305,7 +306,7 @@ function find(db: Database, searchText: string, callback: (matches: SchedulerEve
                 desc: null /* event.dog_breed */,
                 dogId: event.id,
                 endDate: new Date(parseInt(event.event_end, 10)),
-                eventId: event.event_id,
+                id: event.event_id,
                 startDate: new Date(parseInt(event.event_start, 10)),
                 text: event.event_text,
                 type: event.event_type,
@@ -351,7 +352,7 @@ function formatWeek(dbEvents: HHHSQLEvent[]): any[] {
             desc: null,
             dogId: event.id,
             endDate: new Date(parseInt(event.event_end, 10)),
-            eventId: event.event_id,
+            id: event.event_id,
             startDate: new Date(parseInt(event.event_start, 10)),
             text: event.event_text || event.dog_name,
             type: event.event_type,
