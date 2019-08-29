@@ -1,11 +1,8 @@
-import {Database,
-    HHHBooking, HHHDog, HHHEvent,
-    HHHSQLDog, HHHSQLEvent, HHHSQLUser,
-    HHHUser, SchedulerEvent} from "./HHHTypes";
-
+import { Application } from "express";
 import HHHDB = require("./HHHDatabase");
+import * as HHH from "./HHHTypes";
 
-function ApplyApiEndpoints(app, database: Database) {
+function ApplyApiEndpoints(app: Application, database: HHH.Database) {
     app.get("/api/week", (req, res) => {
        HHHDB.getWeek(database, req.query.date ? new Date(req.query.date) : new Date(), (week) => {
            res.send(week);
