@@ -3,6 +3,11 @@ process.env.TZ = "GMT+0000";
 import cors = require("cors");
 import express = require("express");
 import path = require("path");
+import semver = require("semver");
+
+const DEFAULTS = {
+    VERSION: "3.0.0",
+};
 
 const app = express();
 const port = process.env.PORT || 8080;
@@ -19,6 +24,15 @@ app.use(bodyParser.json());       // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
     extended: true,
 }));
+
+app.use("/api", (req, res, next) => {
+    if (req.headers.version && semver.lt(req.headers.version as string, DEFAULTS.VERSION)) {
+        next();
+    } else {
+        res.writeHead(412, "Out of date version", {"content-type" : "text/plain"});
+        res.end("API Version is incompatible");
+    }
+});
 
 app.use("/api", (req, res, next) => {
     HHHDB.checkToken(database, req.query.username, req.query.token, (user) => {
@@ -97,7 +111,7 @@ app.post("/login", (req, res) => {
 
     function respondToLogin(result: any) {
         if (result) {
-            console.log("Logged in ", req.body.username);
+            console.log("Logged in", req.body.username);
             res.send(result);
         } else {
             res.writeHead(403, "Bad User Password combination", {"content-type" : "text/plain"});
