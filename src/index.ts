@@ -8,6 +8,8 @@ const app = express();
 const port = process.env.PORT || 8080;
 
 app.listen(port, () => console.log("Server running on port " + port) );
+
+// MIDDLEWARE
 app.use(cors());
 
 app.use(express.static(path.join(__dirname, "../srv")));
@@ -30,8 +32,8 @@ app.use("/api", (req, res, next) => {
     });
 });
 
-app.use("/api/users", (req, res, next) => { // Limit permissions for changing users
-    if (req.user.permissions > 6) {
+app.use("/api/users", (req, res, next) => {
+    if (req.user.permissions > 6) { // restrict modifying users to >6 perms
         next();
     } else {
         res.writeHead(401, "Insufficent privileges", {"content-type" : "text/plain"});
@@ -39,8 +41,8 @@ app.use("/api/users", (req, res, next) => { // Limit permissions for changing us
     }
 });
 
-app.use("/api/*/delete", (req, res, next) => {
-    if (req.user.permissions > 5) {
+app.use("/api/*", (req, res, next) => {
+    if (req.method !== "DELETE" || req.user.permissions > 5) { // Restrict deleting to >5 perms
         next();
     } else {
         res.writeHead(401, "Insufficent privileges", {"content-type" : "text/plain"});
@@ -49,13 +51,15 @@ app.use("/api/*/delete", (req, res, next) => {
 });
 
 app.use("/api/events|/api/dogs", (req, res, next) => {
-    if (req.user.permissions > 4) {
+    if (req.user.permissions > 4) { // restrict adding/viewing dogs >4 perms
         next();
     } else {
         res.writeHead(401, "Insufficent privileges", {"content-type" : "text/plain"});
         res.end("Required Permissions were not met");
     }
 });
+
+// END MIDDLEWARE
 
 import HHHDB = require("./HHHDatabase"); // Interface with all logic for database
 const database = HHHDB.createDatabase(HHHDB.parseDatabaseString(process.env.CLEARDB_DATABASE_URL));
