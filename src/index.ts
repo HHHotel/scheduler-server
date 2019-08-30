@@ -36,6 +36,7 @@ app.use("/api/users", (req, res, next) => {
     if (req.user.permissions > 6) { // restrict modifying users to >6 perms
         next();
     } else {
+        console.log("Unauthorized User Access by", req.user.username);
         res.writeHead(401, "Insufficent privileges", {"content-type" : "text/plain"});
         res.end("Required Permissions were not met");
     }
@@ -45,6 +46,7 @@ app.use("/api/*", (req, res, next) => {
     if (req.method !== "DELETE" || req.user.permissions > 5) { // Restrict deleting to >5 perms
         next();
     } else {
+        console.log("Unauthorized DELETE Access by", req.user.username);
         res.writeHead(401, "Insufficent privileges", {"content-type" : "text/plain"});
         res.end("Required Permissions were not met");
     }
@@ -54,6 +56,7 @@ app.use("/api/events|/api/dogs", (req, res, next) => {
     if (req.user.permissions > 4) { // restrict adding/viewing dogs >4 perms
         next();
     } else {
+        console.log("Unauthorized Access by", req.user.username);
         res.writeHead(401, "Insufficent privileges", {"content-type" : "text/plain"});
         res.end("Required Permissions were not met");
     }
@@ -94,6 +97,7 @@ app.post("/login", (req, res) => {
 
     function respondToLogin(result: any) {
         if (result) {
+            console.log("Logged in ", req.body.username);
             res.send(result);
         } else {
             res.writeHead(403, "Bad User Password combination", {"content-type" : "text/plain"});

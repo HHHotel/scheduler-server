@@ -171,6 +171,7 @@ function deleteUser(db: Database, username: string) {
     query(db, `
           DELETE FROM users
           WHERE users.username = "` + username + '";', noop);
+    console.info("Removed user: username=", username);
 }
 
 function checkToken(db: Database, username: string, token: number,
@@ -216,11 +217,13 @@ function removeEvent(db: Database, eventId: string, doneCall: (res: unknown) => 
           DELETE FROM events
           WHERE event_id = ` + eventId + `;`
         , doneCall);
+    console.info("Removed event: id=", eventId);
 }
 
 function removeDog(db: Database, dogID: string, doneCall: (res: unknown) => void) {
     query(db, "DELETE FROM dogs WHERE dogs.id = " + dogID + ";", noop);
     query(db, "DELETE FROM events WHERE events.id = " + dogID + ";", doneCall);
+    console.info("Removed dog: id=", dogID);
 }
 
 function editDog(db: Database, id: string, columnName: string, value: string) {
