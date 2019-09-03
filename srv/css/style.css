@@ -127,13 +127,12 @@ button:hover {
 }
 
 *::-webkit-scrollbar-track {
-    background: var(--background-ex-light);
-    box-shadow: inset 0 0 3px var(--shadow);
+    background: none;
 }
 
 *::-webkit-scrollbar-thumb {
     border-radius: 20px;
-    background-color: var(--background-dark);
+    background-color: var(--background-ex-light);
     box-shadow: 3px 0px 5px var(--shadow);
 }
 
