@@ -23,8 +23,6 @@ window.hhhLogin = (event) => {
         password: user.get("password"),
     };
 
-    console.log(credentials)
-
     fetch(DEFAULT.API.BASE_URL + "/login", {
         method: "POST",
         body: JSON.stringify(credentials),
@@ -42,7 +40,6 @@ window.hhhLogin = (event) => {
                     update();
                 });
             } else {
-                console.log(res);
                 alert("Login Failed");
             }
         });
