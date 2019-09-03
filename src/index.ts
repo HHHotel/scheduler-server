@@ -6,7 +6,7 @@ import path = require("path");
 import semver = require("semver");
 
 const DEFAULTS = {
-    VERSION: "3.0.0",
+    VERSION: "0.3.0",
 };
 
 const app = express();
@@ -26,7 +26,7 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
 }));
 
 app.use("/api", (req, res, next) => {
-    if (req.headers.version && semver.lt(req.headers.version as string, DEFAULTS.VERSION)) {
+    if (req.headers.version && semver.gt(req.headers.version as string, DEFAULTS.VERSION)) {
         next();
     } else {
         res.writeHead(412, "Out of date version", {"content-type" : "text/plain"});

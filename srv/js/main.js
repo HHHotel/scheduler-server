@@ -23,13 +23,14 @@ window.hhhLogin = (event) => {
         password: user.get("password"),
     };
 
+    console.log(credentials)
+
     fetch(DEFAULT.API.BASE_URL + "/login", {
         method: "POST",
-        headers: {
-            "Accept": "application/json",
-            "Content-Type": "application/json",
-        },
         body: JSON.stringify(credentials),
+        headers: {
+            "Version": DEFAULT.VERSION,
+        },
     })
         .then((res) => {
             if (res.status === 200) {
@@ -39,6 +40,7 @@ window.hhhLogin = (event) => {
                     update();
                 });
             } else {
+                console.log(res);
                 alert("Login Failed");
             }
         });
@@ -110,7 +112,12 @@ function queryWeek() {
             "username", localStorage.hhh_username,
             "token", localStorage.hhh_token);
 
-    fetch(url).then((res) => {
+    fetch(url, {
+        method: "GET",
+        headers: {
+            "Version": DEFAULT.VERSION,
+        },
+    }).then((res) => {
         if (res.status === 200) {
             res.json().then((data) => {
                 const fow = getFirstOfWeek(window.schedulerDate);
@@ -123,8 +130,9 @@ function queryWeek() {
             });
         } else {
             localStorage.removeItem("hhh_token");
+            localStorage.removeItem("hhh_user");
             setView();
-            alert("Something went wrong!");
+            //alert("Something went wrong!");
         }
     });
 }
