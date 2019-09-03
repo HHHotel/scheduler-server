@@ -29,6 +29,8 @@ window.hhhLogin = (event) => {
         method: "POST",
         body: JSON.stringify(credentials),
         headers: {
+            "Accept": "application/json",
+            "Content-Type": "application/json",
             "Version": DEFAULT.VERSION,
         },
     })
@@ -233,9 +235,12 @@ function displayDay(eventsInDay, parentNode, dayHeadingText) {
     const dayHeading = document.createElement("h2");
     dayHeading.className = "day-header";
     dayHeading.innerText = dayHeadingText;
+    const eventWrapper = document.createElement("div");
+    eventWrapper.className = "event-wrapper";
     day.appendChild(dayHeading);
+    day.appendChild(eventWrapper);
     for (sEvent of eventsInDay) {
-        day.appendChild(getEventElement(sEvent));
+        eventWrapper.appendChild(getEventElement(sEvent));
     }
     parentNode.appendChild(day);
 }
