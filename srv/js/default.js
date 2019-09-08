@@ -1,5 +1,8 @@
 "use strict";
-let baseUrl = window.location.protocol + "//" + window.location.host
+let baseUrl = window.location.protocol + "//"
+    + window.location.host
+
+console.log(baseUrl);
 
 window.DEFAULT = {
     CONSTANTS: {

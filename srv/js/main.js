@@ -156,6 +156,8 @@ function buildQuery() {
  *  @return {[[]]} listing of days with events inside of them
  */
 function loadEventData(serverEventResponse, firstDayOfWeek, lastDayOfWeek) {
+    console.log("LOADING EVENT DATA");
+    console.log(serverEventResponse, firstDayOfWeek, lastDayOfWeek);
     const events = [];
 
     for (let i = 0; i < 7; i++) events[i] = [];
@@ -200,9 +202,9 @@ function loadEventData(serverEventResponse, firstDayOfWeek, lastDayOfWeek) {
 }
 
 /**
- * @param {[[]]} days
- * @param {Date} firstDayOfWeek
- */
+    * @param {[[]]} days
+    * @param {Date} firstDayOfWeek
+    */
 function displayWeek(days, firstDayOfWeek) {
     const weekWrapper = document.querySelector(".week-wrapper");
     while (weekWrapper.hasChildNodes()) {
