@@ -7,6 +7,7 @@
     --background-ex-dark: #131418;
 
     --input-background-color: #d3dadf;
+    --input-foreground-color: #131418;
 
     --cover-color: #444a;
 
@@ -21,17 +22,33 @@
     margin: 0;
 
     box-sizing: border-box;
-    font-family: 'Poppins';
+    font-family: 'Poppins', Sans-serif;
 
     cursor: default;
 }
 
-*:not(input.field) {
+*:not(input) {
     -webkit-user-select: none;
     -khtml-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+}
+
+*::-webkit-scrollbar {
+
+    width: .5rem;
+    border-radius: 20px;
+}
+
+*::-webkit-scrollbar-track {
+    background: none;
+}
+
+*::-webkit-scrollbar-thumb {
+    border-radius: 20px;
+    background-color: var(--background-ex-light);
+    box-shadow: 3px 0px 5px var(--shadow);
 }
 
 body,
@@ -42,9 +59,10 @@ html {
 
 input {
     cursor: text;
-    user-select: all;
+    user-select: text;
 
     background: var(--input-background-color);
+    color: var(--input-foreground-color);
 
     border: none;
     border-bottom: 2px solid var(--background-dark);
@@ -127,20 +145,6 @@ button:hover {
     display: table;
 }
 
-*::-webkit-scrollbar {
-    width: .5rem;
-    border-radius: 20px;
-}
-
-*::-webkit-scrollbar-track {
-    background: none;
-}
-
-*::-webkit-scrollbar-thumb {
-    border-radius: 20px;
-    background-color: var(--background-ex-light);
-    box-shadow: 3px 0px 5px var(--shadow);
-}
 
 .app-wrapper {
     margin-top: 2rem;
