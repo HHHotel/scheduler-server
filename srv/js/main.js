@@ -107,7 +107,7 @@ window.prevWeek = () => {
 */
 function queryWeek() {
     const url = DEFAULT.API.BASE_URL + "/api/week?" +
-        buildQuery("date", window.schedulerDate,
+        buildQuery("date", window.schedulerDate.toDateString(),
             "username", localStorage.hhh_username,
             "token", localStorage.hhh_token);
 
@@ -156,8 +156,6 @@ function buildQuery() {
  *  @return {[[]]} listing of days with events inside of them
  */
 function loadEventData(serverEventResponse, firstDayOfWeek, lastDayOfWeek) {
-    console.log("LOADING EVENT DATA");
-    console.log(serverEventResponse, firstDayOfWeek, lastDayOfWeek);
     const events = [];
 
     for (let i = 0; i < 7; i++) events[i] = [];
