@@ -328,7 +328,7 @@ function getWeek(db: Database, date: Date, callback: ([]) => void ) {
     // This week start date at 00:00
     const startDate: Date = new Date(date.setDate(date.getDate() - date.getDay()));
     // Next week start date at 00:00
-    const endDate: Date   = new Date(date.setDate(date.getDate() + 7));
+    const endDate: Date  = new Date(date.setDate(date.getDate() + 8));
 
     query(db, `
           SELECT * FROM events
