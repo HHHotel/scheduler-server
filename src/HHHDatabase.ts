@@ -260,9 +260,9 @@ function retrieveDog(db: Database, id: string, callback: (dog: HHHDog) => void) 
         results.reverse().map((record) => {
             if (record.event_start && record.event_end) {
                 const event: HHHEvent = {
-                    endDate: parseInt(record.event_end, 10),
+                    endDate: new Date(parseInt(record.event_end, 10)),
                     id: record.event_id,
-                    startDate: parseInt(record.event_start, 10),
+                    startDate: new Date(parseInt(record.event_start, 10)),
                     text: record.event_text,
                     type: record.event_type,
                 };
@@ -308,9 +308,9 @@ function find(db: Database, searchText: string, callback: (matches: SchedulerEve
             matches.push({
                 desc: null /* event.dog_breed */,
                 dogId: event.id,
-                endDate: parseInt(event.event_end, 10),
+                endDate: new Date(parseInt(event.event_end, 10)),
                 id: event.event_id,
-                startDate: parseInt(event.event_start, 10),
+                startDate: new Date(parseInt(event.event_start, 10)),
                 text: event.event_text,
                 type: event.event_type,
             });
@@ -354,9 +354,9 @@ function formatWeek(dbEvents: HHHSQLEvent[]): any[] {
         weekEvents.push({
             desc: null,
             dogId: event.id,
-            endDate: parseInt(event.event_end, 10),
+            endDate: new Date(parseInt(event.event_end, 10)),
             id: event.event_id,
-            startDate: parseInt(event.event_start, 10),
+            startDate: new Date(parseInt(event.event_start, 10)),
             text: event.event_text || event.dog_name,
             type: event.event_type,
         });

@@ -1,8 +1,8 @@
 import {Pool, PoolConfig} from "mysql";
 
 export interface HHHEvent {
-    startDate: number;
-    endDate: number;
+    startDate: Date;
+    endDate: Date;
     type: string;
     text: string;
     id: string;
@@ -57,8 +57,8 @@ export interface SchedulerEvent {
     desc: string;
     dogId: string;
     id: string;
-    startDate: number;
-    endDate: number;
+    startDate: Date;
+    endDate: Date;
 }
 
 export interface Database {
