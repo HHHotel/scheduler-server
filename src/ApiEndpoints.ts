@@ -1,8 +1,8 @@
 import { Application } from "express";
 import HHHDB = require("./HHHDatabase");
-import * as HHH from "./HHHTypes";
+import * as DB from "./HHHDBTypes";
 
-function ApplyApiEndpoints(app: Application, database: HHH.Database) {
+function ApplyApiEndpoints(app: Application, database: DB.IDatabase) {
     app.get("/api/week", (req, res) => {
        HHHDB.getWeek(database, req.query.date ? new Date(req.query.date) : new Date(), (week) => {
            res.send(week);
