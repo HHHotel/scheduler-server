@@ -6,7 +6,7 @@ import path = require("path");
 import semver = require("semver");
 
 const DEFAULTS = {
-    VERSION: "0.3.0",
+    VERSION: "0.3.1", // > 0.3.1 to run currrent
 };
 
 const app = express();

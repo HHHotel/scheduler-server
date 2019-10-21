@@ -1,6 +1,6 @@
 {
-  "name": "HHH-Scheduler",
-  "version": "0.3.0",
+  "name": "hounds-api",
+  "version": "0.3.1",
   "description": "Dog scheduler",
   "main": "./bin/index.js",
   "author": "Matt Rochford",
@@ -34,6 +34,6 @@
     "mocha": "^6.2.0",
     "ts-mocha": "^6.0.0",
     "ts-node": "^8.0.3",
-    "tslint": "^5.14.0"
+    "tslint": "^5.20.0"
   }
 }
