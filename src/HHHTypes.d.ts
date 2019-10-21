@@ -23,5 +23,17 @@ export interface IHoundDog {
     name: string;
     clientName: string;
     id: string;
-    bookings: IHoundEvent[];
+    bookings: IHoundBooking[];
+}
+
+declare global {
+    namespace Express {
+        export interface Request {
+            user?: {
+                username: string,
+                token: number,
+                permissions: number,
+            };
+        }
+    }
 }
