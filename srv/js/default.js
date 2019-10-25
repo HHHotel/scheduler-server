@@ -13,7 +13,7 @@ window.DEFAULT = {
             "Admin": 10,
         },
     },
-    VERSION: "0.3.1",
+    VERSION: "0.3.2",
     API: {
         //BASE_URL: "https://hhh-scheduler-testing.herokuapp.com",
         //BASE_URL: "http://172.22.32.248:8080",
