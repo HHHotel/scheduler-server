@@ -5,7 +5,7 @@ export interface ISQLUser {
     username: string;
     hashed_password: string;
     permissions: number;
-    token: number;
+    token: string;
     token_timestamp: number;
 }
 

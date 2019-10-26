@@ -1,4 +1,5 @@
-window.schedulerDate = new Date();
+window.schedulerDate = new Date(new Date().toLocaleDateString());
+window.schedulerDate.setDate(window.schedulerDate.getDate() - window.schedulerDate.getDay() + 1);
 
 /**
  * This is the login function
@@ -84,15 +85,6 @@ function contentView() {
 
 window.onload = update;
 
-/**
- * @param {Date} date
- * @return {Date} first day of the week
- */
-function getFirstOfWeek(date) {
-    return new Date(new Date(new Date(date).
-        setDate(date.getDate() - date.getDay())).toDateString());
-}
-
 window.nextWeek = () => {
     window.schedulerDate.setDate(window.schedulerDate.getDate() + 7);
     update();
@@ -119,11 +111,9 @@ function queryWeek() {
     }).then((res) => {
         if (res.status === 200) {
             res.json().then((data) => {
-                const fow = getFirstOfWeek(window.schedulerDate);
-                const low = new Date(new Date(getFirstOfWeek(window.schedulerDate)).
-                    setDate(fow.getDate() + 6));
+                const fow = window.schedulerDate;
 
-                const events = loadEventData(data, fow, low);
+                const events = EventData.loadEventData(window.schedulerDate, data);
 
                 displayWeek(events, fow);
             });
@@ -147,56 +137,6 @@ function buildQuery() {
         query += "&" + arguments[i] + "=" + arguments[i + 1];
     }
     return query;
-}
-
-/**
- *  @param {HHHEvent[]} serverEventResponse
- *  @param {Date} firstDayOfWeek
- *  @param {Date} lastDayOfWeek
- *  @return {[[]]} listing of days with events inside of them
- */
-function loadEventData(serverEventResponse, firstDayOfWeek, lastDayOfWeek) {
-    const events = [];
-
-    for (let i = 0; i < 7; i++) events[i] = [];
-
-    for (const event of serverEventResponse) {
-        event.startDate = new Date(event.startDate);
-        event.endDate = new Date(event.endDate);
-
-        const startDay = event.startDate <= firstDayOfWeek ?
-            0 : event.startDate.getDay();
-
-        const endDay = event.endDate >= lastDayOfWeek ?
-            6 : event.endDate.getDay();
-
-        for (let i = startDay; i <= endDay; i++) {
-            const record = {
-                text: event.text,
-                type: event.type,
-                id: event.dogId ? event.dogId : event.eventId,
-                date: event.startDate,
-            };
-
-            const loopDate = new Date(new Date(firstDayOfWeek)
-                .setDate(firstDayOfWeek.getDate() + i));
-
-            if (event.type === DEFAULT.CONSTANTS.BOARDING &&
-                loopDate.toDateString() === event.startDate.toDateString()) {
-                record.date = event.startDate;
-                record.type = DEFAULT.CONSTANTS.ARRIVING;
-            } else if (event.type === DEFAULT.CONSTANTS.BOARDING &&
-                loopDate.toDateString() === event.endDate.toDateString()) {
-                record.date = event.endDate;
-                record.type = DEFAULT.CONSTANTS.DEPARTING;
-            } else if (event.type === DEFAULT.CONSTANTS.BOARDING) {
-                record.date = null;
-            }
-
-            events[i].push(record);
-        }
-    }
-    return events;
 }
 
 /**
@@ -243,37 +183,6 @@ function displayDay(eventsInDay, parentNode, dayHeadingText) {
 }
 
 /**
- * @param {HHHEvent} hhhEvent
- * @return {int} sort order for the event
- */ /*
-function getSorting(hhhEvent) {
-    if (hhhEvent.type === DEFAULT.CONSTANTS.BOARDING) {
-        return 1;
-    } else if (hhhEvent.type === DEFAULT.CONSTANTS.DAYCARE) {
-        if (hhhEvent.date.getHours() <= 12) {
-            return 2;
-        } else {
-            return 5;
-        }
-    } else if (hhhEvent.type === DEFAULT.CONSTANTS.ARRIVING) {
-        if (hhhEvent.date.getHours() < 12) {
-            return 3;
-        } else {
-            return 6;
-        }
-    } else if (hhhEvent.type === DEFAULT.CONSTANTS.DEPARTING) {
-        if (hhhEvent.date.getHours() < 12) {
-            return 4;
-        } else {
-            return 7;
-        }
-    } else {
-        return 10;
-    }
-} */
-
-
-/**
  * @param {HHHEvent} event
  * @return {HTMLElement}
  */
@@ -282,31 +191,9 @@ function getEventElement(event) {
     element.id = event.id;
     element.className = event.type + " event-text";
 
-    const date = event.date ? new Date(event.date) : null;
     const text = event.text;
 
-    if (date) {
-        const hours = date.getHours();
-
-        element.innerText = "(" + hours + getClosing(date) + ") " + text;
-    } else {
-        element.innerText = text;
-    }
+    element.innerText = text;
 
     return element;
-}
-
-/**
- * @param {Date} date
- * @return {string} closingTime
- */
-function getClosing(date) {
-    if (date.getHours() != 8 && date.getHours() != 16) {
-        return ":" + (date.getMinutes() < 10 ? "0" + date.getMinutes()
-            : date.getMinutes());
-    } else if (date.getHours() < 12) {
-        return "-10";
-    } else {
-        return "-18";
-    }
 }

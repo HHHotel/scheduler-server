@@ -4,19 +4,30 @@ let baseUrl = window.location.protocol + "//"
 
 window.DEFAULT = {
     CONSTANTS: {
-        BOARDING: "boarding",
         ARRIVING: "arriving",
         DEPARTING: "departing",
+        BOARDING: "boarding",
+        DAYCARE: "daycare",
+        DOG: "dog",
+        EVENT_TYPES: [
+            "arriving",
+            "departing",
+            "daycare",
+            "grooming",
+            "visit",
+            "foster",
+            "eval",
+            "general",
+        ],
         USER_CONSTANT: {
-            "Viewer": 0,
-            "Inputer": 5,
-            "Admin": 10,
+            ["Viewer"]: 1,
+            ["Inputer"]: 5,
+            ["Admin"]: 10,
         },
     },
     VERSION: "0.3.2",
     API: {
-        //BASE_URL: "https://hhh-scheduler-testing.herokuapp.com",
-        //BASE_URL: "http://172.22.32.248:8080",
         BASE_URL: baseUrl,
     },
+
 };

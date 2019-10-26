@@ -16,7 +16,7 @@ export interface IHoundUser {
     id: string;
     username: string;
     permissions: number;
-    token: number;
+    token: string;
 }
 
 export interface IHoundDog {
@@ -31,7 +31,7 @@ declare global {
         export interface Request {
             user?: {
                 username: string,
-                token: number,
+                token: string,
                 permissions: number,
             };
         }

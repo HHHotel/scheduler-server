@@ -4,6 +4,7 @@ import * as HHH from "./HHHTypes";
 import * as API from "./HHHApiTypes";
 
 import bcrypt = require("bcrypt");
+import uuidv4 = require("uuid/v4");
 
 const TOKEN_EXPIRE_PERIOD: number = 86400000;
 
@@ -25,7 +26,7 @@ function parseDatabaseString(databaseUrl: string) {
 }
 
 // No-OP function
-function noop() { return true; }
+function noop() { return; }
 
 function handleError(err: MysqlError) {
     console.log(err.sqlMessage);
@@ -73,14 +74,13 @@ function login(db: DB.IDatabase, username: string, password: string,
 
     if (!username || !password) { callback(null); return; }
 
-    // TODO More resilient token generation
-    const token = Math.round(Math.random() * 1000000);
+    const token = uuidv4();
     const tokenTimestamp = new Date().valueOf();
 
     // Sets Token
     query(db, `
           UPDATE users
-          SET token = ` + token + `, token_timestamp = ` + tokenTimestamp + `
+          SET token = "` + token + `", token_timestamp = ` + tokenTimestamp + `
           WHERE username = '` + username + `';`
         , findUser);
 
@@ -176,7 +176,7 @@ function deleteUser(db: DB.IDatabase, username: string) {
     console.info("Removed user: username=", username);
 }
 
-function checkToken(db: DB.IDatabase, username: string, token: number,
+function checkToken(db: DB.IDatabase, username: string, token: string,
                     callback: (user: HHH.IHoundUser) => void) {
     query(db, `
           SELECT username, token, token_timestamp, permissions FROM users

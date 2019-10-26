@@ -35,7 +35,7 @@ app.use("/api", (req, res, next) => {
 });
 
 app.use("/api", (req, res, next) => {
-    HHHDB.checkToken(database, req.query.username, req.query.token, (user) => {
+    HHHDB.checkToken(database, req.body.username, req.body.token, (user) => {
         if (user) {
             req.user = user;
             next();
