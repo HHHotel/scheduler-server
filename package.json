@@ -22,7 +22,8 @@
   },
   "scripts": {
     "debug": "node --inspect ./bin/index.js",
-    "start": "npm run build && node ./bin/index.js",
+    "prestart": "npm run build",
+    "start": "node ./bin/index.js",
     "build": "tsc",
     "lint": "tslint -p .",
     "test": "ts-mocha ./src/test/*.test.ts"
