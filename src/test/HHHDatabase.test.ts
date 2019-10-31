@@ -1,23 +1,24 @@
 import assert = require("assert");
-import HHHDB = require("../src/HHHDatabase");
-import {HHHDog, HHHSQLEvent} from "../src/HHHTypes";
+import HHHDB = require("../HHHDatabase");
+import * as HHH from "../HHHTypes";
+import { IHoundApiDog } from "../HHHApiTypes";
 const database = HHHDB.createDatabase(HHHDB.parseDatabaseString(process.env.CLEARDB_DATABASE_URL));
 
 describe("HHH Database", () => {
 
-    const major: HHHDog = {
+    const major: HHH.IHoundDog = {
         bookings: [
             {
-                endDate: new Date("2-22-19 4:00 PM"),
+                endDate: new Date("2-22-19 4:00 PM").valueOf(),
                 id: null,
-                startDate: new Date("2-17-19 8:00 AM"),
+                startDate: new Date("2-17-19 8:00 AM").valueOf(),
                 text: "",
                 type: "boarding",
             },
             {
-                endDate: new Date("2-22-19 4:00 PM"),
+                endDate: new Date("2-22-19 4:00 PM").valueOf(),
                 id: null,
-                startDate: new Date("2-22-19 8:00 AM"),
+                startDate: new Date("2-22-19 8:00 AM").valueOf(),
                 text: "",
                 type: "daycare",
             },
@@ -43,8 +44,9 @@ describe("HHH Database", () => {
             const searchText: string = "Major";
             HHHDB.find(database, searchText,
                 (results) => {
-                    assert.deepEqual(results[0].text, "Major Johnson");
-                    major.id = results[0].dogId;
+                    const dog: IHoundApiDog = results[0] as IHoundApiDog;
+                    assert.deepEqual(dog.name + " " + dog.clientName, "Major Johnson");
+                    major.id = dog.id;
                     done();
                 });
         });
@@ -55,17 +57,8 @@ describe("HHH Database", () => {
             let eventNum = major.bookings.length;
             for (const booking of major.bookings) {
                 booking.id = major.id;
-                const event: HHHSQLEvent = {
-                    client_name: major.clientName,
-                    dog_name: major.name,
-                    event_end: booking.endDate.valueOf().toString(),
-                    event_id: null,
-                    event_start: booking.startDate.valueOf().toString(),
-                    event_text: "",
-                    event_type: booking.type,
-                    id: booking.id,
-                };
-                HHHDB.addEvent(database, event,
+
+                HHHDB.addEvent(database, booking,
                     (results) => {
                         assert.deepEqual(results.warningCount, 0);
                         if (--eventNum === 0) { done(); }
@@ -81,7 +74,7 @@ describe("HHH Database", () => {
                 permissions: 0,
                 username: "testing",
             };
-            HHHDB.addUser(database, user.username, user.password, user.permissions, () => done() );
+            HHHDB.addUser(database, user.username, user.password, user.permissions, () => done());
         });
     });
 
@@ -96,7 +89,7 @@ describe("HHH Database", () => {
                 (res) => {
                     assert.equal(res, "Success");
                     done();
-            });
+                });
         });
     });
 
@@ -109,9 +102,9 @@ describe("HHH Database", () => {
 
     describe("#retrieveDog()", () => {
         it("Proper retrieval of Major", (done) => {
-            HHHDB.retrieveDog(database, major.id, (res: HHHDog) => {
-                res.bookings.sort((a, b) => a.startDate.valueOf() - b.startDate.valueOf() );
-                major.bookings.sort((a, b) => a.startDate.valueOf() - b.startDate.valueOf() );
+            HHHDB.retrieveDog(database, major.id, (res: HHH.IHoundDog) => {
+                res.bookings.sort((a, b) => a.startDate.valueOf() - b.startDate.valueOf());
+                major.bookings.sort((a, b) => a.startDate.valueOf() - b.startDate.valueOf());
                 major.bookings.map((booking, i) => { booking.id = res.bookings[i].id; });
                 assert.deepEqual(res, major);
                 done();

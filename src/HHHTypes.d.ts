@@ -23,7 +23,7 @@ export interface IHoundDog {
     name: string;
     clientName: string;
     id: string;
-    bookings: IHoundBooking[];
+    bookings: IHoundEvent[];
 }
 
 declare global {

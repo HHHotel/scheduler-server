@@ -24,8 +24,8 @@
     "debug": "node --inspect ./bin/index.js",
     "start": "npm run build && node ./bin/index.js",
     "build": "tsc",
-    "lint": "tslint",
-    "test": "ts-mocha ./test/*.test.ts"
+    "lint": "tslint -p .",
+    "test": "ts-mocha ./src/test/*.test.ts"
   },
   "devDependencies": {
     "@types/cors": "^2.8.6",

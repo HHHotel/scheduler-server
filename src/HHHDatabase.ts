@@ -1,4 +1,4 @@
-import {MysqlError, PoolConfig} from "mysql";
+import {MysqlError, PoolConfig } from "mysql";
 import * as DB from "./HHHDBTypes";
 import * as HHH from "./HHHTypes";
 import * as API from "./HHHApiTypes";
@@ -48,11 +48,11 @@ function createDatabase(opts: PoolConfig): DB.IDatabase {
     return { pool: require("mysql").createPool(opts), connOpts: opts };
 }
 
-function query(db: DB.IDatabase, qstr: string, callback: (results: any[]) => void) {
+function query(db: DB.IDatabase, qstr: string, callback: (results: any) => void) {
     db.pool.getConnection((connError, connection) => {
         if (connError) { handleError(connError); }
 
-        connection.query(qstr, (queryError, results) => {
+        connection.query(qstr, (queryError: MysqlError, results: any) => {
             if (queryError) { handleError(queryError); }
 
             if (results.affectedRows) {
@@ -116,7 +116,7 @@ function login(db: DB.IDatabase, username: string, password: string,
 }
 
 function addUser(db: DB.IDatabase, username: string, password: string, permissions: number,
-                 callback: (res: unknown) => void) {
+                 callback: (res: any) => void) {
     query(db, `
          SELECT * FROM users WHERE users.username = "` + username + '";'
         , insertUser);
@@ -197,15 +197,14 @@ function checkToken(db: DB.IDatabase, username: string, token: string,
         });
 }
 
-function addDog(db: DB.IDatabase, dog: API.IHoundApiDog, doneCall: (res: unknown) => void) {
+function addDog(db: DB.IDatabase, dog: API.IHoundApiDog, doneCall: (res: any) => void) {
     query(db, `
           INSERT INTO dogs (id, dog_name, client_name)
           VALUES (UUID_SHORT(), "` + dog.name + '", "' + dog.clientName + '");'
         , doneCall);
 }
 
-function addEvent(db: DB.IDatabase, event: API.IHoundApiEvent, doneCall: (res: unknown) => void) {
-    if (!event.id) { event.id = "0"; }
+function addEvent(db: DB.IDatabase, event: API.IHoundApiEvent, doneCall: (res: any) => void) {
 
     query(db, `
           INSERT INTO events (id, event_start, event_end, event_type, event_text, event_id)
@@ -214,7 +213,7 @@ function addEvent(db: DB.IDatabase, event: API.IHoundApiEvent, doneCall: (res: u
         , doneCall);
 }
 
-function removeEvent(db: DB.IDatabase, eventId: string, doneCall: (res: unknown) => void) {
+function removeEvent(db: DB.IDatabase, eventId: string, doneCall: (res: any) => void) {
     query(db, `
           DELETE FROM events
           WHERE event_id = ` + eventId + `;`
@@ -222,7 +221,7 @@ function removeEvent(db: DB.IDatabase, eventId: string, doneCall: (res: unknown)
     console.info("Removed event: id=", eventId);
 }
 
-function removeDog(db: DB.IDatabase, dogID: string, doneCall: (res: unknown) => void) {
+function removeDog(db: DB.IDatabase, dogID: string, doneCall: (res: any) => void) {
     query(db, "DELETE FROM dogs WHERE dogs.id = " + dogID + ";", noop);
     query(db, "DELETE FROM events WHERE events.id = " + dogID + ";", doneCall);
     console.info("Removed dog: id=", dogID);
@@ -278,7 +277,8 @@ function retrieveDog(db: DB.IDatabase, id: string, callback: (dog: API.IHoundApi
     }
 }
 
-function find(db: DB.IDatabase, searchText: string, callback: (matches: HHH.IHoundEvent[]) => void) {
+function find(db: DB.IDatabase, searchText: string,
+              callback: (matches: Array<API.IHoundApiEvent | API.IHoundApiDog>) => void) {
     query(db, `
           SELECT * FROM dogs
           WHERE dog_name LIKE "%` + searchText + `%"; `
@@ -292,22 +292,19 @@ function find(db: DB.IDatabase, searchText: string, callback: (matches: HHH.IHou
     }
 
     function sendMatches(resDogs: DB.ISQLDog[], resEvents: DB.ISQLEvent[]) {
-        const matches: API.IHoundApiBooking[] = [];
+        const matches: Array<API.IHoundApiEvent | API.IHoundApiDog> = [];
 
         resDogs.map((dog: DB.ISQLDog) => {
             matches.push({
-                dogId: dog.id,
-                endDate: null,
-                startDate: null,
-                id: "0",
-                text: dog.dog_name,
-                type: "dog",
+                id: dog.id,
+                name: dog.dog_name,
+                clientName: dog.client_name,
+                bookings: [],
             });
 
         });
         resEvents.map((event: DB.ISQLEvent) => {
             matches.push({
-                dogId: event.id,
                 endDate: parseInt(event.event_end, 10),
                 id: event.event_id,
                 startDate: parseInt(event.event_start, 10),
