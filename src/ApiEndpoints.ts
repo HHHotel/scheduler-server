@@ -11,7 +11,13 @@ function ApplyApiEndpoints(app: Application, database: DB.IDatabase) {
 
     app.get("/api/dogs/:id", (req, res) => {
         HHHDB.retrieveDog(database, req.params.id, (result) => {
-            res.send(result);
+            if (!result) {
+                res.writeHead(404, "Not Found", {"content-type" : "text/json"});
+                res.end("No dog with that id");
+            } else {
+                res.send(result);
+            }
+
         });
     });
 

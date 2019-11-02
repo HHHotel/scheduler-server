@@ -249,7 +249,10 @@ function retrieveDog(db: DB.IDatabase, id: string, callback: (dog: API.IHoundApi
         , createDog);
 
     function createDog(results: DB.ISQLEvent[]) {
-        if (!results[0]) { return; }
+        if (!results[0]) {
+            callback(null);
+            return;
+        }
 
         const dog: API.IHoundApiDog = {
             bookings: [],
