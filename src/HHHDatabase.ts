@@ -205,7 +205,6 @@ function addDog(db: DB.IDatabase, dog: API.IHoundApiDog, doneCall: (res: any) =>
 }
 
 function addEvent(db: DB.IDatabase, event: API.IHoundApiEvent, doneCall: (res: any) => void) {
-
     query(db, `
           INSERT INTO events (id, event_start, event_end, event_type, event_text, event_id)
           VALUES (` + event.id + ', "' + event.startDate + '", "' + event.endDate +

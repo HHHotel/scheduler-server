@@ -106,12 +106,14 @@ app.post("/login", (req, res) => {
     if (req.query.token) {
         HHHDB.checkToken(database, req.query.username, req.query.token, respondToLogin);
     } else {
-        console.log("Logged in", req.body.username);
         HHHDB.login(database, req.body.username, req.body.password, respondToLogin);
     }
 
     function respondToLogin(result: any) {
         if (result) {
+            if (req.body.password) {
+                console.log("Logged in", req.body.username);
+            }
             res.send(result);
         } else {
             res.writeHead(403, "Bad User Password combination", {"content-type" : "text/plain"});

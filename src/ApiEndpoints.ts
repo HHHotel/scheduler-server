@@ -57,6 +57,7 @@ function ApplyApiEndpoints(app: Application, database: DB.IDatabase) {
     });
 
     app.post("/api/events", (req, res) => {
+        if (!req.body.id) { req.body.id = "0"; }
         HHHDB.addEvent(database, req.body, () => res.send("Added event"));
     });
 
