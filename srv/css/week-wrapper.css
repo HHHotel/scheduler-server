@@ -100,7 +100,10 @@ disconnect-notice {
 
 .visit {
     color: purple;
+}
 
+.eval {
+    color: darkturquoise;
 }
 
 .general {
