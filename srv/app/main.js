@@ -13,7 +13,7 @@ window.schedulerDate = new Date(new Date().toLocaleDateString());
 window.schedulerDate.setDate(window.schedulerDate.getDate() -
     window.schedulerDate.getDay() + 1);
 const BASE_URL = window.location.protocol + "//" + window.location.host;
-const API_VERSION = "0.3.2";
+const API_VERSION = "0.3.3";
 const apiConfig = new HoundsConfig({
     apiAuth: {
         username: localStorage.hhh_username,
