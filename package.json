@@ -6,6 +6,16 @@
   "author": "Matt Rochford",
   "repository": "https://github.com/hhhotel/scheduler-server",
   "license": "MIT",
+  "scripts": {
+    "debug": "node --inspect ./bin/index.js",
+    "prestart": "npm run build",
+    "start": "node ./bin/index.js",
+    "build": "tsc && webpack --config webpack.prod.js",
+    "webpack": "webpack",
+    "watch": "webpack --watch",
+    "lint": "tslint -p .",
+    "test": "ts-mocha ./src/test/*.test.ts"
+  },
   "dependencies": {
     "@happyhoundhotel/hounds-ts": "^0.3.14",
     "@types/bcrypt": "^3.0.0",
@@ -20,17 +30,9 @@
     "mysql": "^2.16.0",
     "semver": "^6.3.0",
     "typescript": "^3.3.4000",
-    "uuid": "^3.3.3"
-  },
-  "scripts": {
-    "debug": "node --inspect ./bin/index.js",
-    "prestart": "npm run build",
-    "start": "node ./bin/index.js",
-    "build": "tsc && webpack --config webpack.prod.js",
-    "webpack": "webpack",
-    "watch": "webpack --watch",
-    "lint": "tslint -p .",
-    "test": "ts-mocha ./src/test/*.test.ts"
+    "uuid": "^3.3.3",
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.10"
   },
   "devDependencies": {
     "@types/cors": "^2.8.6",
@@ -41,8 +43,6 @@
     "mocha": "^6.2.0",
     "ts-mocha": "^6.0.0",
     "ts-node": "^8.0.3",
-    "tslint": "^5.20.0",
-    "webpack": "^4.41.2",
-    "webpack-cli": "^3.3.10"
+    "tslint": "^5.20.0"
   }
 }
