@@ -54,7 +54,6 @@
 body,
 html {
     background-color: var(--background-light);
-    overflow: hidden;
 }
 
 input {
