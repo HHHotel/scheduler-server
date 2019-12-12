@@ -1,3 +1,7 @@
+body {
+    overflow: hidden;
+}
+
 pre {
     font-family: "Poppins";
 }
@@ -40,7 +44,7 @@ pre {
 
 .event-wrapper {
     height: calc(100vh - 8rem);
-    overflow-y: scroll;
+    overflow-y: auto;
     display: flex;
     flex-direction: column;
 }
@@ -49,6 +53,10 @@ pre {
     background-color: var(--background-dark);
     display: flex;
     justify-content: space-between;
+}
+
+#prev-week {
+    transform: rotate(180deg);
 }
 
 #prev-week,
