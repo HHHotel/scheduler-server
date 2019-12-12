@@ -39,8 +39,21 @@ function ApplyApiEndpoints(app: Application, database: DB.IDatabase) {
         res.send("Edited Dog");
     });
 
+    /*
+     * DELETE /api/dogs/\d\+?option=[force|reactivate]
+     *
+     * Deactivates a dog from showing up on the schedule
+     * remove with option=force CAN'T BE UNDONE
+     * undo default with option=reactivate
+     * */
     app.delete("/api/dogs/:id", (req, res) => {
-        HHHDB.removeDog(database, req.params.id, () => res.send("Deleted dog"));
+        if (req.query.option === "force") {
+            HHHDB.removeDog(database, req.params.id, () => res.send("Deleted dog"));
+        } else if (req.query.option === "reactivate") {
+            HHHDB.reactivateDog(database, req.params.id, () => res.send("Reactivated dog"));
+        } else {
+            HHHDB.deactivateDog(database, req.params.id, () => res.send("Deactivated dog"));
+        }
     });
 
     app.delete("/api/events/:id", (req, res) => {

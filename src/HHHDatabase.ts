@@ -217,13 +217,23 @@ function removeEvent(db: DB.IDatabase, eventId: string, doneCall: (res: any) => 
           DELETE FROM events
           WHERE event_id = ` + eventId + `;`
         , doneCall);
-    console.info("Removed event: id=", eventId);
+    console.info("Removed event: id = ", eventId);
 }
 
 function removeDog(db: DB.IDatabase, dogID: string, doneCall: (res: any) => void) {
-    query(db, "DELETE FROM dogs WHERE dogs.id = " + dogID + ";", noop);
-    query(db, "DELETE FROM events WHERE events.id = " + dogID + ";", doneCall);
-    console.info("Removed dog: id=", dogID);
+    query(db, "DELETE FROM dogs where dogs.id = " + dogID + ";", noop);
+    query(db, "DELETE FROM events where events.id = " + dogID + ";", noop);
+    console.info("Removed dog: id = ", dogID);
+}
+
+function deactivateDog(db: DB.IDatabase, dogId: string, doneCall: (res: any) => void) {
+    query(db, "UPDATE dogs set active_client = 0 where dogs.id = '" + dogId + "'", doneCall);
+    console.info("Deactivated dog: id = ", dogId);
+}
+
+function reactivateDog(db: DB.IDatabase, dogId: string, doneCall: (res: any) => void) {
+    query(db, "UPDATE dogs set active_client = 1 where dogs.id = '" + dogId + "'", doneCall);
+    console.info("Deactivated dog: id = ", dogId);
 }
 
 function editDog(db: DB.IDatabase, id: string, columnName: string, value: string) {
@@ -333,9 +343,10 @@ function getWeek(db: DB.IDatabase, date: Date, callback: ([]) => void ) {
     query(db, `
           SELECT * FROM events
           LEFT JOIN dogs ON dogs.id = events.id
-          WHERE (event_start < ` + endDate.valueOf() + " AND event_start >= " + startDate.valueOf() + `) OR
+          WHERE dogs.active_client = 1 AND
+          ((event_start < ` + endDate.valueOf() + " AND event_start >= " + startDate.valueOf() + `) OR
           (event_end < ` + endDate.valueOf() + " AND event_end >= " + startDate.valueOf() + `) OR
-          (event_start < ` + startDate.valueOf() + " AND event_end > " + endDate.valueOf() + `);
+          (event_start < ` + startDate.valueOf() + " AND event_end > " + endDate.valueOf() + `));
         `, (results) => {
 
             const week = formatWeek(results);
@@ -379,6 +390,8 @@ export = {
     login,
     parseDatabaseString,
     removeDog,
+    deactivateDog,
+    reactivateDog,
     removeEvent,
     retrieveDog,
 };
