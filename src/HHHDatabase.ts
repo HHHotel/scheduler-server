@@ -222,7 +222,7 @@ function removeEvent(db: DB.IDatabase, eventId: string, doneCall: (res: any) => 
 
 function removeDog(db: DB.IDatabase, dogID: string, doneCall: (res: any) => void) {
     query(db, "DELETE FROM dogs where dogs.id = " + dogID + ";", noop);
-    query(db, "DELETE FROM events where events.id = " + dogID + ";", noop);
+    query(db, "DELETE FROM events where events.id = " + dogID + ";", doneCall);
     console.info("Removed dog: id = ", dogID);
 }
 
