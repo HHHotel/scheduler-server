@@ -227,13 +227,14 @@ function removeDog(db: DB.IDatabase, dogID: string, doneCall: (res: any) => void
 }
 
 function deactivateDog(db: DB.IDatabase, dogId: string, doneCall: (res: any) => void) {
-    query(db, "UPDATE dogs set active_client = 0 where dogs.id = '" + dogId + "'", doneCall);
+    const queryStr = "UPDATE dogs set active_client = 0 where dogs.id = '" + dogId + "';";
+    query(db, queryStr, doneCall);
     console.info("Deactivated dog: id = ", dogId);
 }
 
 function reactivateDog(db: DB.IDatabase, dogId: string, doneCall: (res: any) => void) {
-    query(db, "UPDATE dogs set active_client = 1 where dogs.id = '" + dogId + "'", doneCall);
-    console.info("Deactivated dog: id = ", dogId);
+    query(db, "UPDATE dogs set active_client = 1 where dogs.id = '" + dogId + "';", doneCall);
+    console.info("Reactivated dog: id = ", dogId);
 }
 
 function editDog(db: DB.IDatabase, id: string, columnName: string, value: string) {
