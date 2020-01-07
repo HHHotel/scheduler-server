@@ -344,7 +344,7 @@ function getWeek(db: DB.IDatabase, date: Date, callback: ([]) => void ) {
     query(db, `
           SELECT * FROM events
           LEFT JOIN dogs ON dogs.id = events.id
-          WHERE dogs.active_client = 1 AND
+          WHERE (dogs.active_client = 1 OR events.id = 0) AND
           ((event_start < ` + endDate.valueOf() + " AND event_start >= " + startDate.valueOf() + `) OR
           (event_end < ` + endDate.valueOf() + " AND event_end >= " + startDate.valueOf() + `) OR
           (event_start < ` + startDate.valueOf() + " AND event_end > " + endDate.valueOf() + `));
