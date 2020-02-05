@@ -1,7 +1,7 @@
 import {MysqlError, PoolConfig } from "mysql";
 import * as DB from "./HHHDBTypes";
-import * as HHH from "./HHHTypes";
-import * as API from "./HHHApiTypes";
+import * as HHH from "@happyhoundhotel/hounds-ts/dist/src/types/HHHTypes";
+import * as API from "@happyhoundhotel/hounds-ts/dist/src/types/HHHApiTypes";
 
 import bcrypt = require("bcrypt");
 import uuidv4 = require("uuid/v4");
@@ -101,7 +101,7 @@ function login(db: DB.IDatabase, username: string, password: string,
                     callback(null);
                 } else {
                     callback({
-                        id: user.id,
+                        id: parseInt(user.id, 10),
                         permissions: user.permissions,
                         token: user.token,
                         username: user.username,
@@ -194,7 +194,7 @@ function checkToken(db: DB.IDatabase, username: string, token: string,
         });
 }
 
-function addDog(db: DB.IDatabase, dog: API.IHoundApiDog, doneCall: (res: any) => void) {
+function addDog(db: DB.IDatabase, dog: API.IHoundAPIDog, doneCall: (res: any) => void) {
     query(db, `
           INSERT INTO dogs (id, dog_name, client_name)
           VALUES (UUID_SHORT(), ?, ?);`,
@@ -202,7 +202,7 @@ function addDog(db: DB.IDatabase, dog: API.IHoundApiDog, doneCall: (res: any) =>
           doneCall);
 }
 
-function addEvent(db: DB.IDatabase, event: API.IHoundApiEvent, doneCall: (res: any) => void) {
+function addEvent(db: DB.IDatabase, event: API.IHoundAPIEvent, doneCall: (res: any) => void) {
     query(db, `INSERT INTO events (id, event_start, event_end, event_type, event_text, event_id)
           VALUES ( ?, ?, ?, ?, ?, UUID_SHORT());`,
           [event.id, event.startDate, event.endDate, event.type, event.text],
@@ -240,7 +240,7 @@ function editEvent(db: DB.IDatabase, eventId: string, columnName: string, value:
           [value, eventId], noop);
 }
 
-function retrieveDog(db: DB.IDatabase, id: string, callback: (dog: API.IHoundApiDog) => void) {
+function retrieveDog(db: DB.IDatabase, id: string, callback: (dog: API.IHoundAPIDog) => void) {
     query(db, `SELECT * FROM dogs
           LEFT JOIN events ON dogs.id = events.id
           WHERE dogs.id = ?;`, [id],
@@ -252,21 +252,23 @@ function retrieveDog(db: DB.IDatabase, id: string, callback: (dog: API.IHoundApi
             return;
         }
 
-        const dog: API.IHoundApiDog = {
+        const dog: API.IHoundAPIDog = {
             bookings: [],
             clientName: results[0].client_name,
             id: results[0].id,
             name: results[0].dog_name,
+            activeClient: results[0].active_client !== 0,
         };
 
         results.reverse().map((record) => {
             if (record.event_start && record.event_end) {
-                const event: API.IHoundApiEvent = {
+                const event: API.IHoundAPIEvent = {
                     endDate: parseInt(record.event_end, 10),
                     id: record.event_id,
                     startDate: parseInt(record.event_start, 10),
                     text: record.event_text,
                     type: record.event_type,
+                    desc: "",
                 };
 
                 dog.bookings.push(event);
@@ -279,7 +281,7 @@ function retrieveDog(db: DB.IDatabase, id: string, callback: (dog: API.IHoundApi
 }
 
 function find(db: DB.IDatabase, searchText: string,
-              callback: (matches: Array<API.IHoundApiEvent | API.IHoundApiDog>) => void) {
+              callback: (matches: Array<API.IHoundAPIEvent | API.IHoundAPIDog>) => void) {
     query(db, "SELECT * FROM dogs WHERE dog_name LIKE ? or client_name like ?;",
           ["%" + searchText + "%", "%" + searchText + "%"], findEvents);
 
@@ -290,10 +292,11 @@ function find(db: DB.IDatabase, searchText: string,
     }
 
     function sendMatches(resDogs: DB.ISQLDog[], resEvents: DB.ISQLEvent[]) {
-        const matches: Array<API.IHoundApiEvent | API.IHoundApiDog> = [];
+        const matches: Array<API.IHoundAPIEvent | API.IHoundAPIDog> = [];
 
         resDogs.map((dog: DB.ISQLDog) => {
             matches.push({
+                activeClient: dog.active_client !== 0,
                 id: dog.id,
                 name: dog.dog_name,
                 clientName: dog.client_name,
@@ -303,6 +306,7 @@ function find(db: DB.IDatabase, searchText: string,
         });
         resEvents.map((event: DB.ISQLEvent) => {
             matches.push({
+                desc: "",
                 endDate: parseInt(event.event_end, 10),
                 id: event.event_id,
                 startDate: parseInt(event.event_start, 10),
@@ -326,16 +330,15 @@ function getWeek(db: DB.IDatabase, date: Date, callback: ([]) => void ) {
     // Next week Tues at 00:00
     const endDate: Date  = new Date(date.setDate(date.getDate() + 9));
 
-    query(db, `
-          SELECT * FROM events
+    query(db, `SELECT * FROM events
           LEFT JOIN dogs ON dogs.id = events.id
-          WHERE (event_start < ? AND event_start >= ?) OR
+          WHERE dogs.active_client = 1 AND
+          ((event_start < ? AND event_start >= ?) OR
           (event_end < ? AND event_end >= ?) OR
-          (event_start < ? AND event_end > ?);`,
+          (event_start < ? AND event_end > ?));`,
           [ endDate.valueOf(), startDate.valueOf(), endDate.valueOf(),
             startDate.valueOf(), startDate.valueOf(), endDate.valueOf() ],
         (results) => {
-
             const week = formatWeek(results);
 
             if (callback) { callback(week); }
@@ -345,15 +348,16 @@ function getWeek(db: DB.IDatabase, date: Date, callback: ([]) => void ) {
 
 function formatWeek(dbEvents: DB.ISQLEvent[]): any[] {
 
-    const weekEvents: API.IHoundApiBooking[] = [];
+    const weekEvents: API.IHoundAPIBooking[] = [];
 
     dbEvents.map((event) => {
         if (event.event_text === "undefined") { event.event_text = null; }
         weekEvents.push({
+            desc: "",
             dogId: event.id,
             endDate: parseInt(event.event_end, 10),
-            id: event.event_id,
             startDate: parseInt(event.event_start, 10),
+            id: event.event_id,
             text: event.event_text || event.dog_name,
             type: event.event_type,
         });
