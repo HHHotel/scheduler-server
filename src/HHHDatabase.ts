@@ -231,11 +231,13 @@ function reactivateDog(db: DB.IDatabase, dogId: string, doneCall: (res: any) => 
 }
 
 function editDog(db: DB.IDatabase, id: string, columnName: string, value: string) {
-    query(db, " UPDATE dogs SET ? = ? WHERE id = ?;", [columnName, value, id], noop);
+    query(db, "UPDATE dogs SET " + db.pool.escapeId(columnName) + " = ? WHERE id = ?;",
+          [value, id], noop);
 }
 
 function editEvent(db: DB.IDatabase, eventId: string, columnName: string, value: string) {
-    query(db, " UPDATE events SET ? = ?  WHERE event_id = ? ;", [columnName, value, eventId], noop);
+    query(db, " UPDATE events SET " + db.pool.escapeId(columnName) + " = ?  WHERE event_id = ? ;",
+          [value, eventId], noop);
 }
 
 function retrieveDog(db: DB.IDatabase, id: string, callback: (dog: API.IHoundApiDog) => void) {
