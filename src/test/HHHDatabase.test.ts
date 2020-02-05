@@ -124,11 +124,24 @@ describe("HHH Database", () => {
         });
     });
 
-    /*
-     * TODO:
-    * addEvent -- Plain event
-    * editDog
-    * editEvent
-    * getWeek
-    * */
+    /* TODO
+    describe("#addEvent", () => {
+    });
+    describe("#removeEvent", () => {
+    });
+    describe("#editDog", () => {
+    });
+    describe("#editEvent", () => {
+    });
+    describe("#getWeek", () => {
+    });
+    describe("#checkToken", () => {
+    });
+    MORE FIND THINGS describe("#find", () => {
+    });
+    describe("#deactivateDog", () => {
+    });
+    describe("#reactivateDog", () => {
+    });
+    */
 });
