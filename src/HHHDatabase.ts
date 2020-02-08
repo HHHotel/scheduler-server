@@ -101,7 +101,7 @@ function login(db: DB.IDatabase, username: string, password: string,
                     callback(null);
                 } else {
                     callback({
-                        id: parseInt(user.id, 10),
+                        id: null,
                         permissions: user.permissions,
                         token: user.token,
                         username: user.username,
