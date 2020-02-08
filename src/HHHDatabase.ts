@@ -7,7 +7,6 @@ import bcrypt = require("bcrypt");
 import uuidv4 = require("uuid/v4");
 
 const TOKEN_EXPIRE_PERIOD: number = 86400000;
-
 function parseDatabaseString(databaseUrl: string) {
     const dbUser = databaseUrl.substring(8, databaseUrl.indexOf(":", 8));
     const dbPass = databaseUrl.substring(databaseUrl.indexOf(":", 8) + 1, databaseUrl.indexOf("@"));
@@ -332,7 +331,7 @@ function getWeek(db: DB.IDatabase, date: Date, callback: ([]) => void ) {
 
     query(db, `SELECT * FROM events
           LEFT JOIN dogs ON dogs.id = events.id
-          WHERE dogs.active_client = 1 AND
+          WHERE (dogs.active_client = 1 OR events.id = 0) AND
           ((event_start < ? AND event_start >= ?) OR
           (event_end < ? AND event_end >= ?) OR
           (event_start < ? AND event_end > ?));`,
