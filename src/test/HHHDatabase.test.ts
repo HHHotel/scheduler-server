@@ -31,99 +31,99 @@ describe("HHH Database", () => {
         activeClient: true,
     };
 
-    // describe("#addDog()", () => { it("Shouldn't complain", (done) => {
-    //         HHHDB.addDog(database, major,
-    //             (results) => {
-    //                 assert.deepEqual(results.warningCount, 0);
-    //                 done();
-    //             });
-    //     });
-    // });
+    describe("#addDog()", () => { it("Shouldn't complain", (done) => {
+            HHHDB.addDog(database, major,
+                (results) => {
+                    assert.deepEqual(results.warningCount, 0);
+                    done();
+                });
+        });
+    });
 
-    // describe("#find()", () => {
-    //     it("Should find Major", (done) => {
-    //         const searchText: string = "Major";
-    //         HHHDB.find(database, searchText,
-    //             (results) => {
-    //                 const dog: IHoundAPIDog = results[0] as IHoundAPIDog;
-    //                 assert.deepEqual(dog.name + " " + dog.clientName, "Major Johnson");
-    //                 major.id = dog.id;
-    //                 done();
-    //             });
-    //     });
-    // });
+    describe("#find()", () => {
+        it("Should find Major", (done) => {
+            const searchText: string = "Major";
+            HHHDB.find(database, searchText,
+                (results) => {
+                    const dog: IHoundAPIDog = results[0] as IHoundAPIDog;
+                    assert.deepEqual(dog.name + " " + dog.clientName, "Major Johnson");
+                    major.id = dog.id;
+                    done();
+                });
+        });
+    });
 
-    // describe("#addEvent()", () => {
-    //     it("Shouldn't complain", (done) => {
-    //         let eventNum = major.bookings.length;
-    //         for (const booking of major.bookings) {
-    //             booking.id = major.id;
+    describe("#addEvent()", () => {
+        it("Shouldn't complain", (done) => {
+            let eventNum = major.bookings.length;
+            for (const booking of major.bookings) {
+                booking.id = major.id;
 
-    //             HHHDB.addEvent(database, booking,
-    //                 (results) => {
-    //                     assert.deepEqual(results.warningCount, 0);
-    //                     if (--eventNum === 0) { done(); }
-    //                 });
-    //         }
-    //     });
-    // });
+                HHHDB.addEvent(database, booking,
+                    (results) => {
+                        assert.deepEqual(results.warningCount, 0);
+                        if (--eventNum === 0) { done(); }
+                    });
+            }
+        });
+    });
 
-    // describe("#addUser()", () => {
-    //     it("Should create a user", (done) => {
-    //         const user = {
-    //             password: "testing",
-    //             permissions: 0,
-    //             username: "testing",
-    //         };
-    //         HHHDB.addUser(database, user.username, user.password, user.permissions, () => done());
-    //     });
-    // });
+    describe("#addUser()", () => {
+        it("Should create a user", (done) => {
+            const user = {
+                password: "testing",
+                permissions: 0,
+                username: "testing",
+            };
+            HHHDB.addUser(database, user.username, user.password, user.permissions, () => done());
+        });
+    });
 
-    // describe("#changePassword()", () => {
-    //     it("Should change a password", (done) => {
-    //         const user = {
-    //             password: "testing",
-    //             permissions: 0,
-    //             username: "testing",
-    //         };
-    //         HHHDB.changePassword(database, user.username, user.password, "testingNew",
-    //             (res) => {
-    //                 assert.equal(res, "Success");
-    //                 done();
-    //             });
-    //     });
-    // });
+    describe("#changePassword()", () => {
+        it("Should change a password", (done) => {
+            const user = {
+                password: "testing",
+                permissions: 0,
+                username: "testing",
+            };
+            HHHDB.changePassword(database, user.username, user.password, "testingNew",
+                (res) => {
+                    assert.equal(res, "Success");
+                    done();
+                });
+        });
+    });
 
-    // describe("#deleteUser()", () => {
-    //     it("Should delete the testing user", (done) => {
-    //         HHHDB.deleteUser(database, "testing");
-    //         done();
-    //     });
-    // });
+    describe("#deleteUser()", () => {
+        it("Should delete the testing user", (done) => {
+            HHHDB.deleteUser(database, "testing");
+            done();
+        });
+    });
 
-    // describe("#retrieveDog()", () => {
-    //     it("Proper retrieval of Major", (done) => {
-    //         HHHDB.retrieveDog(database, major.id, (res: IHoundAPIDog) => {
-    //             res.bookings.sort((a, b) => a.startDate - b.startDate);
-    //             major.bookings.sort((a, b) => a.startDate - b.startDate);
-    //             major.bookings.map((booking, i) => { booking.id = res.bookings[i].id; });
-    //             assert.deepEqual(res, major);
-    //             done();
-    //         });
+    describe("#retrieveDog()", () => {
+        it("Proper retrieval of Major", (done) => {
+            HHHDB.retrieveDog(database, major.id, (res: IHoundAPIDog) => {
+                res.bookings.sort((a, b) => a.startDate - b.startDate);
+                major.bookings.sort((a, b) => a.startDate - b.startDate);
+                major.bookings.map((booking, i) => { booking.id = res.bookings[i].id; });
+                assert.deepEqual(res, major);
+                done();
+            });
 
-    //     });
-    // });
+        });
+    });
 
-    // describe("#deleteDog", () => {
-    //     it("Should remove Major and booking", (done) => {
-    //         HHHDB.removeDog(database, major.id, () => {
-    //             HHHDB.find(database, "Major Johnson", (res) => {
-    //                 assert.deepEqual(res.length, 0);
-    //                 done();
-    //             });
-    //         });
-    //     });
-    // });
+    describe("#deleteDog", () => {
+        it("Should remove Major and booking", (done) => {
+            HHHDB.removeDog(database, major.id, () => {
+                HHHDB.find(database, "Major Johnson", (res) => {
+                    assert.deepEqual(res.length, 0);
+                    done();
+                });
+            });
+        });
+    });
 
     const groomingEvent: IHoundAPIEvent = {
         desc: "",
