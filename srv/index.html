@@ -1,59 +1,64 @@
 <!DOCTYPE HTML>
 
 <html>
-    <head>
-        <title>HHH Scheduler</title>
-        <!-- Meta Data -->
-        <link rel="icon" href = "images/web-app-icon.png">
-        <meta name="viewport" content="width=device-width, 
-        initial-scale=1, maximum-scale=1, user-scalable=0"/>
-        <meta name="mobile-web-app-capable" content="yes">
-        <meta name="apple-mobile-web-app-capable" content="yes">
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-        <meta name="HandheldFriendly" content="true">
 
-        <!-- Stylesheets -->
-        <link rel = "stylesheet" href = "css/normalize.css" />
-        <link rel = "stylesheet" href = "css/print.css" media="print"/>
-        <link rel = "stylesheet" href = "css/style.css" />
-        <link rel = "stylesheet" href = "css/week-wrapper.css" />
-        <link rel = "stylesheet" href = "css/login.css" />
-        <link rel = "stylesheet" href = "css/web.css" />
-    </head>
+<head>
+    <title>HHH Scheduler</title>
+    <!-- Meta Data -->
+    <link rel="icon" href="images/web-app-icon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2, user-scalable=1" />
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="HandheldFriendly" content="true">
 
-    <body>
-        <h1 class="hhh-header">HHH Scheduler</h1>
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/normalize.css" />
+    <link rel="stylesheet" href="css/print.css" media="print" />
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/week-wrapper.css" />
+    <link rel="stylesheet" href="css/login.css" />
+    <link rel="stylesheet" href="css/web.css" />
+</head>
 
-        <div class = "login-wrapper">
-            <img class = "login-logo" src = "images/icon.png" alt="logo"/>
-            <form onsubmit = "return hhhLogin()" id="login-form" class = "login-inputs">
-                <div class = "login-label">Username</div>
-                <input name="username" class = "login-input" />
-                <div class = "login-label">Password</div>
-                <input name = "password" type = "password" class = "login-input" />
-                <br />
+<body>
+    <h1 class="hhh-header">HHH Scheduler</h1>
 
-                <button type = "submit" class = "login-button">login</button>
-            </form>
-        </div>
+    <div class="login-wrapper">
+        <img class="login-logo" src="images/icon.png" alt="logo" />
+        <form onsubmit="return hhhLogin()" id="login-form" class="login-inputs">
+            <div class="login-label">Username</div>
+            <input name="username" class="login-input" />
+            <div class="login-label">Password</div>
+            <input name="password" type="password" class="login-input" />
+            <br />
+
+            <button type="submit" class="login-button">login</button>
+        </form>
+    </div>
 
 
-        <div class = "content-wrapper" style = "display:none"> 
-            <div class = "week-scroller">
-                <div id="prev-week">
-                    <svg transform="rotate(180)"xmlns="http://www.w3.org/2000/svg" color="white" width="24" height="24" viewBox="0 0 24 24"><path d="M8.122 24l-4.122-4 8-8-8-8 4.122-4 11.878 12z"/></svg>
-                </div>
-                <div id="refresh"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M9 12l-4.463 4.969-4.537-4.969h3c0-4.97 4.03-9 9-9 2.395 0 4.565.942 6.179 2.468l-2.004 2.231c-1.081-1.05-2.553-1.699-4.175-1.699-3.309 0-6 2.691-6 6h3zm10.463-4.969l-4.463 4.969h3c0 3.309-2.691 6-6 6-1.623 0-3.094-.65-4.175-1.699l-2.004 2.231c1.613 1.526 3.784 2.468 6.179 2.468 4.97 0 9-4.03 9-9h3l-4.537-4.969z"/></svg></div>
-                <div id="next-week">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M8.122 24l-4.122-4 8-8-8-8 4.122-4 11.878 12z"/></svg>
-                </div>
+    <div class="content-wrapper" style="display:none">
+        <div class="week-scroller">
+            <div id="prev-week">
+                <svg xmlns="http://www.w3.org/2000/svg" color="white" width="24" height="24"
+                    viewbox="0 0 24 24">
+                    <path d="M8.122 24l-4.122-4 8-8-8-8 4.122-4 11.878 12z" /></svg>
             </div>
-            <div class = "week-wrapper"></div>
+            <div id="refresh"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewbox="0 0 24 24">
+                    <path
+                        d="M9 12l-4.463 4.969-4.537-4.969h3c0-4.97 4.03-9 9-9 2.395 0 4.565.942 6.179 2.468l-2.004 2.231c-1.081-1.05-2.553-1.699-4.175-1.699-3.309 0-6 2.691-6 6h3zm10.463-4.969l-4.463 4.969h3c0 3.309-2.691 6-6 6-1.623 0-3.094-.65-4.175-1.699l-2.004 2.231c1.613 1.526 3.784 2.468 6.179 2.468 4.97 0 9-4.03 9-9h3l-4.537-4.969z" />
+                    </svg></div>
+            <div id="next-week">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewbox="0 0 24 24">
+                    <path d="M8.122 24l-4.122-4 8-8-8-8 4.122-4 11.878 12z" /></svg>
+            </div>
         </div>
+        <div class="week-wrapper"></div>
+    </div>
 
+    <script src="ie.js"></script>
+    <script src="bundle.js"></script>
+</body>
 
-        <script src="js/default.js"></script>
-        <script src="js/main.js"></script>
-        <script src="js/uiEvents.js"></script>
-    </body>
 </html>

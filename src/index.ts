@@ -6,7 +6,7 @@ import path = require("path");
 import semver = require("semver");
 
 const DEFAULTS = {
-    VERSION: "0.3.1", // > 0.3.1 to run currrent
+    VERSION: "0.3.3", // > 0.3.3 to run currrent
 };
 
 const app = express();
@@ -103,15 +103,17 @@ const database = HHHDB.createDatabase(HHHDB.parseDatabaseString(process.env.CLEA
  * in all subsequent communications with the api
  * */
 app.post("/login", (req, res) => {
-    if (req.body.token) {
-        HHHDB.checkToken(database, req.body.username, req.body.token, respondToLogin);
+    if (req.query.token) {
+        HHHDB.checkToken(database, req.query.username, req.query.token, respondToLogin);
     } else {
         HHHDB.login(database, req.body.username, req.body.password, respondToLogin);
     }
 
     function respondToLogin(result: any) {
         if (result) {
-            console.log("Logged in", req.body.username);
+            if (req.body.password) {
+                console.log("Logged in", req.body.username);
+            }
             res.send(result);
         } else {
             res.writeHead(403, "Bad User Password combination", {"content-type" : "text/plain"});

@@ -4,14 +4,20 @@ import * as DB from "./HHHDBTypes";
 
 function ApplyApiEndpoints(app: Application, database: DB.IDatabase) {
     app.get("/api/week", (req, res) => {
-       HHHDB.getWeek(database, req.query.date ? new Date(req.query.date) : new Date(), (week) => {
+        HHHDB.getWeek(database, req.query.date ? new Date(req.query.date) : new Date(), (week) => {
            res.send(week);
        });
     });
 
     app.get("/api/dogs/:id", (req, res) => {
         HHHDB.retrieveDog(database, req.params.id, (result) => {
-            res.send(result);
+            if (!result) {
+                res.writeHead(404, "Not Found", {"content-type" : "text/json"});
+                res.end("No dog with that id");
+            } else {
+                res.send(result);
+            }
+
         });
     });
 
@@ -33,8 +39,21 @@ function ApplyApiEndpoints(app: Application, database: DB.IDatabase) {
         res.send("Edited Dog");
     });
 
+    /*
+     * DELETE /api/dogs/\d\+?option=[force|reactivate]
+     *
+     * Deactivates a dog from showing up on the schedule
+     * remove with option=force CAN'T BE UNDONE
+     * undo default with option=reactivate
+     * */
     app.delete("/api/dogs/:id", (req, res) => {
-        HHHDB.removeDog(database, req.params.id, () => res.send("Deleted dog"));
+        if (req.query.option === "force") {
+            HHHDB.removeDog(database, req.params.id, () => res.send("Deleted dog"));
+        } else if (req.query.option === "reactivate") {
+            HHHDB.reactivateDog(database, req.params.id, () => res.send("Reactivated dog"));
+        } else {
+            HHHDB.deactivateDog(database, req.params.id, () => res.send("Deactivated dog"));
+        }
     });
 
     app.delete("/api/events/:id", (req, res) => {
@@ -51,6 +70,7 @@ function ApplyApiEndpoints(app: Application, database: DB.IDatabase) {
     });
 
     app.post("/api/events", (req, res) => {
+        if (!req.body.id) { req.body.id = "0"; }
         HHHDB.addEvent(database, req.body, () => res.send("Added event"));
     });
 

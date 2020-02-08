@@ -5,7 +5,7 @@ export interface ISQLUser {
     username: string;
     hashed_password: string;
     permissions: number;
-    token: number;
+    token: string;
     token_timestamp: number;
 }
 
@@ -13,6 +13,7 @@ export interface ISQLDog {
     id: string;
     dog_name: string;
     client_name: string;
+    active_client: number;
 }
 
 export interface ISQLEvent extends ISQLDog {
@@ -26,4 +27,16 @@ export interface ISQLEvent extends ISQLDog {
 export interface IDatabase {
     pool: Pool;
     connOpts: PoolConfig;
+}
+
+declare global {
+    namespace Express {
+        export interface Request {
+            user?: {
+                username: string,
+                token: string,
+                permissions: number,
+            };
+        }
+    }
 }

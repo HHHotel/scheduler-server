@@ -29,8 +29,8 @@ disconnect-notice {
     padding: .3rem;
     width: 100%;
     position: fixed;
-    left    : 0;
-    bottom  : 0;
+    left: 0;
+    bottom: 0;
 }
 
 .week-wrapper {
@@ -70,58 +70,42 @@ disconnect-notice {
 .dog-list * {
     min-height: 1rem;
     color: black;
-    order: 10;
     display: inline-flex;
     margin: 0 4px;
 }
 
 .arriving {
     color: blue;
-    order: 3;
 }
 
-/*
-.arriving::after {
-content: ' - Arrives';
+.departing {
+    color: red;
 }
- */
 
-    .departing {
-        color: red;
-        order: 4;
-    }
+.boarding {
+    color: maroon;
+}
 
-    /*
-    .departing::after {
-    content: ' - Leaves';
-    }
-     */
+.daycare {
+    color: hotpink;
+}
 
-    .boarding {
-        order: 1;
-        color: maroon;
-    }
+.grooming {
+    color: green;
+}
 
-    .daycare {
-        order: 5;
-        color: hotpink;
-    }
+.foster {
+    color: darkblue;
+}
 
-    .grooming {
-        order: 9;
-        color: green;
-    }
-    .foster {
-        color: darkblue;
-        order: 2;
-    }
-    .visit {
-        color: purple;
-        order: 10;
+.visit {
+    color: purple;
+}
 
-    }
+.eval {
+    color: darkturquoise;
+}
 
-    .general {
-        order: 10;
-        color: darkslategrey;
-    }
+.general {
+    color: darkslategrey;
+}

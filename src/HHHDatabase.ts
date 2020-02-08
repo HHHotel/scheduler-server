@@ -1,9 +1,10 @@
-import {MysqlError, PoolConfig} from "mysql";
+import {MysqlError, PoolConfig } from "mysql";
 import * as DB from "./HHHDBTypes";
-import * as HHH from "./HHHTypes";
-import * as API from "./HHHApiTypes";
+import * as HHH from "@happyhoundhotel/hounds-ts/dist/src/types/HHHTypes";
+import * as API from "@happyhoundhotel/hounds-ts/dist/src/types/HHHApiTypes";
 
 import bcrypt = require("bcrypt");
+import uuidv4 = require("uuid/v4");
 
 const TOKEN_EXPIRE_PERIOD: number = 86400000;
 
@@ -25,7 +26,7 @@ function parseDatabaseString(databaseUrl: string) {
 }
 
 // No-OP function
-function noop() { return true; }
+function noop() { return; }
 
 function handleError(err: MysqlError) {
     console.log(err.sqlMessage);
@@ -47,11 +48,11 @@ function createDatabase(opts: PoolConfig): DB.IDatabase {
     return { pool: require("mysql").createPool(opts), connOpts: opts };
 }
 
-function query(db: DB.IDatabase, qstr: string, callback: (results: any[]) => void) {
+function query(db: DB.IDatabase, qstr: string, qarray: Array<string|number> , callback: (results: any) => void) {
     db.pool.getConnection((connError, connection) => {
         if (connError) { handleError(connError); }
 
-        connection.query(qstr, (queryError, results) => {
+        connection.query(qstr, qarray, (queryError: MysqlError, results: any) => {
             if (queryError) { handleError(queryError); }
 
             if (results.affectedRows) {
@@ -73,23 +74,19 @@ function login(db: DB.IDatabase, username: string, password: string,
 
     if (!username || !password) { callback(null); return; }
 
-    // TODO More resilient token generation
-    const token = Math.round(Math.random() * 1000000);
+    const token = uuidv4();
     const tokenTimestamp = new Date().valueOf();
 
     // Sets Token
-    query(db, `
-          UPDATE users
-          SET token = ` + token + `, token_timestamp = ` + tokenTimestamp + `
-          WHERE username = '` + username + `';`
-        , findUser);
+    query(db, "UPDATE users SET token = ?, token_timestamp = ?  WHERE username = ?;",
+        [token, tokenTimestamp, username],
+        findUser);
 
     // Get user
     function findUser() {
-        query(db, `
-                  SELECT * from users
-                  WHERE users.username = '` + username + "';"
-            , comparePass);
+        query(db, "SELECT * from users WHERE users.username = ?;",
+                [username],
+                comparePass);
     }
 
     // Check hash with password
@@ -104,7 +101,7 @@ function login(db: DB.IDatabase, username: string, password: string,
                     callback(null);
                 } else {
                     callback({
-                        id: user.id,
+                        id: null,
                         permissions: user.permissions,
                         token: user.token,
                         username: user.username,
@@ -116,20 +113,20 @@ function login(db: DB.IDatabase, username: string, password: string,
 }
 
 function addUser(db: DB.IDatabase, username: string, password: string, permissions: number,
-                 callback: (res: unknown) => void) {
-    query(db, `
-         SELECT * FROM users WHERE users.username = "` + username + '";'
-        , insertUser);
+                 callback: (res: any) => void) {
+    query(db, "SELECT * FROM users WHERE users.username = ? ;",
+            [username],
+            insertUser);
 
     function insertUser(results: DB.ISQLUser[]) {
         if (results[0]) { return null; }
         bcrypt.hash(password, 12, (err, hash) => {
             if (err) { throw err; }
 
-            query(db, `
-                         INSERT INTO users (username, hashed_password, permissions) VALUES
-                         ("` + username + '","' + hash + '",' + permissions + ");"
-                , callback);
+            query(db, `INSERT INTO users (username, hashed_password, permissions)
+                    VALUES (?,?,?);`,
+                    [username, hash, permissions],
+                    callback);
         });
     }
 }
@@ -137,9 +134,10 @@ function addUser(db: DB.IDatabase, username: string, password: string, permissio
 function changePassword(db: DB.IDatabase, username: string,
                         oldPassword: string, newPassword: string, callback: (answer: string) => void) {
     query(db, `
-          SELECT * from users
-          WHERE users.username = "` + username + '";'
-        , checkPassword);
+            SELECT * from users
+            WHERE users.username = ?;`,
+            [username],
+            checkPassword);
 
     function checkPassword(results: DB.ISQLUser[]) {
         if (!results[0]) { callback("User Not Found"); return; }
@@ -162,25 +160,24 @@ function changePassword(db: DB.IDatabase, username: string,
             if (hashingError) { throw hashingError; }
             query(db, `
                           UPDATE users
-                          SET hashed_password = "` + hash + `"
-                          WHERE users.username = "` + username + '";'
-                , () => { callback("Success"); } );
+                          SET hashed_password = ?
+                          WHERE users.username = ?;`,
+                          [hash, username],
+                () => { callback("Success"); } );
         });
     }
 }
 
 function deleteUser(db: DB.IDatabase, username: string) {
-    query(db, `
-          DELETE FROM users
-          WHERE users.username = "` + username + '";', noop);
+    query(db, "DELETE FROM users WHERE users.username = ?;", [username], noop);
     console.info("Removed user: username=", username);
 }
 
-function checkToken(db: DB.IDatabase, username: string, token: number,
+function checkToken(db: DB.IDatabase, username: string, token: string,
                     callback: (user: HHH.IHoundUser) => void) {
-    query(db, `
-          SELECT username, token, token_timestamp, permissions FROM users
-          WHERE users.username = '` + username + `';`
+    query(db, `SELECT username, token, token_timestamp, permissions FROM users
+          WHERE users.username = ?;`,
+          [username]
         , (result) => {
             if (result[0]
                 && (new Date().valueOf() - result[0].token_timestamp) < TOKEN_EXPIRE_PERIOD
@@ -197,76 +194,81 @@ function checkToken(db: DB.IDatabase, username: string, token: number,
         });
 }
 
-function addDog(db: DB.IDatabase, dog: API.IHoundApiDog, doneCall: (res: unknown) => void) {
+function addDog(db: DB.IDatabase, dog: API.IHoundAPIDog, doneCall: (res: any) => void) {
     query(db, `
           INSERT INTO dogs (id, dog_name, client_name)
-          VALUES (UUID_SHORT(), "` + dog.name + '", "' + dog.clientName + '");'
-        , doneCall);
+          VALUES (UUID_SHORT(), ?, ?);`,
+          [dog.name, dog.clientName],
+          doneCall);
 }
 
-function addEvent(db: DB.IDatabase, event: API.IHoundApiEvent, doneCall: (res: unknown) => void) {
-    if (!event.id) { event.id = "0"; }
-
-    query(db, `
-          INSERT INTO events (id, event_start, event_end, event_type, event_text, event_id)
-          VALUES (` + event.id + ', "' + event.startDate + '", "' + event.endDate +
-        '", "' + event.type + '", "' + event.text + '", UUID_SHORT());'
-        , doneCall);
+function addEvent(db: DB.IDatabase, event: API.IHoundAPIEvent, doneCall: (res: any) => void) {
+    query(db, `INSERT INTO events (id, event_start, event_end, event_type, event_text, event_id)
+          VALUES ( ?, ?, ?, ?, ?, UUID_SHORT());`,
+          [event.id, event.startDate, event.endDate, event.type, event.text],
+          doneCall);
 }
 
-function removeEvent(db: DB.IDatabase, eventId: string, doneCall: (res: unknown) => void) {
-    query(db, `
-          DELETE FROM events
-          WHERE event_id = ` + eventId + `;`
-        , doneCall);
-    console.info("Removed event: id=", eventId);
+function removeEvent(db: DB.IDatabase, eventId: string, doneCall: (res: any) => void) {
+    query(db, "DELETE FROM events WHERE event_id = ?;", [eventId], doneCall);
+    console.info("Removed event: id = ", eventId);
 }
 
-function removeDog(db: DB.IDatabase, dogID: string, doneCall: (res: unknown) => void) {
-    query(db, "DELETE FROM dogs WHERE dogs.id = " + dogID + ";", noop);
-    query(db, "DELETE FROM events WHERE events.id = " + dogID + ";", doneCall);
-    console.info("Removed dog: id=", dogID);
+function removeDog(db: DB.IDatabase, dogID: string, doneCall: (res: any) => void) {
+    query(db, "DELETE FROM dogs where dogs.id = ?;", [dogID], noop);
+    query(db, "DELETE FROM events where events.id = ?;", [dogID], doneCall);
+    console.info("Removed dog: id = ", dogID);
+}
+
+function deactivateDog(db: DB.IDatabase, dogId: string, doneCall: (res: any) => void) {
+    query(db, "UPDATE dogs set active_client = 0 where dogs.id = ?;", [dogId], doneCall);
+    console.info("Deactivated dog: id = ", dogId);
+}
+
+function reactivateDog(db: DB.IDatabase, dogId: string, doneCall: (res: any) => void) {
+    query(db, "UPDATE dogs set active_client = 1 where dogs.id = ?;", [dogId], doneCall);
+    console.info("Reactivated dog: id = ", dogId);
 }
 
 function editDog(db: DB.IDatabase, id: string, columnName: string, value: string) {
-    query(db, `
-          UPDATE dogs SET ` + columnName + ' = "' + value + `"
-          WHERE id = ` +  id + ";"
-        , noop);
+    query(db, "UPDATE dogs SET " + db.pool.escapeId(columnName) + " = ? WHERE id = ?;",
+          [value, id], noop);
 }
 
 function editEvent(db: DB.IDatabase, eventId: string, columnName: string, value: string) {
-    query(db, `
-          UPDATE events SET ` + columnName + ' = "' + value + `"
-          WHERE event_id = ` + eventId + ";"
-        , noop);
+    query(db, " UPDATE events SET " + db.pool.escapeId(columnName) + " = ?  WHERE event_id = ? ;",
+          [value, eventId], noop);
 }
 
-function retrieveDog(db: DB.IDatabase, id: string, callback: (dog: API.IHoundApiDog) => void) {
-    query(db, `
-          SELECT * FROM dogs
+function retrieveDog(db: DB.IDatabase, id: string, callback: (dog: API.IHoundAPIDog) => void) {
+    query(db, `SELECT * FROM dogs
           LEFT JOIN events ON dogs.id = events.id
-          WHERE dogs.id = "` + id + '";'
-        , createDog);
+          WHERE dogs.id = ?;`, [id],
+          createDog);
 
     function createDog(results: DB.ISQLEvent[]) {
-        if (!results[0]) { return; }
+        if (!results[0]) {
+            callback(null);
+            return;
+        }
 
-        const dog: API.IHoundApiDog = {
+        const dog: API.IHoundAPIDog = {
             bookings: [],
             clientName: results[0].client_name,
             id: results[0].id,
             name: results[0].dog_name,
+            activeClient: results[0].active_client !== 0,
         };
 
         results.reverse().map((record) => {
             if (record.event_start && record.event_end) {
-                const event: API.IHoundApiEvent = {
+                const event: API.IHoundAPIEvent = {
                     endDate: parseInt(record.event_end, 10),
                     id: record.event_id,
                     startDate: parseInt(record.event_start, 10),
                     text: record.event_text,
                     type: record.event_type,
+                    desc: "",
                 };
 
                 dog.bookings.push(event);
@@ -278,36 +280,33 @@ function retrieveDog(db: DB.IDatabase, id: string, callback: (dog: API.IHoundApi
     }
 }
 
-function find(db: DB.IDatabase, searchText: string, callback: (matches: HHH.IHoundEvent[]) => void) {
-    query(db, `
-          SELECT * FROM dogs
-          WHERE dog_name LIKE "%` + searchText + `%"; `
-        , findEvents);
+function find(db: DB.IDatabase, searchText: string,
+              callback: (matches: Array<API.IHoundAPIEvent | API.IHoundAPIDog>) => void) {
+    query(db, "SELECT * FROM dogs WHERE dog_name LIKE ? or client_name like ?;",
+          ["%" + searchText + "%", "%" + searchText + "%"], findEvents);
 
     function findEvents(resDogs: DB.ISQLDog[]) {
-        query(db, `
-                  SELECT * from events WHERE event_text LIKE "%` + searchText + `%" AND
-                  id = 0 AND event_text <> 'undefined';`
-            , (resEvents) => sendMatches(resDogs, resEvents));
+        query(db, `SELECT * from events WHERE event_text LIKE ?  AND
+              id = 0 AND event_text <> 'undefined';`, ["%" + searchText + "%"],
+                  (resEvents) => sendMatches(resDogs, resEvents));
     }
 
     function sendMatches(resDogs: DB.ISQLDog[], resEvents: DB.ISQLEvent[]) {
-        const matches: API.IHoundApiBooking[] = [];
+        const matches: Array<API.IHoundAPIEvent | API.IHoundAPIDog> = [];
 
         resDogs.map((dog: DB.ISQLDog) => {
             matches.push({
-                dogId: dog.id,
-                endDate: null,
-                startDate: null,
-                id: "0",
-                text: dog.dog_name,
-                type: "dog",
+                activeClient: dog.active_client !== 0,
+                id: dog.id,
+                name: dog.dog_name,
+                clientName: dog.client_name,
+                bookings: [],
             });
 
         });
         resEvents.map((event: DB.ISQLEvent) => {
             matches.push({
-                dogId: event.id,
+                desc: "",
                 endDate: parseInt(event.event_end, 10),
                 id: event.event_id,
                 startDate: parseInt(event.event_start, 10),
@@ -331,14 +330,15 @@ function getWeek(db: DB.IDatabase, date: Date, callback: ([]) => void ) {
     // Next week Tues at 00:00
     const endDate: Date  = new Date(date.setDate(date.getDate() + 9));
 
-    query(db, `
-          SELECT * FROM events
+    query(db, `SELECT * FROM events
           LEFT JOIN dogs ON dogs.id = events.id
-          WHERE (event_start < ` + endDate.valueOf() + " AND event_start >= " + startDate.valueOf() + `) OR
-          (event_end < ` + endDate.valueOf() + " AND event_end >= " + startDate.valueOf() + `) OR
-          (event_start < ` + startDate.valueOf() + " AND event_end > " + endDate.valueOf() + `);
-        `, (results) => {
-
+          WHERE dogs.active_client = 1 AND
+          ((event_start < ? AND event_start >= ?) OR
+          (event_end < ? AND event_end >= ?) OR
+          (event_start < ? AND event_end > ?));`,
+          [ endDate.valueOf(), startDate.valueOf(), endDate.valueOf(),
+            startDate.valueOf(), startDate.valueOf(), endDate.valueOf() ],
+        (results) => {
             const week = formatWeek(results);
 
             if (callback) { callback(week); }
@@ -348,15 +348,16 @@ function getWeek(db: DB.IDatabase, date: Date, callback: ([]) => void ) {
 
 function formatWeek(dbEvents: DB.ISQLEvent[]): any[] {
 
-    const weekEvents: API.IHoundApiBooking[] = [];
+    const weekEvents: API.IHoundAPIBooking[] = [];
 
     dbEvents.map((event) => {
         if (event.event_text === "undefined") { event.event_text = null; }
         weekEvents.push({
+            desc: "",
             dogId: event.id,
             endDate: parseInt(event.event_end, 10),
-            id: event.event_id,
             startDate: parseInt(event.event_start, 10),
+            id: event.event_id,
             text: event.event_text || event.dog_name,
             type: event.event_type,
         });
@@ -380,6 +381,8 @@ export = {
     login,
     parseDatabaseString,
     removeDog,
+    deactivateDog,
+    reactivateDog,
     removeEvent,
     retrieveDog,
 };

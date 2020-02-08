@@ -6,7 +6,19 @@
   "author": "Matt Rochford",
   "repository": "https://github.com/hhhotel/scheduler-server",
   "license": "MIT",
+  "scripts": {
+    "debug": "node --inspect ./bin/index.js",
+    "prestart": "npm run build",
+    "start": "node ./bin/index.js",
+    "prebuild": "webpack --config webpack.prod.js",
+    "build": "tsc",
+    "webpack": "webpack",
+    "watch": "webpack --watch",
+    "lint": "tslint -p .",
+    "test": "ts-mocha ./src/test/*.test.ts"
+  },
   "dependencies": {
+    "@happyhoundhotel/hounds-ts": "^0.3.18",
     "@types/bcrypt": "^3.0.0",
     "@types/express": "^4.16.1",
     "@types/mysql": "^2.15.5",
@@ -14,23 +26,21 @@
     "@types/semver": "^6.0.1",
     "bcrypt": "^3.0.6",
     "cors": "^2.8.5",
+    "date-fns": "^2.6.0",
     "express": "^4.16.4",
     "mysql": "^2.16.0",
     "semver": "^6.3.0",
-    "typescript": "^3.3.4000"
-  },
-  "scripts": {
-    "debug": "node --inspect ./bin/index.js",
-    "start": "npm run build; node ./bin/index.js",
-    "build": "tsc",
-    "build:watch": "tsc --watch",
-    "lint": "tslint",
-    "test": "ts-mocha ./test/*.test.ts"
+    "typescript": "^3.3.4000",
+    "uuid": "^3.3.3",
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.10"
   },
   "devDependencies": {
     "@types/cors": "^2.8.6",
     "@types/expect": "^1.20.4",
     "@types/mocha": "^5.2.6",
+    "eslint": "^6.6.0",
+    "eslint-config-google": "^0.14.0",
     "mocha": "^6.2.0",
     "ts-mocha": "^6.0.0",
     "ts-node": "^8.0.3",
