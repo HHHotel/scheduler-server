@@ -3,11 +3,25 @@ import HHHDB = require("./HHHDatabase");
 import * as DB from "./HHHDBTypes";
 import * as WebSocket from "ws";
 
+function websocketBroadcast(name: string, wss: WebSocket.Server, data?: any) {
+    wss.clients.forEach( (client) => {
+        if (client.readyState !== WebSocket.OPEN) {
+            return;
+        }
+
+        if (!data) {
+            client.send(JSON.stringify({ type: name }));
+        } else {
+            client.send(JSON.stringify({ type: name, payload: data }));
+        }
+    });
+}
+
 function ApplyApiEndpoints(app: Application, wss: WebSocket.Server, database: DB.IDatabase) {
     app.get("/api/week", (req, res) => {
         HHHDB.getWeek(database, req.query.date ? new Date(req.query.date) : new Date(), (week) => {
-           res.send(week);
-       });
+            res.send(week);
+        });
     });
 
     app.get("/api/dogs/:id", (req, res) => {
@@ -25,7 +39,7 @@ function ApplyApiEndpoints(app: Application, wss: WebSocket.Server, database: DB
     app.post("/api/dogs", (req, res) => {
         HHHDB.addDog(database, req.body, () => {
             res.send("Added new Dog");
-            wss.clients.forEach((client) => client.send("load"));
+            websocketBroadcast("load", wss);
         });
     });
 
@@ -38,7 +52,7 @@ function ApplyApiEndpoints(app: Application, wss: WebSocket.Server, database: DB
             HHHDB.editEvent(database, booking.id, "event_end", booking.endDate.valueOf() + "");
         }
 
-        wss.clients.forEach((client) => client.send("load"));
+        websocketBroadcast("load", wss);
         res.send("Edited Dog");
     });
 
@@ -61,14 +75,14 @@ function ApplyApiEndpoints(app: Application, wss: WebSocket.Server, database: DB
         /* TODO make something like this for global messages */
         function endRequest(msg) {
             res.send(msg);
-            wss.clients.forEach((client) => client.send("load"));
+            websocketBroadcast("load", wss);
         }
     });
 
     app.delete("/api/events/:id", (req, res) => {
         HHHDB.removeEvent(database, req.params.id, () => {
             res.send("Deleted Event");
-            wss.clients.forEach((client) => client.send("load"));
+            websocketBroadcast("load", wss);
         });
     });
 
@@ -85,7 +99,7 @@ function ApplyApiEndpoints(app: Application, wss: WebSocket.Server, database: DB
         if (!req.body.id) { req.body.id = "0"; }
         HHHDB.addEvent(database, req.body, () => {
             res.send("Added event");
-            wss.clients.forEach((client) => client.send("load"));
+            websocketBroadcast("load", wss);
         });
     });
 

@@ -16,10 +16,6 @@ const app = express();
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 
-wss.on("connection", (ws) => {
-    console.log("New WebSocket Connection");
-});
-
 server.listen(PORT);
 
 // MIDDLEWARE
