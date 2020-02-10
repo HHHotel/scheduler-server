@@ -1,12 +1,27 @@
 import { Application } from "express";
 import HHHDB = require("./HHHDatabase");
 import * as DB from "./HHHDBTypes";
+import * as WebSocket from "ws";
 
-function ApplyApiEndpoints(app: Application, database: DB.IDatabase) {
+function websocketBroadcast(name: string, wss: WebSocket.Server, data?: any) {
+    wss.clients.forEach( (client) => {
+        if (client.readyState !== WebSocket.OPEN) {
+            return;
+        }
+
+        if (!data) {
+            client.send(JSON.stringify({ type: name }));
+        } else {
+            client.send(JSON.stringify({ type: name, payload: data }));
+        }
+    });
+}
+
+function ApplyApiEndpoints(app: Application, wss: WebSocket.Server, database: DB.IDatabase) {
     app.get("/api/week", (req, res) => {
         HHHDB.getWeek(database, req.query.date ? new Date(req.query.date) : new Date(), (week) => {
-           res.send(week);
-       });
+            res.send(week);
+        });
     });
 
     app.get("/api/dogs/:id", (req, res) => {
@@ -24,6 +39,7 @@ function ApplyApiEndpoints(app: Application, database: DB.IDatabase) {
     app.post("/api/dogs", (req, res) => {
         HHHDB.addDog(database, req.body, () => {
             res.send("Added new Dog");
+            websocketBroadcast("load", wss);
         });
     });
 
@@ -36,6 +52,7 @@ function ApplyApiEndpoints(app: Application, database: DB.IDatabase) {
             HHHDB.editEvent(database, booking.id, "event_end", booking.endDate.valueOf() + "");
         }
 
+        websocketBroadcast("load", wss);
         res.send("Edited Dog");
     });
 
@@ -48,16 +65,25 @@ function ApplyApiEndpoints(app: Application, database: DB.IDatabase) {
      * */
     app.delete("/api/dogs/:id", (req, res) => {
         if (req.query.option === "force") {
-            HHHDB.removeDog(database, req.params.id, () => res.send("Deleted dog"));
+            HHHDB.removeDog(database, req.params.id, () => endRequest("Deleted dog"));
         } else if (req.query.option === "reactivate") {
-            HHHDB.reactivateDog(database, req.params.id, () => res.send("Reactivated dog"));
+            HHHDB.reactivateDog(database, req.params.id, () => endRequest("Reactivated dog"));
         } else {
-            HHHDB.deactivateDog(database, req.params.id, () => res.send("Deactivated dog"));
+            HHHDB.deactivateDog(database, req.params.id, () => endRequest("Deactivated dog"));
+        }
+
+        /* TODO make something like this for global messages */
+        function endRequest(msg) {
+            res.send(msg);
+            websocketBroadcast("load", wss);
         }
     });
 
     app.delete("/api/events/:id", (req, res) => {
-        HHHDB.removeEvent(database, req.params.id, () => res.send("Deleted Event"));
+        HHHDB.removeEvent(database, req.params.id, () => {
+            res.send("Deleted Event");
+            websocketBroadcast("load", wss);
+        });
     });
 
     app.delete("/api/users/:user", (req, res) => {
@@ -71,15 +97,18 @@ function ApplyApiEndpoints(app: Application, database: DB.IDatabase) {
 
     app.post("/api/events", (req, res) => {
         if (!req.body.id) { req.body.id = "0"; }
-        HHHDB.addEvent(database, req.body, () => res.send("Added event"));
+        HHHDB.addEvent(database, req.body, () => {
+            res.send("Added event");
+            websocketBroadcast("load", wss);
+        });
     });
 
     app.post("/api/users", (req, res) => {
         if (req.user.permissions > req.body.permissions) {
             HHHDB.addUser(database, req.body.username, req.body.password, req.body.permissions,
-                () => {
-                res.send("Added new User");
-            });
+                          () => {
+                              res.send("Added new User");
+                          });
         } else {
             res.send("Insufficent Permissions");
         }
@@ -87,7 +116,7 @@ function ApplyApiEndpoints(app: Application, database: DB.IDatabase) {
 
     app.put("/api/user/password", (req, res) => {
         HHHDB.changePassword(database, req.user.username, req.body.oldPassword,
-            req.body.newPassword, (result) => res.send(result));
+                             req.body.newPassword, (result) => res.send(result));
     });
 }
 
