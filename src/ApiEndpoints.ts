@@ -10,9 +10,9 @@ function websocketBroadcast(name: string, wss: WebSocket.Server, data?: any) {
         }
 
         if (!data) {
-            client.send(JSON.stringify({ type: name }));
+            client.send(JSON.stringify({ name }));
         } else {
-            client.send(JSON.stringify({ type: name, payload: data }));
+            client.send(JSON.stringify({ name, data }));
         }
     });
 }
