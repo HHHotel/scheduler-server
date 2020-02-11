@@ -16,6 +16,16 @@ const app = express();
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 
+wss.on("connection", (ws) => {
+    ws.on("message", (msg) => {
+        const message = JSON.parse(msg.toString());
+        switch (message.name) {
+            case "ping":
+                ws.send(JSON.stringify({name: "pong"}));
+        }
+    });
+});
+
 server.listen(PORT);
 
 // MIDDLEWARE
