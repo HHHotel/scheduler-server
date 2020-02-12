@@ -4,15 +4,29 @@ import cors = require("cors");
 import express = require("express");
 import path = require("path");
 import semver = require("semver");
+import WebSocket = require("ws");
+import http = require("http");
 
 const DEFAULTS = {
     VERSION: "0.3.3", // > 0.3.3 to run currrent
 };
+const PORT = process.env.PORT || 8080;
 
 const app = express();
-const port = process.env.PORT || 8080;
+const server = http.createServer(app);
+const wss = new WebSocket.Server({ server });
 
-app.listen(port, () => console.log("Server running on port " + port) );
+wss.on("connection", (ws) => {
+    ws.on("message", (msg) => {
+        const message = JSON.parse(msg.toString());
+        switch (message.name) {
+            case "ping":
+                ws.send(JSON.stringify({name: "pong"}));
+        }
+    });
+});
+
+server.listen(PORT);
 
 // MIDDLEWARE
 app.use(cors());
@@ -125,4 +139,4 @@ app.post("/login", (req, res) => {
 
 /* Include all the methods for dealing with endpoints for the API */
 import ApplyApiEndpoints = require("./ApiEndpoints");
-ApplyApiEndpoints(app, database);
+ApplyApiEndpoints(app, wss, database);
