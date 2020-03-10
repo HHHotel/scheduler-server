@@ -195,9 +195,9 @@ function checkToken(db: DB.IDatabase, username: string, token: string,
 
 function addDog(db: DB.IDatabase, dog: API.IHoundAPIDog, doneCall: (res: any) => void) {
     query(db, `
-          INSERT INTO dogs (id, dog_name, client_name)
-          VALUES (UUID_SHORT(), ?, ?);`,
-          [dog.name, dog.clientName],
+          INSERT INTO dogs (id, dog_name, client_name, active_client)
+          VALUES (UUID_SHORT(), ?, ?, ?);`,
+          [dog.name, dog.clientName, dog.activeClient ? 1 : 0],
           doneCall);
 }
 
