@@ -329,20 +329,23 @@ function getWeek(db: DB.IDatabase, date: Date, callback: ([]) => void ) {
     // Next week Tues at 00:00
     const endDate: Date  = new Date(date.setDate(date.getDate() + 9));
 
+    const s = startDate.valueOf();
+    const e = endDate.valueOf();
+
     query(db, `SELECT * FROM events
           LEFT JOIN dogs ON dogs.id = events.id
           WHERE (dogs.active_client = 1 OR events.id = 0) AND
-          ((event_start < ? AND event_start >= ?) OR
-          (event_end < ? AND event_end >= ?) OR
-          (event_start < ? AND event_end > ?));`,
-          [ endDate.valueOf(), startDate.valueOf(), endDate.valueOf(),
-            startDate.valueOf(), startDate.valueOf(), endDate.valueOf() ],
+          (
+            event_start BETWEEN ? AND ? OR
+            event_end BETWEEN ? AND ? OR
+            event_start <= ? AND event_end >= ?
+          );`,
+          [ s, e, s, e, s, e],
         (results) => {
             const week = formatWeek(results);
 
             if (callback) { callback(week); }
         });
-
 }
 
 function formatWeek(dbEvents: DB.ISQLEvent[]): any[] {
