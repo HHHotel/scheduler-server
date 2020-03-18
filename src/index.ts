@@ -9,7 +9,7 @@ import WebSocket = require("ws");
 import http = require("http");
 
 const DEFAULTS = {
-    VERSION: "0.3.3", // > 0.3.3 to run currrent
+    VERSION: "0.3.4", // > 0.3.3 to run currrent
 };
 const PORT = process.env.PORT || 8080;
 
@@ -39,7 +39,6 @@ app.use(bodyParser.urlencoded({ // to support URL-encoded bodies
     extended: true,
 }));
 
-// TODO Refractor into new module
 import HoundsDatabase from "./HHHDatabase";
 const database = new HoundsDatabase(process.env.CLEARDB_DATABASE_URL);
 
