@@ -1,27 +1,25 @@
 import * as api from "@happyhoundhotel/hounds-ts";
-import * as dates from "date-fns";
+import {
+    compareAsc,
+} from "date-fns";
 import {
     setView,
     displayWeek,
 } from "./ui";
-import {
-    HoundsConfig,
-    DEFAULT,
-} from "@happyhoundhotel/hounds-ts";
 
 window.schedulerDate = new Date(new Date().toLocaleDateString());
 window.schedulerDate.setDate(window.schedulerDate.getDate() -
     window.schedulerDate.getDay() + 1);
 const BASE_URL = window.location.protocol + "//" + window.location.host;
 const API_VERSION = "0.3.4";
-const apiConfig = new HoundsConfig({
+const apiConfig = {
     apiAuth: {
         username: localStorage.hhh_username,
         token: localStorage.hhh_token,
     },
     apiURL: BASE_URL,
     apiVersion: API_VERSION,
-});
+};
 
 /**
  * Save the API credentials to localstorage
@@ -95,9 +93,9 @@ function setClosing(event) {
     const closingAm = 10;
     const openingPm = 16;
     const closingPm = 18;
-    if (dates.compareAsc(event.startDate, event.endDate) === 0) {
+    if (compareAsc(event.startDate, event.endDate) === 0) {
         const startHour = event.startDate.getHours();
-        if (event.type === DEFAULT.CONSTANTS.DAYCARE) {
+        if (event.type === api.DEFAULT.CONSTANTS.DAYCARE) {
             event.endDate.setHours(closingPm);
         } else if (
             isInInterval(startHour, openingAm, closingAm) ||
