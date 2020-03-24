@@ -2,6 +2,7 @@ process.env.TZ = "GMT+0000";
 
 import cors = require("cors");
 import helmet = require("helmet");
+import morgan = require("morgan");
 import express = require("express");
 import path = require("path");
 import semver = require("semver");
@@ -14,6 +15,7 @@ const DEFAULTS = {
 const PORT = process.env.PORT || 8080;
 
 const app = express();
+app.use(morgan("tiny"));
 app.disable("etag").disable("x-powered-by");
 const server = http.createServer(app);
 const wss = new WebSocket.Server({server});

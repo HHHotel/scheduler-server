@@ -422,7 +422,11 @@ export default class HoundsDatabase {
 
         const resWeek = await this.query(`SELECT * FROM events
               LEFT JOIN dogs ON dogs.id = events.dog_id
-              WHERE (dogs.active_client = 1 OR events.dog_id IS NULL) AND
+              WHERE (
+                  dogs.active_client = 1 OR
+                  events.dog_id = 0 OR
+                  events.dog_id IS NULL
+              ) AND
               (
                 start BETWEEN ? AND ? OR
                 end BETWEEN ? AND ? OR
