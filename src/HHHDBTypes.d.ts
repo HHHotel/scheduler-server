@@ -1,5 +1,3 @@
-import {Pool, PoolConfig} from "mysql";
-
 export interface ISQLUser {
     id: string;
     username: string;
@@ -18,15 +16,10 @@ export interface ISQLDog {
 
 export interface ISQLEvent extends ISQLDog {
     event_id: string;
-    event_type: string;
-    event_text: string;
-    event_start: string;
-    event_end: string;
-}
-
-export interface IDatabase {
-    pool: Pool;
-    connOpts: PoolConfig;
+    type: string;
+    text: string;
+    start: string;
+    end: string;
 }
 
 declare global {
